@@ -1,0 +1,87 @@
+﻿
+@model Image.Models.Entities.Role
+@{
+    Layout = "Layout/_LayoutDashboard";
+    ViewBag.Title = "Role & Permissions";
+    ViewBag.PageHeader = "Role & Permissions";
+    ViewBag.PageSubHeader = "Create user Role & assign selected Permissions";
+    ViewBag.FormHeader = "Role & Permissions (Make sure to fill all compulsory fields *)";
+}
+
+@using (Html.BeginForm("Create", "Role", FormMethod.Post, new {enctype = "multipart/form-data", role = "form"}))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true, "", new {@class = "text-danger"})
+
+    <div class="form-body">
+        <div class="form-group">
+            @Html.LabelFor(model => model.Name, new {@class = "control-label"})<span class="required">*</span>
+            @Html.EditorFor(model => model.Name, new {htmlAttributes = new {@class = "form-control", placeholder = "Please enter the role name"}})
+            @Html.ValidationMessageFor(model => model.Name, "", new {@class = "text-danger"})
+        </div>
+    </div>
+    <div class="form-group">
+        <label>System Setting Permissions</label>
+        <div class="">
+            <label >
+                @Html.LabelFor(model => model.ManageApplicationUser)
+                @Html.CheckBoxFor(model => model.ManageApplicationUser)
+            </label>
+            <label >
+                @Html.LabelFor(model => model.ManageRoles)
+                @Html.CheckBoxFor(model => model.ManageRoles)
+            </label>
+            <label >
+                @Html.LabelFor(model => model.UserSubscriptions)
+                @Html.CheckBoxFor(model => model.ManagePackages)
+            </label>
+            <label >
+                @Html.LabelFor(model => model.ManageImageCategory)
+                @Html.CheckBoxFor(model => model.ManageImageCategory)
+            </label>
+        </div>
+
+
+    </div>
+    <div class="form-group">
+        <label>Image Permissions</label>
+        <div class="">
+            <label >
+                @Html.LabelFor(model => model.UploadImage)
+                @Html.CheckBoxFor(model => model.UploadImage)
+                <span></span>
+            </label>
+            <label >
+                @Html.LabelFor(model => model.PurchaseImage)
+                @Html.CheckBoxFor(model => model.PurchaseImage)
+                <span></span>
+            </label>
+            <label >
+                @Html.LabelFor(model => model.UserSubscriptions)
+                @Html.CheckBoxFor(model => model.ManagePackages)
+                <span></span>
+            </label>
+
+        </div>
+    </div>
+    <div class="form-group">
+        <label>Seller Centre Permissions</label>
+        <div class="">
+            <label >
+                @Html.LabelFor(model => model.ManageOrders)
+                @Html.CheckBoxFor(model => model.ManageOrders)
+                <span></span>
+            </label>
+            <label >
+                @Html.LabelFor(model => model.ManagePayments)
+                @Html.CheckBoxFor(model => model.ManagePayments)
+                <span></span>
+            </label>
+
+        </div>
+    </div>
+    <div class="form-group">
+        <button type="submit" class="btn blue">Submit</button>
+        <a href="@Url.Action("Index","Role")" class="btn btn-default">Cancel</a>
+    </div>
+}

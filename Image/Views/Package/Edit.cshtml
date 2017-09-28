@@ -1,0 +1,27 @@
+﻿
+@model Image.Models.Entities.Package
+@{
+    Layout = "Layout/_LayoutDashboard";
+    ViewBag.Title = "Package";
+    ViewBag.PageHeader = "Package";
+    ViewBag.PageSubHeader = "Edit the  Subscription Package";
+    ViewBag.FormHeader = "Package (Make sure to fill all compulsory fields *)";
+}
+
+@using (Html.BeginForm("Edit", "ImageCategory", FormMethod.Post, new {enctype = "multipart/form-data", role = "form"}))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true, "", new {@class = "text-danger"})
+
+    <div class="form-body">
+        <div class="form-group">
+            @Html.LabelFor(model => model.Name, new {@class = "control-label"})
+            @Html.EditorFor(model => model.Name, new {htmlAttributes = new {@class = "form-control", placeholder = "Please enter the category name"}})
+            @Html.ValidationMessageFor(model => model.Name, "", new {@class = "text-danger"})
+        </div>
+    </div>
+    <div class="form-group">
+            <button type="submit" class="btn blue">Submit</button>
+            <a href="@Url.Action("Index")"  class="btn btn-default">Cancel</a>
+    </div>
+}
