@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using DataManager.Enum;
 using Image.Models.DataBaseConnections;
 using Image.Models.Entities;
 using Microsoft.AspNetCore.Http;
@@ -19,7 +20,8 @@ namespace Image.Controllers
         // GET: ImageSubCategory
         public ActionResult Index(long id)
         {
-            return View(_databaseConnection.ImageSubCategories.Where(n=>n.ImageCategoryId == id));
+            ViewBag.CategoryId = id;
+            return View(_databaseConnection.ImageSubCategories.Where(n=>n.ImageCategoryId == id).ToList());
         }
 
         // GET: ImageSubCategory/Details/5
@@ -29,8 +31,9 @@ namespace Image.Controllers
         }
 
         // GET: ImageSubCategory/Create
-        public ActionResult Create()
+        public ActionResult Create(long id)
         {
+            ViewBag.CategoryId = id;
             return View();
         }
 

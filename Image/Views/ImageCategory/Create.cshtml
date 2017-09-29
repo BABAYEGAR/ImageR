@@ -1,11 +1,10 @@
 ﻿
 @model Image.Models.Entities.ImageCategory
 @{
-    Layout = "Layout/_LayoutDashboard";
-    ViewBag.Title = "Image Category";
+    Layout = "Layout/Dashboard/_LayoutForm";
+    ViewBag.PageTitle = "Create Image Category";
     ViewBag.PageHeader = "Image Category";
-    ViewBag.PageSubHeader = "Create an Image Category";
-    ViewBag.FormHeader = "Image Category (Make sure to fill all compulsory fields *)";
+    ViewBag.FormHeader = "Create an Image Category (Make sure to fill all compulsory fields *)";
 }
 
 @using (Html.BeginForm("Create", "ImageCategory", FormMethod.Post, new {enctype = "multipart/form-data", role = "form"}))
@@ -21,7 +20,7 @@
         </div>
     </div>
     <div class="form-group">
-            <button type="submit" class="btn blue">Submit</button>
+            <button type="submit" class="btn btn-primary">Submit</button>
             <a href="@Url.Action("Index","ImageCategory")"  class="btn btn-default">Cancel</a>
     </div>
 }

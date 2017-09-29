@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Image.Models.Entities
 {
-    public class PackageItem
+    public class PackageItem : Transport
     {
         public long PackageItemId { get; set; }
         [Required]

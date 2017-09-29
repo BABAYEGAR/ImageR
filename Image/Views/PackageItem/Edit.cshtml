@@ -1,27 +1,30 @@
 ﻿
 @model Image.Models.Entities.PackageItem
 @{
-    Layout = "Layout/_LayoutDashboard";
-    ViewBag.Title = "Package Item";
-    ViewBag.PageHeader = "Package Item";
-    ViewBag.PageSubHeader = "Edit the Package Item";
-    ViewBag.FormHeader = "Package Item (Make sure to fill all compulsory fields *)";
+    Layout = "Layout/Dashboard/_LayoutForm";
+    ViewBag.PageTitle = "Edit Subscription Package Item";
+    ViewBag.PageHeader = "Subscription Package Item";
+    ViewBag.FormHeader = "Edit the Subscription Package Item (Make sure to fill all compulsory fields *)";
 }
 
 @using (Html.BeginForm("Edit", "ImageCategory", FormMethod.Post, new {enctype = "multipart/form-data", role = "form"}))
 {
     @Html.AntiForgeryToken()
+    @Html.HiddenFor(m=>m.PackageItemId)
+    @Html.HiddenFor(m=>m.PackageId)
+    @Html.HiddenFor(m=>m.DateCreated)
+    @Html.HiddenFor(m=>m.CreatedBy)
     @Html.ValidationSummary(true, "", new {@class = "text-danger"})
 
     <div class="form-body">
         <div class="form-group">
             @Html.LabelFor(model => model.Name, new {@class = "control-label"})
-            @Html.EditorFor(model => model.Name, new {htmlAttributes = new {@class = "form-control", placeholder = "Please enter the category name"}})
+            @Html.EditorFor(model => model.Name, new {htmlAttributes = new {@class = "form-control", placeholder = "Please enter the role name"}})
             @Html.ValidationMessageFor(model => model.Name, "", new {@class = "text-danger"})
         </div>
     </div>
     <div class="form-group">
-            <button type="submit" class="btn blue">Submit</button>
+            <button type="submit" class="btn btn-primary">Submit</button>
             <a href="@Url.Action("Index")"  class="btn btn-default">Cancel</a>
     </div>
 }

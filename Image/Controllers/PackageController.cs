@@ -1,14 +1,26 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using System;
+using System.Linq;
+using DataManager.Enum;
+using Image.Models.DataBaseConnections;
+using Image.Models.Entities;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace Image.Controllers
 {
     public class PackageController : Controller
     {
+        private readonly ImageDataContext _databaseConnection;
+
+        public PackageController(ImageDataContext databaseConnection)
+        {
+            _databaseConnection = databaseConnection;
+        }
         // GET: Package
         public ActionResult Index()
         {
-            return View();
+            return View(_databaseConnection.Packages.ToList());
         }
 
         // GET: Package/Details/5
@@ -26,13 +38,24 @@ namespace Image.Controllers
         // POST: Package/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
+        public ActionResult Create(Package package,IFormCollection collection)
         {
             try
             {
                 // TODO: Add insert logic here
+                var signedInUserId = HttpContext.Session.GetInt32("userId");
+                package.DateCreated = DateTime.Now;
+                package.DateLastModified = DateTime.Now;
+                package.CreatedBy = signedInUserId;
+                package.LastModifiedBy = signedInUserId;
 
-                return RedirectToAction(nameof(Index));
+                _databaseConnection.Packages.Add(package);
+                _databaseConnection.SaveChanges();
+
+                //display notification
+                TempData["display"] = "You have successfully added a new Package!";
+                TempData["notificationtype"] = NotificationType.Success.ToString();
+                return RedirectToAction("Index");
             }
             catch
             {
@@ -49,36 +72,41 @@ namespace Image.Controllers
         // POST: Package/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
+        public ActionResult Edit(Package package, IFormCollection collection)
         {
             try
             {
                 // TODO: Add update logic here
+                var signedInUserId = HttpContext.Session.GetInt32("userId");
+                package.DateLastModified = DateTime.Now;
+                package.LastModifiedBy = signedInUserId;
 
-                return RedirectToAction(nameof(Index));
+                _databaseConnection.Entry(package).State = EntityState.Modified; ;
+                _databaseConnection.SaveChanges();
+
+                //display notification
+                TempData["display"] = "You have successfully modified the Package!";
+                TempData["notificationtype"] = NotificationType.Success.ToString();
+                return RedirectToAction("Index");
             }
             catch
             {
                 return View();
             }
         }
-
-        // GET: Package/Delete/5
-        public ActionResult Delete(int id)
-        {
-            return View();
-        }
-
-        // POST: Package/Delete/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
+        public ActionResult Delete(long id, IFormCollection collection)
         {
             try
             {
-                // TODO: Add delete logic here
+                var package = _databaseConnection.Packages.Find(id);
 
-                return RedirectToAction(nameof(Index));
+                _databaseConnection.Packages.Remove(package);
+                _databaseConnection.SaveChanges();
+
+                //display notification
+                TempData["display"] = "You have successfully deleted the Package!";
+                TempData["notificationtype"] = NotificationType.Success.ToString();
+                return RedirectToAction("Index");
             }
             catch
             {

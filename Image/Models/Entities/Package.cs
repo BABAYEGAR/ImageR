@@ -9,8 +9,6 @@ namespace Image.Models.Entities
         [Required]
         public string Name { get; set; }
         [Required]
-        public string Type { get; set; }
-        [Required]
         public long? Amount { get; set; }
         public IEnumerable<PackageItem> PackageItems { get; set; }
         public IEnumerable<UserSubscription> UserSubscriptions { get; set; }

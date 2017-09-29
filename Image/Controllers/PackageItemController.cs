@@ -1,14 +1,27 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using System;
+using System.Linq;
+using DataManager.Enum;
+using Image.Models.DataBaseConnections;
+using Image.Models.Entities;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace Image.Controllers
 {
     public class PackageItemController : Controller
     {
-        // GET: PackageItem
-        public ActionResult Index()
+        private readonly ImageDataContext _databaseConnection;
+
+        public PackageItemController(ImageDataContext databaseConnection)
         {
-            return View();
+            _databaseConnection = databaseConnection;
+        }
+        // GET: PackageItem
+        public ActionResult Index(long packageId)
+        {
+            ViewBag.PackageId = packageId;
+            return View(_databaseConnection.PackageItem.Where(n=>n.PackageId == packageId).ToList());
         }
 
         // GET: PackageItem/Details/5
@@ -18,21 +31,33 @@ namespace Image.Controllers
         }
 
         // GET: PackageItem/Create
-        public ActionResult Create()
+        public ActionResult Create(long id)
         {
+            ViewBag.packageId = id;
             return View();
         }
 
         // POST: PackageItem/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
+        public ActionResult Create(PackageItem packageItem,IFormCollection collection)
         {
             try
             {
                 // TODO: Add insert logic here
+                var signedInUserId = HttpContext.Session.GetInt32("userId");
+                packageItem.DateCreated = DateTime.Now;
+                packageItem.DateLastModified = DateTime.Now;
+                packageItem.CreatedBy = signedInUserId;
+                packageItem.LastModifiedBy = signedInUserId;
 
-                return RedirectToAction(nameof(Index));
+                _databaseConnection.PackageItem.Add(packageItem);
+                _databaseConnection.SaveChanges();
+
+                //display notification
+                TempData["display"] = "You have successfully added a new Package Item!";
+                TempData["notificationtype"] = NotificationType.Success.ToString();
+                return RedirectToAction("Index");
             }
             catch
             {
@@ -49,13 +74,22 @@ namespace Image.Controllers
         // POST: PackageItem/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
+        public ActionResult Edit(PackageItem packageItem, IFormCollection collection)
         {
             try
             {
                 // TODO: Add update logic here
+                var signedInUserId = HttpContext.Session.GetInt32("userId");
+                packageItem.DateLastModified = DateTime.Now;
+                packageItem.LastModifiedBy = signedInUserId;
 
-                return RedirectToAction(nameof(Index));
+                _databaseConnection.Entry(packageItem).State = EntityState.Modified; ;
+                _databaseConnection.SaveChanges();
+
+                //display notification
+                TempData["display"] = "You have successfully modified the Package Item!";
+                TempData["notificationtype"] = NotificationType.Success.ToString();
+                return RedirectToAction("Index");
             }
             catch
             {
@@ -64,21 +98,19 @@ namespace Image.Controllers
         }
 
         // GET: PackageItem/Delete/5
-        public ActionResult Delete(int id)
-        {
-            return View();
-        }
-
-        // POST: PackageItem/Delete/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
+        public ActionResult Delete(long id, IFormCollection collection)
         {
             try
             {
-                // TODO: Add delete logic here
+                var packageItem = _databaseConnection.PackageItem.Find(id);
 
-                return RedirectToAction(nameof(Index));
+                _databaseConnection.PackageItem.Remove(packageItem);
+                _databaseConnection.SaveChanges();
+
+                //display notification
+                TempData["display"] = "You have successfully deleted the Package Item!";
+                TempData["notificationtype"] = NotificationType.Success.ToString();
+                return RedirectToAction("Index",new{packageId = id});
             }
             catch
             {

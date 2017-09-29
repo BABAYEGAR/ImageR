@@ -90,7 +90,6 @@
     <Compile Include="Encryption\Bcrypt.cs" />
     <Compile Include="Encryption\Hashing.cs" />
     <Compile Include="Encryption\Md5Ecryption.cs" />
-    <Compile Include="Enum\NotificationType.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

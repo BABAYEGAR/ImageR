@@ -5,6 +5,7 @@ using Image.Models.Entities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using DataManager.Enum;
 
 namespace Image.Controllers
 {

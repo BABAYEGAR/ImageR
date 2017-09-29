@@ -1,16 +1,18 @@
 ﻿
 @model Image.Models.Entities.Role
 @{
-    Layout = "Layout/_LayoutDashboard";
-    ViewBag.Title = "Role & Permissions";
+    Layout = "Layout/Dashboard/_LayoutForm";
+    ViewBag.PageTitle = "Edit Role & Permissions";
     ViewBag.PageHeader = "Role & Permissions";
-    ViewBag.PageSubHeader = "Edit the user Role & assigned Permissions";
-    ViewBag.FormHeader = "Role & Permissions (Make sure to fill all compulsory fields *)";
+    ViewBag.FormHeader = "Edit the Role and Re-assign Permisions (Make sure to fill all compulsory fields *)";
 }
 
 @using (Html.BeginForm("Edit", "Role", FormMethod.Post, new { enctype = "multipart/form-data", role = "form" }))
 {
     @Html.AntiForgeryToken()
+    @Html.HiddenFor(m=>m.RoleId)
+    @Html.HiddenFor(m=>m.DateCreated)
+    @Html.HiddenFor(m=>m.CreatedBy)
     @Html.ValidationSummary(true, "", new { @class = "text-danger" })
 
     <div class="form-body">

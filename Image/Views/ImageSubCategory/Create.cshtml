@@ -2,11 +2,10 @@
 @using Microsoft.AspNetCore.Mvc.Rendering
 @model ImageSubCategory
 @{
-    Layout = "Layout/_LayoutDashboard";
-    ViewBag.Title = "Image Sub- Category";
-    ViewBag.PageHeader = "Image Sub- Category";
-    ViewBag.PageSubHeader = "Create an Image Sub- Category";
-    ViewBag.FormHeader = "Image Sub- Category (Make sure to fill all compulsory fields *)";
+    Layout = "Layout/Dashboard/_LayoutForm";
+    ViewBag.PageTitle = "Create Image Sub-Category";
+    ViewBag.PageHeader = "Image Sub-Category";
+    ViewBag.FormHeader = "Create an Image Sub- Category (Make sure to fill all compulsory fields *)";
     Model.ImageCategoryId = ViewBag.CategoryId;
 }
 
@@ -23,7 +22,7 @@
         </div>
     </div>
     <div class="form-group">
-            <button type="submit" class="btn blue">Submit</button>
+            <button type="submit" class="btn btn-primary">Submit</button>
             <a href="@Url.Action("Index")"  class="btn btn-default">Cancel</a>
     </div>
 }

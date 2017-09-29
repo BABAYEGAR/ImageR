@@ -1,11 +1,10 @@
 ﻿
 @model Image.Models.Entities.Role
 @{
-    Layout = "Layout/_LayoutDashboard";
-    ViewBag.Title = "Role & Permissions";
+    Layout = "Layout/Dashboard/_LayoutForm";
+    ViewBag.PageTitle = "Create Role";
     ViewBag.PageHeader = "Role & Permissions";
-    ViewBag.PageSubHeader = "Create user Role & assign selected Permissions";
-    ViewBag.FormHeader = "Role & Permissions (Make sure to fill all compulsory fields *)";
+    ViewBag.FormHeader = "Create a Role and Assign Permisions (Make sure to fill all compulsory fields *)";
 }
 
 @using (Html.BeginForm("Create", "Role", FormMethod.Post, new {enctype = "multipart/form-data", role = "form"}))
