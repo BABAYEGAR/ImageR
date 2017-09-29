@@ -30,79 +30,78 @@
     <link rel="stylesheet" type="text/css" href="~/Dashboard/plugins/datatables.net-fixedheader-bs/css/fixedHeader.bootstrap.min.css">
     <!-- Primary Style-->
     <link rel="stylesheet" type="text/css" href="~/Dashboard/build/css/second-layout.css">
-    <link href="~/font-awesome/css/font-awesome.min.css" rel="stylesheet" />
+    <link href="~/font-awesome/css/font-awesome.min.css" rel="stylesheet"/>
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries-->
-    <!-- WARNING: Respond.js doesn't work if you view the page via file://--> 
+    <!-- WARNING: Respond.js doesn't work if you view the page via file://-->
     <!--[if lt IE 9]>
         <script type="text/javascript" src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
         <script type="text/javascript" src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
     <style>
-        .required {
-            color: red
-
-        }
+        .required { color: red }
     </style>
 </head>
 <body data-sidebar-color="sidebar-light" class="sidebar-light">
 <!-- Header start-->
-    @Html.Partial("Partials/_NavigationPartial");
+@Html.Partial("Partials/_NavigationPartial");
 <!-- Header end-->
 <div class="main-container">
-<!-- Main Sidebar start-->
+    <!-- Main Sidebar start-->
     @Html.Partial("Partials/_LeftSideBarPartial");
-<!-- Main Sidebar end-->
-<div class="page-container">
-    <div class="page-header clearfix">
-        <div class="pull-left">
-            <h2 class="mt-0 mb-5">@ViewBag.PageHeader</h2>
+    <!-- Main Sidebar end-->
+    <div class="page-container">
+        <div class="page-header clearfix">
+            <div class="pull-left">
+                <h2 class="mt-0 mb-5">@ViewBag.PageHeader</h2>
+            </div>
         </div>
-    </div>
-    @if (TempData["display"] != null)
-    {
-        if (TempData["notificationtype"].Equals(NotificationType.Success.ToString()))
+        @if (TempData["display"] != null)
         {
-            <div class="alert alert-success alert-dismissable">
-                @TempData["display"] <button type="button" class="close" data-dismiss="alert">×</button>
-            </div>
+            if (TempData["notificationtype"].Equals(NotificationType.Success.ToString()))
+            {
+                <div class="alert alert-success alert-dismissable">
+                    @TempData["display"] <button type="button" class="close" data-dismiss="alert">×</button>
+                </div>
+            }
+            else if (TempData["notificationtype"].Equals(NotificationType.Error.ToString()))
+            {
+                <div class="alert alert-danger alert-dismissable">
+                    @TempData["display"] <button type="button" class="close" data-dismiss="alert">×</button>
+                </div>
+            }
+            else if (TempData["notificationtype"].Equals(NotificationType.Info.ToString()))
+            {
+                <div class="alert alert-info alert-dismissable">
+                    @TempData["display"] <button type="button" class="close" data-dismiss="alert">×</button>
+                </div>
+            }
         }
-        else if (TempData["notificationtype"].Equals(NotificationType.Error.ToString()))
-        {
-            <div class="alert alert-danger alert-dismissable">
-                @TempData["display"] <button type="button" class="close" data-dismiss="alert">×</button>
-            </div>
-        }
-        else if (TempData["notificationtype"].Equals(NotificationType.Info.ToString()))
-        {
-            <div class="alert alert-info alert-dismissable">
-                @TempData["display"] <button type="button" class="close" data-dismiss="alert">×</button>
-            </div>
-        }
-    }
-    <div class="page-content container-fluid">
-    <div class="row">
-    <div class="col-lg-12">
-        <div class="widget">
-            <div class="widget-heading">
-                <h3 class="widget-title">@ViewBag.FormHeader</h3>
-            </div>
-            <div class="widget-body">
-        @RenderBody()
+        <div class="page-content container-fluid">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="widget">
+                        <div class="widget-heading">
+                            <h3 class="widget-title">@ViewBag.FormHeader</h3>
+                        </div>
+                        <div class="widget-body">
+                            @RenderBody()
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-    </div>
-</div>
-<!-- Right Sidebar start-->
+    <!-- Right Sidebar start-->
     @Html.Partial("Partials/_RightSideBarPartial");
 
-<!-- Right Sidebar end-->
+    <!-- Right Sidebar end-->
 </div>
 <!-- Demo Settings start-->
 <!-- Demo Settings end-->
 <!-- jQuery-->
 <script type="text/javascript" src="~/Dashboard/plugins/jquery/dist/jquery.min.js"></script>
+<script src="~/lib/jquery-validation/dist/jquery.validate.js"></script>
+<script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.js"></script>
 <!-- Bootstrap JavaScript-->
 <script type="text/javascript" src="~/Dashboard/plugins/bootstrap/dist/js/bootstrap.min.js"></script>
 <!-- Malihu Scrollbar-->

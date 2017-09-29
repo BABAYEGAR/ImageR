@@ -2,12 +2,15 @@
 @model Image.Models.Entities.Competition
 @{
     Layout = "Layout/Dashboard/_LayoutForm";
-    ViewBag.PageTitle = "Create Subscription";
-    ViewBag.PageHeader = "Subscription Package";
-    ViewBag.FormHeader = "Create a Subscription Package (Make sure to fill all compulsory fields *)";
+    ViewBag.PageTitle = "Create Competition";
+    ViewBag.PageHeader = "Image R Competition (Thies)";
+    ViewBag.FormHeader = "Create a Competition (Make sure to fill all compulsory fields *)";
 }
-
-@using (Html.BeginForm("Create", "Package", FormMethod.Post, new {enctype = "multipart/form-data", role = "form"}))
+@section Css{ 
+    <!-- Bootstrap DateTimePicker-->
+    <link rel="stylesheet" type="text/css" href="~/Dashboard/plugins/eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.min.css">
+}
+@using (Html.BeginForm("Create", "Competition", FormMethod.Post, new {enctype = "multipart/form-data", role = "form"}))
 {
     @Html.AntiForgeryToken()
     @Html.ValidationSummary(true, "", new {@class = "text-danger"})
@@ -15,17 +18,48 @@
     <div class="form-body">
         <div class="form-group col-md-6">
             @Html.LabelFor(model => model.Name, new {@class = "control-label"})<span class="required">*</span>
-            @Html.EditorFor(model => model.Name, new {htmlAttributes = new {@class = "form-control", placeholder = "Please enter the category name"}})
+            @Html.EditorFor(model => model.Name, new {htmlAttributes = new {@class = "form-control", placeholder = "Please enter the competition name"}})
             @Html.ValidationMessageFor(model => model.Name, "", new {@class = "text-danger"})
         </div>
         <div class="form-group col-md-6">
-            @Html.LabelFor(model => model.Amount, new {@class = "control-label"})<span class="required">*</span>
-            @Html.EditorFor(model => model.Amount, new {htmlAttributes = new {@class = "form-control", placeholder = "Please enter the category name"}})
-            @Html.ValidationMessageFor(model => model.Amount, "", new {@class = "text-danger"})
+            @Html.LabelFor(model => model.Theme, new {@class = "control-label"})<span class="required">*</span>
+            @Html.EditorFor(model => model.Theme, new {htmlAttributes = new {@class = "form-control", placeholder = "Please enter the competition name"}})
+            @Html.ValidationMessageFor(model => model.Theme, "", new {@class = "text-danger"})
         </div>
+        <div class="form-group">
+            @Html.LabelFor(model => model.Description, new {@class = "control-label"})<span class="required">*</span>
+            @Html.TextAreaFor(model => model.Description, new {@class = "form-control", placeholder = "Please enter the competition description"})
+            @Html.ValidationMessageFor(model => model.Description, "", new {@class = "text-danger"})
+        </div>
+        <div class="form-group col-md-6">
+            @Html.LabelFor(model => model.StartDate, new {@class = "control-label"})<span class="required">*</span>
+            @Html.EditorFor(model => model.StartDate, new {htmlAttributes = new {@class = "form-control",id = "minimum-dtpicker", placeholder = "Please select the competition start date"}})
+            @Html.ValidationMessageFor(model => model.StartDate, "", new {@class = "text-danger"})
+        </div>
+        <div class="form-group col-md-6">
+            @Html.LabelFor(model => model.EndDate, new {@class = "control-label"})<span class="required">*</span>
+            @Html.EditorFor(model => model.EndDate, new {htmlAttributes = new {@class = "form-control", placeholder = "Please select the competition end date"}})
+            @Html.ValidationMessageFor(model => model.EndDate, "", new {@class = "text-danger"})
+        </div>
+
     </div>
     <div class="form-group">
             <button type="submit" class="btn btn-primary">Submit</button>
-            <a href="@Url.Action("Index")"  class="btn btn-default">Cancel</a>
+            <a href="@Url.Action("Index","Competition")"  class="btn btn-default">Cancel</a>
     </div>
+}
+@section Scripts{ 
+    <!-- MomentJS-->
+    <script type="text/javascript" src="~/Dashboard/plugins/moment/min/moment.min.js"></script>
+    <!-- Moment With Locales-->
+    <script type="text/javascript" src="~/Dashboard/plugins/moment/locale/fr.js"></script>
+    <script type="text/javascript" src="~/Dashboard/plugins/moment/locale/ru.js"></script>
+    <script type="text/javascript" src="~/Dashboard/plugins/moment/locale/ja.js"></script>
+    <script type="text/javascript" src="~/Dashboard/plugins/moment/locale/vi.js"></script>
+    <!-- Bootstrap DateTimePicker-->
+    <script type="text/javascript" src="~/Dashboard/plugins/eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js"></script>
+    <!-- Custom JS-->
+    <script type="text/javascript" src="~/Dashboard/build/js/second-layout/app.js"></script>
+    <script type="text/javascript" src="~/Dashboard/build/js/second-layout/demo.js"></script>
+    <script type="text/javascript" src="~/Dashboard/build/js/page-content/pickers/datetime-picker.js"></script>
 }
