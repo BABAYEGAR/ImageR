@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace Image.Views.ImageCategory
+namespace Image.Views.PhotographerCategory
 {
     public class IndexModel : PageModel
     {

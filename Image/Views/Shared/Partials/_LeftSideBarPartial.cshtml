@@ -3,12 +3,19 @@
 @using Newtonsoft.Json
 @{
     Role userRole = null;
-    var roleString = Context.Session.GetString("Role");
-    userRole = JsonConvert.DeserializeObject<Role>(roleString);
-
+    if (Context.Session.GetString("Role") != null)
+    {
+        var roleString = Context.Session.GetString("Role");
+        userRole = JsonConvert.DeserializeObject<Role>(roleString);
+    }
     AppUser appUser = null;
-    var userString = Context.Session.GetString("ImageLoggedInUser");
-    appUser = JsonConvert.DeserializeObject<AppUser>(userString);
+    if (Context.Session.GetString("ImageLoggedInUser") != null)
+    {
+        var userString = Context.Session.GetString("ImageLoggedInUser");
+        appUser = JsonConvert.DeserializeObject<AppUser>(userString);
+    }
+ 
+
 }
 <aside data-mcs-theme="minimal-dark" class="main-sidebar mCustomScrollbar">
     <div class="user">
@@ -17,15 +24,15 @@
                 <img src="~/Dashboard/build/images/users/04.jpg" alt="" class="avatar img-circle"><span class="status bg-success"></span>
             </div>
         </a>
-        <h4 class="fs-14 text-muted mt-15 mb-5 fw-300">@appUser.Name</h4>
-        <p class="fs-13 mb-0 text-muted">Designer</p>
+        <h4 class="fs-14 text-muted mt-15 mb-5 fw-300">@appUser?.Name</h4>
+        <p class="fs-13 mb-0 text-muted">@appUser?.PhotographerCategory.Name</p>
     </div>
     <ul class="list-unstyled navigation mb-0">
-        <li class="sidebar-header pt-0">Main</li>
+        <li class="sidebar-header pt-0">Main Menu</li>
         <li>
             <a href="@Url.Action("Dashboard", "Home")" class="active bubble"><i class="ti-home"></i> Dashboard<span class="badge bg-danger">3</span></a>
         </li>
-        @if (userRole.ManageApplicationUser)
+        @if (userRole != null && userRole.ManageApplicationUser)
         {
             <li class="panel">
                 <a role="button" data-toggle="collapse" data-parent=".navigation" href="#collapse1" aria-expanded="false" aria-controls="collapse1" class="collapsed"><i class="ti-paint-bucket"></i> Users Management</a>
@@ -42,7 +49,7 @@
                 </ul>
             </li>
         }
-        @if (userRole.ManagePackages)
+        @if (userRole != null && userRole.ManagePackages)
         {
             <li class="panel">
                 <a role="button" data-toggle="collapse" data-parent=".navigation" href="#collapse2" aria-expanded="false" aria-controls="collapse2" class="collapsed"><i class="ti-brush-alt"></i> Subscription Managment</a>
@@ -53,7 +60,7 @@
                 </ul>
             </li>
         }
-        @if (userRole.ManageImageCategory || userRole.ManagePhotographerCategory)
+        @if (userRole != null && userRole.ManageImageCategory || userRole != null && userRole.ManagePhotographerCategory)
         {
             <li class="panel">
                 <a role="button" data-toggle="collapse" data-parent=".navigation" href="#collapse3" aria-expanded="false" aria-controls="collapse3" class="collapsed"><i class="ti-brush-alt"></i> Category Management</a>
@@ -67,7 +74,7 @@
                 </ul>
             </li>
         }
-        @if (userRole.ManageCompetition)
+        @if (userRole != null && userRole.ManageCompetition)
         {
             <li class="panel">
                 <a role="button" data-toggle="collapse" data-parent=".navigation" href="#collapse4" aria-expanded="false" aria-controls="collapse4" class="collapsed"><i class="ti-brush-alt"></i> Tasks</a>
@@ -78,7 +85,7 @@
                 </ul>
             </li>
         }
-        @if (userRole.UploadImage)
+        @if (userRole != null && userRole.UploadImage)
         {
             <li class="panel">
                 <a role="button" data-toggle="collapse" data-parent=".navigation" href="#collapse5" aria-expanded="false" aria-controls="collapse5" class="collapsed"><i class="ti-shopping-cart"></i> My Images @*<span class="label label-outline label-success">New</span>*@</a>
@@ -89,7 +96,7 @@
                 </ul>
             </li>
         }
-        @if (userRole.ManageOrders)
+        @if (userRole != null && userRole.ManageOrders)
         {
             <li class="panel">
                 <a role="button" data-toggle="collapse" data-parent=".navigation" href="#collapse6" aria-expanded="false" aria-controls="collapse6" class="collapsed"><i class="ti-shopping-cart"></i> My Camera's @*<span class="label label-outline label-success">New</span>*@</a>
@@ -100,7 +107,7 @@
                 </ul>
             </li>
         }
-        @if (userRole.ManageOrders)
+        @if (userRole != null && userRole.ManageOrders)
         {
             <li class="panel">
                 <a role="button" data-toggle="collapse" data-parent=".navigation" href="#collapse7" aria-expanded="false" aria-controls="collapse7" class="collapsed"><i class="ti-shopping-cart"></i> Orders @*<span class="label label-outline label-success">New</span>*@</a>
