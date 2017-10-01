@@ -9,24 +9,24 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Image.Controllers
 {
-    public class ImageCategoryController : Controller
+    public class PhotographerCategoryController : Controller
     {
         private readonly ImageDataContext _databaseConnection;
 
-        public ImageCategoryController(ImageDataContext databaseConnection)
+        public PhotographerCategoryController(ImageDataContext databaseConnection)
         {
             _databaseConnection = databaseConnection;
         }
         // GET: ImageCategory
         public ActionResult Index()
         {
-            return View(_databaseConnection.ImageCategories.ToList());
+            return View(_databaseConnection.PhotographerCategories.ToList());
         }
 
         // GET: ImageCategory/Details/5
         public ActionResult Details(int id)
         {
-            return View(_databaseConnection.ImageCategories.Find(id));
+            return View(_databaseConnection.PhotographerCategories.Find(id));
         }
 
         // GET: ImageCategory/Create
@@ -38,21 +38,21 @@ namespace Image.Controllers
         // POST: ImageCategory/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(ImageCategory imageCategory,  IFormCollection collection)
+        public ActionResult Create(PhotographerCategory photographerCategory,  IFormCollection collection)
         {
             try
             {
                 var signedInUserId = HttpContext.Session.GetInt32("userId");
-                imageCategory.DateCreated = DateTime.Now;
-                imageCategory.DateLastModified = DateTime.Now;
-                imageCategory.CreatedBy = signedInUserId;
-                imageCategory.LastModifiedBy = signedInUserId;
+                photographerCategory.DateCreated = DateTime.Now;
+                photographerCategory.DateLastModified = DateTime.Now;
+                photographerCategory.CreatedBy = signedInUserId;
+                photographerCategory.LastModifiedBy = signedInUserId;
 
-                _databaseConnection.ImageCategories.Add(imageCategory);
+                _databaseConnection.PhotographerCategories.Add(photographerCategory);
                 _databaseConnection.SaveChanges();
 
                 //display notification
-                TempData["display"] = "You have successfully added a new Image Category!";
+                TempData["display"] = "You have successfully added a new Photographer Category!";
                 TempData["notificationtype"] = NotificationType.Success.ToString();
                 return RedirectToAction("Index");
             }
@@ -71,16 +71,16 @@ namespace Image.Controllers
         // POST: ImageCategory/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(ImageCategory imageCategory,IFormCollection collection)
+        public ActionResult Edit(PhotographerCategory photographerCategory,IFormCollection collection)
         {
             try
             {
                 // TODO: Add update logic here
                 var signedInUserId = HttpContext.Session.GetInt32("userId");
-                imageCategory.DateLastModified = DateTime.Now;
-                imageCategory.LastModifiedBy = signedInUserId;
+                photographerCategory.DateLastModified = DateTime.Now;
+                photographerCategory.LastModifiedBy = signedInUserId;
 
-                _databaseConnection.Entry(imageCategory).State = EntityState.Modified;;
+                _databaseConnection.Entry(photographerCategory).State = EntityState.Modified;;
                 _databaseConnection.SaveChanges();
 
                 //display notification
@@ -95,11 +95,11 @@ namespace Image.Controllers
         }
 
         // GET: ImageCategory/Delete/5
-        public ActionResult Delete(int id)
+        public ActionResult Delete(long id)
         {
-            var imageCategory = _databaseConnection.ImageCategories.Find(id);
+            var photographerCategory = _databaseConnection.PhotographerCategories.Find(id);
 
-            _databaseConnection.ImageCategories.Remove(imageCategory);
+            _databaseConnection.PhotographerCategories.Remove(photographerCategory);
             _databaseConnection.SaveChanges();
 
             //display notification

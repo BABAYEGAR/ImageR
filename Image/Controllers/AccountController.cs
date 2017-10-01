@@ -1,14 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
-using DataManager.Enum;
 using Image.Models.DataBaseConnections;
 using Image.Models.Encryption;
 using Image.Models.Entities;
+using Image.Models.Enum;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-
+using Newtonsoft.Json;
 
 namespace Image.Controllers
 {
@@ -20,14 +19,19 @@ namespace Image.Controllers
         {
             _databaseConnection = databaseConnection;
         }
+        public ActionResult Profile()
+        {
+            return View();
+        }
         public ActionResult Register()
         {
             return View();
         }
+
         [HttpPost]
         public ActionResult Register(AccountModel model)
         {
-            AppUser appUser = new AppUser
+            var appUser = new AppUser
             {
                 Name = model.Username,
                 Mobile = model.Mobile,
@@ -48,9 +52,56 @@ namespace Image.Controllers
             TempData["notificationtype"] = NotificationType.Success.ToString();
             return View();
         }
-        public ActionResult Login()
+
+        [HttpGet]
+        [AllowAnonymous]
+        public ActionResult Login(string returnUrl)
         {
+            _databaseConnection.Dispose();
+            HttpContext.Session.Clear();
+            if (returnUrl != null)
+            {
+                //display notification
+                TempData["display"] = "Your session has expired, Login to continue!";
+                TempData["notificationtype"] = NotificationType.Success.ToString();
+            }
             return View();
+        }
+
+        [HttpPost]
+        [AllowAnonymous]
+        [ValidateAntiForgeryToken]
+        public ActionResult Login(AccountModel model)
+        {
+            var userExist =
+                _databaseConnection.AppUsers.SingleOrDefault(
+                    n => n.Email == model.Email || n.Username == model.Username);
+            if (userExist == null)
+            {
+                //display notification
+                TempData["display"] = "Your Email does not exist, Check and Try again!";
+                TempData["notificationtype"] = NotificationType.Success.ToString();
+                return View(model);
+            }
+            var passwordCorrect = new Hashing().ValidatePassword(model.ConfirmPassword, userExist.ConfirmPassword);
+            if (passwordCorrect == false)
+            {
+                //display notification
+                TempData["display"] = "Dear " + userExist.Name + " your Password is Incorrect, Check and Try again!";
+                TempData["notificationtype"] = NotificationType.Success.ToString();
+                return View(model);
+            }
+            //convert object to json string and insert into session
+            var userString = JsonConvert.SerializeObject(userExist);
+            HttpContext.Session.SetString("ImageLoggedInUser", userString);
+
+            return RedirectToAction("Dashboard", "Home");
+        }
+        [HttpGet]
+        public IActionResult LogOut()
+        {
+            _databaseConnection.Dispose();
+            return RedirectToAction("Login", "Account");
         }
     }
 }

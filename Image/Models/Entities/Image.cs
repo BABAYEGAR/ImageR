@@ -11,6 +11,7 @@ namespace Image.Models.Entities
         public string Title { get; set; }
         [Required]
         public string Theme { get; set; }
+        public string Caption { get; set; }
         [Required]
         public string Description { get; set; }
         public string ImageName { get; set; }

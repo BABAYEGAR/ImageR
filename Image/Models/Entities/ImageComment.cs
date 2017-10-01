@@ -9,5 +9,8 @@ namespace Image.Models.Entities
         public long? ImageId { get; set; }
         [ForeignKey("ImageId")]
         public Image Image { get; set; }
+        public long? AppUserId { get; set; }
+        [ForeignKey("AppUserId")]
+        public AppUser AppUser { get; set; }
     }
 }

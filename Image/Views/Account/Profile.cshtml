@@ -1,0 +1,168 @@
+﻿@using Image.Models.Entities
+@using Microsoft.AspNetCore.Http
+@using Newtonsoft.Json
+@{
+    Layout = "Layout/Dashboard/_LayoutDashboard";
+
+    Role userRole = null;
+    var roleString = Context.Session.GetString("Role");
+    userRole = JsonConvert.DeserializeObject<Role>(roleString);
+
+    AppUser appUser = null;
+    var userString = Context.Session.GetString("ImageLoggedInUser");
+    appUser = JsonConvert.DeserializeObject<AppUser>(userString);
+
+    List<Image> images = ViewBag.Images;
+}
+<div class="row row-0">
+    <div class="col-lg-12">
+        <div style="height: 260px; padding-top: 130px" class="pl-30 pr-30 clearfix overlay text-white">
+            <div class="pull-left media">
+                <div class="media-left">
+                    <img src="~/Dashboard/build/images/backgrounds/profile.png" alt="" style="opacity: 1; z-index: -1" class="img-main img-responsive"><a href="javascript:void(0)" style="background-color: #fff; border-radius: 50%; display: inline-block; padding: 3px;">
+                        <img src="~/Dashboard/build/images/users/06.jpg" width="100" alt="" class="img-circle">
+                    </a>
+                </div>
+                <div style="width: auto" class="media-body media-middle">
+                    <h2 class="media-heading">@appUser.Username</h2>
+                    <div class="fs-20">@appUser.Name</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row ml-10 mr-10 pt-10">
+    <div class="col-md-3">
+        <div class="widget clear">
+            <div class="widget-heading">
+                <h3 class="widget-title">About me</h3>
+            </div>
+            <div class="widget-body">
+                <ul class="media-list mb-0">
+                    <li class="media">
+                        <div class="media-left">
+                            <i class="ti-briefcase text-info"></i>
+                        </div>
+                        <div class="media-body">
+                            <p>@appUser.PhotographerCategory.Name</p>
+                        </div>
+                    </li>
+                    <li class="media">
+                        <div class="media-left">
+                            <i class="ti-gift text-info"></i>
+                        </div>
+                        <div class="media-body">
+                            <p>@appUser.DateOfBirth</p>
+                        </div>
+                    </li>
+                    <li class="media">
+                        <div class="media-left">
+                            <i class="ti-email text-info"></i>
+                        </div>
+                        <div class="media-body">
+                            <p>@appUser.Email</p>
+                        </div>
+                    </li>
+                    <li class="media">
+                        <div class="media-left">
+                            <i class="ti-home text-info"></i>
+                        </div>
+                        <div class="media-body">
+                            <p>@appUser.Address</p>
+                        </div>
+                    </li>
+                    <li class="media">
+                        <div class="media-left">
+                            <i class="ti-mobile text-info"></i>
+                        </div>
+                        <div class="media-body">
+                            <p>@appUser.Mobile</p>
+                        </div>
+                    </li>
+                    <li class="media">
+                        <div class="media-left">
+                            <i class="ti-world text-info"></i>
+                        </div>
+                        <div class="media-body">
+                            <p>@appUser.Website</p>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="widget clear">
+            <div class="widget-heading">
+                <h3 class="widget-title">Biography</h3>
+            </div>
+            <div class="widget-body">
+                <p>@appUser.Biography</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        @foreach (var item in images)
+        {
+            <div class="widget clear">
+                <div class="widget-heading">
+                    <div class="media">
+                        <div class="media-left">
+                            <img src="~/Dashboard/build/images/users/10.jpg" alt="" class="media-object mo-lg img-circle">
+                        </div>
+                        <div class="media-body media-middle">
+                            <p class="mb-0">
+                                <span class="fw-500">@item.AppUser.Name</span> uploaded a new photo
+                            </p>
+                            <time datetime="2015-12-10T20:50:48+07:00" class="text-muted fs-12">
+                                @item.DateCreated.ToString("D") <i class="ti-time"></i>@item.DateCreated.ToString("h:mm:ss tt")</time>
+                        </div>
+                    </div>
+                </div>
+                <div class="widget-body">
+                    <p>
+                        @item.Description
+                    </p>
+                    <div class="thumbnail">
+                        <img src="~/Dashboard/build/images/backgrounds/02.jpg" alt="">
+                        <div class="text-right caption">
+                            <ul class="list-inline mb-0">
+                                <li>
+                                    <i class="ti-comment text-info"></i>@item.ImageComments.ToList().Count</li>
+                                <li>
+                                    <i class="ti-heart text-danger"></i> @item.ImageClicks.ToList().Count</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <ul class="media-list">
+                        <li class="media">
+                            <div class="media-left avatar">
+                                <img alt="" src="~/Dashboard/build/images/users/01.jpg" class="media-object img-circle"><span class="status bg-success"></span>
+                            </div>
+                            <div class="media-body">
+                                <h5 class="media-heading inline-block">Philip Fernandez</h5>
+                                <time datetime="2015-12-10T20:50:48+07:00" class="text-muted fs-12">20 Jan 2016 <i class="ti-time"></i> 12:12 PM</time>
+                                <p>@item.Caption</p>
+                                @foreach (var items in item.ImageComments)
+                                {
+                                    <div class="media">
+                                        <div class="media-left avatar">
+                                            <img alt="" src="~/Dashboard/build/images/users/12.jpg" class="media-object img-circle"><span class="status bg-success"></span>
+                                        </div>
+                                        <div class="media-body">
+                                            <h5 class="media-heading inline-block">@items.AppUser.Name</h5>
+                                            <time datetime="2015-12-10T20:50:48+07:00" class="text-muted fs-12">
+                                                @item.DateCreated.ToString("D") <i class="ti-time"></i>@item.DateCreated.ToString("h:mm:ss tt")</time>
+                                            <p>@items.Comment</p>
+                                        </div>
+                                    </div>
+                                }
+
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        }
+
+    </div>
+
+</div>

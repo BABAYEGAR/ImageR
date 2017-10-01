@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace Image.Views.Register
+namespace Image.Views.Account
 {
     public class CreateModel : PageModel
     {

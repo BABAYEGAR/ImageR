@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace Image.Views.Competiton
+namespace Image.Views.Competition
 {
     public class CreateModel : PageModel
     {

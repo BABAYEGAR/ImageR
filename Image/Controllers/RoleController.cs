@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Linq;
-using DataManager.Enum;
 using Image.Models.DataBaseConnections;
 using Image.Models.Entities;
+using Image.Models.Enum;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;

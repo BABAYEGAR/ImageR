@@ -39,7 +39,8 @@ namespace Image.Models.DataBaseConnections
         public virtual DbSet<Order> Orders { get; set; }
         public virtual DbSet<Payment> Payments { get; set; }
         public virtual DbSet<UserSubscription> UserSubscriptions { get; set; }
-        public DbSet<Competition> Competition { get; set; }
+        public virtual DbSet<Competition> Competition { get; set; }
+        public virtual DbSet<PhotographerCategory> PhotographerCategories { get; set; }
 
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

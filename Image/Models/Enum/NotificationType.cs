@@ -1,4 +1,4 @@
-﻿namespace DataManager.Enum
+﻿namespace Image.Models.Enum
 {
     public enum NotificationType
     {
