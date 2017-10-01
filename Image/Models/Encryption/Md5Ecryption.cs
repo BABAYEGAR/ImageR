@@ -2,7 +2,7 @@
 using System.Security.Cryptography;
 using System.Text;
 
-namespace DataManager.Encryption
+namespace Image.Models.Encryption
 {
     public class Md5Ecryption
     {

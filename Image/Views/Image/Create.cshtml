@@ -1,0 +1,428 @@
+﻿@model Image.Models.Entities.Image
+@{
+    Layout = "Layout/Dashboard/_LayoutForm";
+    ViewBag.PageTitle = "Upload Image";
+    ViewBag.PageHeader = "Image Upload";
+    ViewBag.FormHeader = "Upload an Image (Make sure to fill all compulsory fields *)";
+}
+@section css{
+
+    <!-- Bootstrap Markdown-->
+    <link rel="stylesheet" type="text/css" href="~/Dashboard/plugins/bootstrap-markdown/css/bootstrap-markdown.min.css">
+    <style>
+        .fileinput-upload-button {
+            visibility: hidden
+        }
+    </style>
+}
+<div class="widget-body">
+<p>
+    Make sure to upload an Image in the next tab
+</p>
+<div role="tabpanel">
+<ul role="tablist" class="nav nav-tabs nav-justified mb-15">
+    <li role="presentation" class="active">
+        <a id="home-tab5" href="#home5" role="tab" data-toggle="tab" aria-controls="home5" aria-expanded="true">Image Fields</a>
+    </li>
+    <li role="presentation">
+        <a id="profile-tab5" href="#profile5" role="tab" data-toggle="tab" aria-controls="profile5" aria-expanded="False">Image Upload</a>
+    </li>
+    <li role="presentation">
+        <a id="profile-tab6" href="#profile6" role="tab" data-toggle="tab" aria-controls="profile6" aria-expanded="False">Customize Image Upload</a>
+    </li>
+</ul>
+
+@using (Html.BeginForm("Create", "Image", FormMethod.Post, new {enctype = "multipart/form-data", role = "form"}))
+{
+    <div class="tab-content">
+
+    <div id="home5" role="tabpanel" aria-labelledby="home-tab5" class="tab-pane fade active in">
+        @Html.AntiForgeryToken()
+        @Html.ValidationSummary(true, "", new {@class = "text-danger"})
+
+        <div class="form-body">
+            <div class="row">
+            <div class="form-group col-md-6">
+                @Html.LabelFor(model => model.Title, new {@class = "control-label"})<span class="required">*</span>
+                @Html.EditorFor(model => model.Title, new {htmlAttributes = new {@class = "form-control", placeholder = "Please enter the category name"}})
+                @Html.ValidationMessageFor(model => model.Title, "", new {@class = "text-danger"})
+            </div>
+            <div class="form-group col-md-6">
+                @Html.LabelFor(model => model.Theme, new {@class = "control-label"})<span class="required">*</span>
+                @Html.EditorFor(model => model.Theme, new {htmlAttributes = new {@class = "form-control", placeholder = "Please enter the category name"}})
+                @Html.ValidationMessageFor(model => model.Theme, "", new {@class = "text-danger"})
+            </div>
+            <div class="form-group col-md-6">
+                @Html.LabelFor(model => model.ImageCategoryId, new {@class = "control-label"})<span class="required">*</span>
+                @Html.DropDownListFor(model => model.ImageCategoryId, null, "Select an Image Category/Genre", new {@class = "form-control", placeholder = "", id = "category"})
+                @Html.ValidationMessageFor(model => model.ImageCategoryId, "", new {@class = "text-danger"})
+            </div>
+            <div class="form-group col-md-6">
+                @Html.LabelFor(model => model.ImageSubCategoryId, new {@class = "control-label"})<span class="required">*</span>
+                @Html.DropDownListFor(m => m.ImageSubCategoryId, new SelectList(string.Empty, "Value", "Text"), "--Please select a Sub-Category/ Sub-Genre--", new {@class = "form-control", id = "sub"})
+                @Html.ValidationMessageFor(model => model.ImageSubCategoryId, "", new {@class = "text-danger"})
+            </div>
+            <div class="form-group col-md-6">
+                @Html.LabelFor(model => model.Location, new {@class = "control-label"})<span class="required">*</span>
+                @Html.EditorFor(model => model.Location, new {htmlAttributes = new {@class = "form-control", placeholder = "Please enter the location the image was taken"}})
+                @Html.ValidationMessageFor(model => model.Location, "", new {@class = "text-danger"})
+            </div>
+            <div class="form-group col-md-6">
+                @Html.LabelFor(model => model.Inspiration, new {@class = "control-label"})<span class="required">*</span>
+                @Html.EditorFor(model => model.Inspiration, new {htmlAttributes = new {@class = "form-control", placeholder = "Please enter the your inspiration for taking the image"}})
+                @Html.ValidationMessageFor(model => model.Inspiration, "", new {@class = "text-danger"})
+            </div>
+            <div class="form-group col-md-6">
+                @Html.LabelFor(model => model.Camera, new {@class = "control-label"})<span class="required">*</span>
+                @Html.EditorFor(model => model.Camera, new {htmlAttributes = new {@class = "form-control", placeholder = "Please enter the type of camera used to capture the image"}})
+                @Html.ValidationMessageFor(model => model.Camera, "", new {@class = "text-danger"})
+            </div>
+                <div class="form-group col-md-6">
+                    @Html.LabelFor(model => model.SellingPrice, new {@class = "control-label"})<span class="required">*</span>
+                    @Html.EditorFor(model => model.SellingPrice, new {htmlAttributes = new {@class = "form-control", placeholder = "Please enter the selling price for the image"}})
+                    @Html.ValidationMessageFor(model => model.SellingPrice, "", new {@class = "text-danger"})
+                </div>
+            </div>
+            <div class="row">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Description, new {@class = "control-label"})<span class="required">*</span>
+                    <textarea name="Description" data-provide="markdown" rows="10"></textarea>
+                    @Html.ValidationMessageFor(model => model.Description, "", new {@class = "text-danger"})
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+    <div id="profile5" role="tabpanel" aria-labelledby="profile-tab5" class="tab-pane fade">
+        <div class="form-group">
+            <br/>
+            <br/>
+            <label class="col-sm-2 control-label">Image Upload</label>
+            <div class="col-sm-10">
+                <input id="input-5" name="input5[]" type="file" multiple="" class="file-loading">
+                <p class="help-block">Initialize file input widget via javascript. Hide the caption and display widget with only buttons. You can add the <code>file-loading</code> class to show a spinning indicator, while the plugin loads.
+                </p>
+            </div>
+        </div>
+    </div>
+    <div id="profile6" role="tabpanel" aria-labelledby="profile-tab6" class="tab-pane fade">
+    <div class="col-md-12">
+    <div class="row">
+        <div class="col-md-9">
+            <div class="img-container">
+                <img src="" id="avatar" alt="Picture">
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="docs-preview clearfix">
+                <div class="img-preview preview-md"></div>
+                <div class="img-preview preview-sm"></div>
+                <div class="img-preview preview-xs"></div>
+            </div>
+            <div class="docs-data">
+                <div class="form-group">
+                    <div class="input-group">
+                        <label for="dataX" class="input-group-addon">X</label>
+                        <input id="dataX" type="text" placeholder="x" class="form-control"><span class="input-group-addon">px</span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="input-group">
+                        <label for="dataY" class="input-group-addon">Y</label>
+                        <input id="dataY" type="text" placeholder="y" class="form-control"><span class="input-group-addon">px</span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="input-group">
+                        <label for="dataWidth" class="input-group-addon">Width</label>
+                        <input id="dataWidth" type="text" placeholder="width" class="form-control"><span class="input-group-addon">px</span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="input-group">
+                        <label for="dataHeight" class="input-group-addon">Height</label>
+                        <input id="dataHeight" type="text" placeholder="height" class="form-control"><span class="input-group-addon">px</span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="input-group">
+                        <label for="dataRotate" class="input-group-addon">Rotate</label>
+                        <input id="dataRotate" type="text" placeholder="rotate" class="form-control"><span class="input-group-addon">deg</span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="input-group">
+                        <label for="dataScaleX" class="input-group-addon">ScaleX</label>
+                        <input id="dataScaleX" type="text" placeholder="scaleX" class="form-control">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="input-group">
+                        <label for="dataScaleY" class="input-group-addon">ScaleY</label>
+                        <input id="dataScaleY" type="text" placeholder="scaleY" class="form-control">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-9 docs-buttons">
+            <div class="btn-group">
+                <button type="button" data-method="setDragMode" data-option="move" title="Move" class="btn btn-raised btn-black">
+                    <span data-toggle="tooltip" data-container="body" title="$().cropper(&quot;setDragMode&quot;, &quot;move&quot;)" class="docs-tooltip">
+                        <span class="ti-move"></span>
+                    </span>
+                </button>
+                <button type="button" data-method="setDragMode" data-option="crop" title="Crop" class="btn btn-raised btn-black">
+                    <span data-toggle="tooltip" data-container="body" title="$().cropper(&quot;setDragMode&quot;, &quot;crop&quot;)" class="docs-tooltip">
+                        <span class="ti-new-window"></span>
+                    </span>
+                </button>
+            </div>
+            <div class="btn-group">
+                <button type="button" data-method="zoom" data-option="0.1" title="Zoom In" class="btn btn-raised btn-black">
+                    <span data-toggle="tooltip" data-container="body" title="$().cropper(&quot;zoom&quot;, 0.1)" class="docs-tooltip">
+                        <span class="ti-zoom-in"></span>
+                    </span>
+                </button>
+                <button type="button" data-method="zoom" data-option="-0.1" title="Zoom Out" class="btn btn-raised btn-black">
+                    <span data-toggle="tooltip" data-container="body" title="$().cropper(&quot;zoom&quot;, -0.1)" class="docs-tooltip">
+                        <span class="ti-zoom-out"></span>
+                    </span>
+                </button>
+            </div>
+            <div class="btn-group">
+                <button type="button" data-method="move" data-option="-10" data-second-option="0" title="Move Left" class="btn btn-raised btn-black">
+                    <span data-toggle="tooltip" data-container="body" title="$().cropper(&quot;move&quot;, -10, 0)" class="docs-tooltip">
+                        <span class="ti-arrow-left"></span>
+                    </span>
+                </button>
+                <button type="button" data-method="move" data-option="10" data-second-option="0" title="Move Right" class="btn btn-raised btn-black">
+                    <span data-toggle="tooltip" data-container="body" title="$().cropper(&quot;move&quot;, 10, 0)" class="docs-tooltip">
+                        <span class="ti-arrow-right"></span>
+                    </span>
+                </button>
+                <button type="button" data-method="move" data-option="0" data-second-option="-10" title="Move Up" class="btn btn-raised btn-black">
+                    <span data-toggle="tooltip" data-container="body" title="$().cropper(&quot;move&quot;, 0, -10)" class="docs-tooltip">
+                        <span class="ti-arrow-up"></span>
+                    </span>
+                </button>
+                <button type="button" data-method="move" data-option="0" data-second-option="10" title="Move Down" class="btn btn-raised btn-black">
+                    <span data-toggle="tooltip" data-container="body" title="$().cropper(&quot;move&quot;, 0, 10)" class="docs-tooltip">
+                        <span class="ti-arrow-down"></span>
+                    </span>
+                </button>
+            </div>
+            <div class="btn-group">
+                <button type="button" data-method="rotate" data-option="-45" title="Rotate Left" class="btn btn-raised btn-black">
+                    <span data-toggle="tooltip" data-container="body" title="$().cropper(&quot;rotate&quot;, -45)" class="docs-tooltip">
+                        <span class="ti-back-left"></span>
+                    </span>
+                </button>
+                <button type="button" data-method="rotate" data-option="45" title="Rotate Right" class="btn btn-raised btn-black">
+                    <span data-toggle="tooltip" data-container="body" title="$().cropper(&quot;rotate&quot;, 45)" class="docs-tooltip">
+                        <span class="ti-back-right"></span>
+                    </span>
+                </button>
+            </div>
+            <div class="btn-group">
+                <button type="button" data-flip="horizontal" data-method="scale" data-option="-1" data-second-option="1" title="Flip Horizontal" class="btn btn-raised btn-black">
+                    <span data-toggle="tooltip" data-container="body" title="$().cropper(&quot;scale&quot;, -1, 1)" class="docs-tooltip">
+                        <span class="ti-arrows-horizontal"></span>
+                    </span>
+                </button>
+                <button type="button" data-flip="vertical" data-method="scale" data-option="1" data-second-option="-1" title="Flip Vertical" class="btn btn-raised btn-black">
+                    <span data-toggle="tooltip" data-container="body" title="$().cropper(&quot;scale&quot;, 1, -1)" class="docs-tooltip">
+                        <span class="ti-arrows-vertical"></span>
+                    </span>
+                </button>
+            </div>
+            <div class="btn-group">
+                <button type="button" data-method="crop" title="Crop" class="btn btn-raised btn-black">
+                    <span data-toggle="tooltip" data-container="body" title="$().cropper(&quot;crop&quot;)" class="docs-tooltip">
+                        <span class="ti-check"></span>
+                    </span>
+                </button>
+                <button type="button" data-method="clear" title="Clear" class="btn btn-raised btn-black">
+                    <span data-toggle="tooltip" data-container="body" title="$().cropper(&quot;clear&quot;)" class="docs-tooltip">
+                        <span class="ti-close"></span>
+                    </span>
+                </button>
+            </div>
+            <div class="btn-group">
+                <button type="button" data-method="disable" title="Disable" class="btn btn-raised btn-black">
+                    <span data-toggle="tooltip" data-container="body" title="$().cropper(&quot;disable&quot;)" class="docs-tooltip">
+                        <span class="ti-lock"></span>
+                    </span>
+                </button>
+                <button type="button" data-method="enable" title="Enable" class="btn btn-raised btn-black">
+                    <span data-toggle="tooltip" data-container="body" title="$().cropper(&quot;enable&quot;)" class="docs-tooltip">
+                        <span class="ti-unlock"></span>
+                    </span>
+                </button>
+            </div>
+            <div class="btn-group">
+                <button type="button" data-method="reset" title="Reset" class="btn btn-raised btn-black">
+                    <span data-toggle="tooltip" data-container="body" title="$().cropper(&quot;reset&quot;)" class="docs-tooltip">
+                        <span class="ti-reload"></span>
+                    </span>
+                </button>
+                <label for="inputImage" title="Upload image file" class="btn btn-raised btn-black btn-upload">
+                    <input id="inputImage" type="file" name="file" accept="image/*" class="sr-only"><span data-toggle="tooltip" data-container="body" title="Import image with Blob URLs" class="docs-tooltip">
+                        <span class="ti-upload"></span>
+                    </span>
+                </label>
+                <button type="button" data-method="destroy" title="Destroy" class="btn btn-raised btn-black">
+                    <span data-toggle="tooltip" data-container="body" title="$().cropper(&quot;destroy&quot;)" class="docs-tooltip">
+                        <span class="ti-power-off"></span>
+                    </span>
+                </button>
+            </div>
+            <div class="btn-group btn-group-crop">
+                <button type="button" data-method="getCroppedCanvas" class="btn btn-raised btn-black">
+                    <span data-toggle="tooltip" data-container="body" title="$().cropper(&quot;getCroppedCanvas&quot;)" class="docs-tooltip">Get Cropped Canvas</span>
+                </button>
+                <button type="button" data-method="getCroppedCanvas" data-option="{ &quot;width&quot;: 160, &quot;height&quot;: 90 }" class="btn btn-raised btn-black">
+                    <span data-toggle="tooltip" data-container="body" title="$().cropper(&quot;getCroppedCanvas&quot;, { width: 160, height: 90 })" class="docs-tooltip">160×90</span>
+                </button>
+                <button type="button" data-method="getCroppedCanvas" data-option="{ &quot;width&quot;: 320, &quot;height&quot;: 180 }" class="btn btn-raised btn-black">
+                    <span data-toggle="tooltip" data-container="body" title="$().cropper(&quot;getCroppedCanvas&quot;, { width: 320, height: 180 })" class="docs-tooltip">320×180</span>
+                </button>
+            </div>
+            <!-- Show the cropped image in modal-->
+            <div id="getCroppedCanvasModal" aria-hidden="true" aria-labelledby="getCroppedCanvasTitle" role="dialog" tabindex="-1" class="modal fade docs-cropped">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" data-dismiss="modal" aria-hidden="true" class="close">×</button>
+                            <h4 id="getCroppedCanvasTitle" class="modal-title">Cropped</h4>
+                        </div>
+                        <div class="modal-body"></div>
+                        <div class="modal-footer">
+                            <button type="button" data-dismiss="modal" class="btn btn-raised btn-default">Close</button><a id="download" download="cropped.png" href="javascript:void(0);" class="btn btn-raised btn-black">Download</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- /.modal-->
+            <button type="button" data-method="getData" data-option="" data-target="#putData" class="btn btn-raised btn-black">
+                <span data-toggle="tooltip" title="$().cropper(&quot;getData&quot;)" class="docs-tooltip">Get Data</span>
+            </button>
+            <button type="button" data-method="setData" data-target="#putData" class="btn btn-raised btn-black">
+                <span data-toggle="tooltip" title="$().cropper(&quot;setData&quot;, data)" class="docs-tooltip">Set Data</span>
+            </button>
+            <button type="button" data-method="getContainerData" data-option="" data-target="#putData" class="btn btn-raised btn-black">
+                <span data-toggle="tooltip" title="$().cropper(&quot;getContainerData&quot;)" class="docs-tooltip">Get Container Data</span>
+            </button>
+            <button type="button" data-method="getImageData" data-option="" data-target="#putData" class="btn btn-raised btn-black">
+                <span data-toggle="tooltip" title="$().cropper(&quot;getImageData&quot;)" class="docs-tooltip">Get Image Data</span>
+            </button>
+            <button type="button" data-method="getCanvasData" data-option="" data-target="#putData" class="btn btn-raised btn-black">
+                <span data-toggle="tooltip" title="$().cropper(&quot;getCanvasData&quot;)" class="docs-tooltip">Get Canvas Data</span>
+            </button>
+            <button type="button" data-method="setCanvasData" data-target="#putData" class="btn btn-raised btn-black">
+                <span data-toggle="tooltip" title="$().cropper(&quot;setCanvasData&quot;, data)" class="docs-tooltip">Set Canvas Data</span>
+            </button>
+            <button type="button" data-method="getCropBoxData" data-option="" data-target="#putData" class="btn btn-raised btn-black">
+                <span data-toggle="tooltip" title="$().cropper(&quot;getCropBoxData&quot;)" class="docs-tooltip">Get Crop Box Data</span>
+            </button>
+            <button type="button" data-method="setCropBoxData" data-target="#putData" class="btn btn-raised btn-black">
+                <span data-toggle="tooltip" title="$().cropper(&quot;setCropBoxData&quot;, data)" class="docs-tooltip">Set Crop Box Data</span>
+            </button>
+            <input id="putData" type="text" placeholder="Get data to here or set data with this value" class="form-control">
+        </div>
+        <!-- /.docs-buttons-->
+    </div>
+    </div>
+
+    </div>
+    <div class="form-group">
+        <button type="submit" class="btn btn-primary">
+            <i class="glyphicon glyphicon-upload"></i>
+            Submit
+        </button>
+        <a href="@Url.Action("Index", "Image")" class="btn btn-default">Cancel</a>
+    </div>
+
+
+    </div>
+}
+    </div >
+
+</div>
+    
+@section Scripts
+{
+    <!-- Bootstrap Markdown-->
+    <script type="text/javascript" src="~/Dashboard/plugins/bootstrap-markdown/js/bootstrap-markdown.js"></script>
+
+}
+
+@section Functions {
+    <script>
+        $(document)
+            .ready(function() {
+
+
+                //checks if the state has a value before displaying assigned lga
+                if ($('#category').val() != '') {
+                    getSubCategories();
+                }
+
+                //loads assigned lga for state on change/select
+                $('#category').on('change', function() { getSubCategories(); });
+
+                //Ajax call for Lga assigned to state
+                function getSubCategories() {
+
+                    $("#sub").empty();
+                    $.ajax({
+                        type: 'GET',
+                        url: '@Url.Action("GetSubForCategories", "Image")',
+                        dataType: 'json',
+                        data: { id: $("#category").val() },
+                        success: function(sub) {
+
+                            $.each(sub,
+                                function(i, sub) {
+                                    $("#sub").append('<option value="' +
+                                        sub.ImageSubCategoryId +
+                                        '">' +
+                                        sub.Name +
+                                        '</option>');
+                                });
+                        },
+                        error: function(ex) {
+                            alert('Failed to retrieve Sub-Categories.' + ex);
+                        }
+                    });
+                }
+
+                //Ajax ends
+            });
+
+
+    </script>
+    <!-- jQuery read image data and show preview code -->
+    <script type="text/javascript">
+        $(document).ready(function () {
+            //Image file input change event
+            $("#input-5").change(function () {
+                readImageData(this);//Call image read and render function
+            });
+        });
+
+        function readImageData(imgData) {
+            if (imgData.files && imgData.files[0]) {
+                var readerObj = new FileReader();
+
+                readerObj.onload = function (element) {
+                    $('#avatar').attr('src', element.target.result);
+                }
+
+                readerObj.readAsDataURL(imgData.files[0]);
+            }
+        }
+    </script>
+}

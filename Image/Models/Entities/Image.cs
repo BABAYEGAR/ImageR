@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Image.Models.Entities
@@ -6,11 +7,26 @@ namespace Image.Models.Entities
     public class Image : Transport
     {
         public long ImageId { get; set; }
-        public long Title { get; set; }
-        public long Description { get; set; }
-        public long PerspectOne { get; set; }
-        public long PerspectTwo { get; set; }
-        public long PerspectThree { get; set; }
+        [Required]
+        public string Title { get; set; }
+        [Required]
+        public string Theme { get; set; }
+        [Required]
+        public string Description { get; set; }
+        public string ImageName { get; set; }
+        [Required]
+        public string Location { get; set; }
+        public string Camera { get; set; }
+        [Display(Name = "Selling Price")]
+        [Required]
+        public string SellingPrice { get; set; }
+        public string Inspiration { get; set; }
+        [Display(Name = "Sub-Category/Sub-Genre")]
+        public long? ImageSubCategoryId { get; set; }
+        [ForeignKey("ImageSubCategoryId")]
+        public ImageSubCategory ImageSubCategory { get; set; }
+        [Required]
+        [Display(Name = "Category/Genre")]
         public long? ImageCategoryId { get; set; }
         [ForeignKey("ImageCategoryId")]
         public ImageCategory ImageCategory { get; set; }

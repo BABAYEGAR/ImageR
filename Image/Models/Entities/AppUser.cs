@@ -12,13 +12,7 @@ namespace Image.Models.Entities
         [Required]
         [MaxLength(100, ErrorMessage = "This field is does not support more than 100 characters")]
         [RegularExpression("[a-zA-Z ]*$")]
-        public string Firstname { get; set; }
-
-        [Required]
-        [MaxLength(100, ErrorMessage = "This field is does not support more than 100 characters")]
-        [RegularExpression("^[a-zA-Z ]*$")]
-        public string Lastname { get; set; }
-
+        public string Name { get; set; }
         [Required]
         [MaxLength(100, ErrorMessage = "This field is does not support more than 100 characters")]
         [EmailAddress]
@@ -28,7 +22,7 @@ namespace Image.Models.Entities
         [MaxLength(100, ErrorMessage = "This field is does not support more than 100 characters")]
         [RegularExpression("^[0-9]*$")]
         public string Mobile { get; set; }
-
+        public string Address { get; set; }
         [Required]
         public string Password { get; set; }
 
@@ -44,10 +38,8 @@ namespace Image.Models.Entities
 
         [DisplayName("Profile Picture")]
         public string ProfilePicture { get; set; }
-
-        public string DisplayName
-            => Firstname + " " + Lastname;
-
+        [Required]
+        public string Username { get; set; }
         public IEnumerable<Image> Images { get; set; }
         public IEnumerable<Cart> Carts { get; set; }
         public IEnumerable<Order> Orders { get; set; }

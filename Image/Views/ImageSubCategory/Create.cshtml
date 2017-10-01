@@ -6,12 +6,13 @@
     ViewBag.PageTitle = "Create Image Sub-Category";
     ViewBag.PageHeader = "Image Sub-Category";
     ViewBag.FormHeader = "Create an Image Sub- Category (Make sure to fill all compulsory fields *)";
-    Model.ImageCategoryId = ViewBag.CategoryId;
+    long categoryId = ViewBag.CategoryId;
 }
 
 @using (Html.BeginForm("Create", "ImageSubCategory", FormMethod.Post, new {enctype = "multipart/form-data", role = "form"}))
 {
     @Html.AntiForgeryToken()
+    @Html.Hidden("CategoryId", categoryId)
     @Html.ValidationSummary(true, "", new {@class = "text-danger"})
 
     <div class="form-body">

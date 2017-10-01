@@ -46,6 +46,7 @@ namespace Image.Controllers
             {
                 // TODO: Add insert logic here
                 var signedInUserId = HttpContext.Session.GetInt32("userId");
+                imageSubCategory.ImageCategoryId = Convert.ToInt64(collection["CategoryId"]);
                 imageSubCategory.DateCreated = DateTime.Now;
                 imageSubCategory.DateLastModified = DateTime.Now;
                 imageSubCategory.CreatedBy = signedInUserId;

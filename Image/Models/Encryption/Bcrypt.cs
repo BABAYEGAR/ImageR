@@ -4,7 +4,7 @@ using System.Security.Cryptography;
 using System.Text;
 using BCrypt.Net;
 
-namespace DataManager.Encryption
+namespace Image.Models.Encryption
 {
     // 
     // Copyright (c) 2006 Damien Miller <djm@mindrot.org>

@@ -11,9 +11,10 @@ using System;
 namespace Image.Migrations
 {
     [DbContext(typeof(ImageDataContext))]
-    partial class ImageDataContextModelSnapshot : ModelSnapshot
+    [Migration("20170930075128_Migrate3")]
+    partial class Migrate3
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -206,39 +207,27 @@ namespace Image.Migrations
 
                     b.Property<DateTime>("DateLastModified");
 
-                    b.Property<string>("Description")
-                        .IsRequired();
+                    b.Property<string>("Description");
 
-                    b.Property<long?>("ImageCategoryId")
-                        .IsRequired();
+                    b.Property<long?>("ImageCategoryId");
 
                     b.Property<string>("ImageName");
-
-                    b.Property<long?>("ImageSubCategoryId");
 
                     b.Property<string>("Inspiration");
 
                     b.Property<long?>("LastModifiedBy");
 
-                    b.Property<string>("Location")
-                        .IsRequired();
+                    b.Property<string>("Location");
 
-                    b.Property<string>("SellingPrice")
-                        .IsRequired();
+                    b.Property<string>("SellingPrice");
 
-                    b.Property<string>("Theme")
-                        .IsRequired();
-
-                    b.Property<string>("Title")
-                        .IsRequired();
+                    b.Property<string>("Title");
 
                     b.HasKey("ImageId");
 
                     b.HasIndex("AppUserId");
 
                     b.HasIndex("ImageCategoryId");
-
-                    b.HasIndex("ImageSubCategoryId");
 
                     b.ToTable("Images");
                 });
@@ -627,12 +616,7 @@ namespace Image.Migrations
 
                     b.HasOne("Image.Models.Entities.ImageCategory", "ImageCategory")
                         .WithMany("Images")
-                        .HasForeignKey("ImageCategoryId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("Image.Models.Entities.ImageSubCategory", "ImageSubCategory")
-                        .WithMany()
-                        .HasForeignKey("ImageSubCategoryId");
+                        .HasForeignKey("ImageCategoryId");
                 });
 
             modelBuilder.Entity("Image.Models.Entities.ImageClick", b =>

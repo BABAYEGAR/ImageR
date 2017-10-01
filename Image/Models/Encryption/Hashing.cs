@@ -1,4 +1,4 @@
-﻿namespace DataManager.Encryption
+﻿namespace Image.Models.Encryption
 {
     public class Hashing
     {
