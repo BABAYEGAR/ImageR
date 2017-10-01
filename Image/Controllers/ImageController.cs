@@ -41,6 +41,8 @@ namespace Image.Controllers
         {
             ViewBag.ImageCategoryId = new SelectList(_databaseConnection.ImageCategories.ToList(), "ImageCategoryId",
                 "Name");
+            ViewBag.CameraId = new SelectList(_databaseConnection.Cameras.ToList(), "CameraId",
+                "Name");
             return View();
         }
 

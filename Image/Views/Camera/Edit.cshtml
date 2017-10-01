@@ -1,14 +1,14 @@
 ﻿
 
-@model Image.Models.Entities.ImageCategory
+@model Image.Models.Entities.Camera
 @{
     Layout = "Layout/Dashboard/_LayoutForm";
-    ViewBag.PageTitle = "Edit Image Category";
-    ViewBag.PageHeader = "Image Category";
-    ViewBag.FormHeader = "Edit the Image Category (Make sure to fill all compulsory fields *)";
+    ViewBag.PageTitle = "Edit Camera";
+    ViewBag.PageHeader = "Camera";
+    ViewBag.FormHeader = "Edit the Camera (Make sure to fill all compulsory fields *)";
 }
 
-@using (Html.BeginForm("Edit", "ImageCategory", FormMethod.Post, new {enctype = "multipart/form-data", role = "form"}))
+@using (Html.BeginForm("Edit", "Camera", FormMethod.Post, new {enctype = "multipart/form-data", role = "form"}))
 {
     @Html.AntiForgeryToken()
     @Html.HiddenFor(m=>m.ImageCategoryId)

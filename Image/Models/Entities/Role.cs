@@ -19,10 +19,14 @@ namespace Image.Models.Entities
         public bool ManageCompetition { get; set; }
         [DisplayName("Manage Subscription Pacakges")]
         public bool ManagePackages { get; set; }
-        [DisplayName("Purchase Image")]
+        [DisplayName("Purchase Images")]
         public bool PurchaseImage { get; set; }
-        [DisplayName("Manage Image Category")]
+        [DisplayName("Manage Image Categories")]
         public bool ManageImageCategory { get; set; }
+        [DisplayName("Manage Photographer Categories")]
+        public bool ManagePhotographerCategory { get; set; }
+        [DisplayName("Manage Cameras")]
+        public bool ManageCameras { get; set; }
         [DisplayName("Manage Orders")]
         public bool ManageOrders { get; set; }
         [DisplayName("Manage Payments")]

@@ -31,19 +31,23 @@
                 @Html.CheckBoxFor(model => model.ManageRoles)
             </label>
             <label >
-                @Html.LabelFor(model => model.UserSubscriptions)
+                @Html.LabelFor(model => model.ManagePackages)
                 @Html.CheckBoxFor(model => model.ManagePackages)
             </label>
             <label >
                 @Html.LabelFor(model => model.ManageImageCategory)
                 @Html.CheckBoxFor(model => model.ManageImageCategory)
             </label>
+            <label >
+                @Html.LabelFor(model => model.ManagePhotographerCategory)
+                @Html.CheckBoxFor(model => model.ManagePhotographerCategory)
+            </label>
         </div>
 
 
     </div>
     <div class="form-group">
-        <label>Image Permissions</label>
+        <label>Photo Studio Permissions</label>
         <div class="">
             <label >
                 @Html.LabelFor(model => model.UploadImage)
@@ -56,15 +60,14 @@
                 <span></span>
             </label>
             <label >
-                @Html.LabelFor(model => model.UserSubscriptions)
-                @Html.CheckBoxFor(model => model.ManagePackages)
-                <span></span>
+                @Html.LabelFor(model => model.ManageCameras)
+                @Html.CheckBoxFor(model => model.ManageCameras)
             </label>
 
         </div>
     </div>
     <div class="form-group">
-        <label>Seller Centre Permissions</label>
+        <label>Sales Permissions</label>
         <div class="">
             <label >
                 @Html.LabelFor(model => model.ManageOrders)

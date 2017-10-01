@@ -21,5 +21,7 @@ namespace Image.Models.Entities
         [Compare("Password")]
         [Display(Name = "Confirm Password")]
         public string ConfirmPassword { get; set; }
+        [Display(Name = "Photographer Category")]
+        public long? PhotographerCategoryId { get; set; }
     }
 }

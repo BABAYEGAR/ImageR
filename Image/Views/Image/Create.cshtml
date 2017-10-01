@@ -72,11 +72,11 @@
                 @Html.EditorFor(model => model.Inspiration, new {htmlAttributes = new {@class = "form-control", placeholder = "Please enter the your inspiration for taking the image"}})
                 @Html.ValidationMessageFor(model => model.Inspiration, "", new {@class = "text-danger"})
             </div>
-            <div class="form-group col-md-6">
-                @Html.LabelFor(model => model.Camera, new {@class = "control-label"})<span class="required">*</span>
-                @Html.EditorFor(model => model.Camera, new {htmlAttributes = new {@class = "form-control", placeholder = "Please enter the type of camera used to capture the image"}})
-                @Html.ValidationMessageFor(model => model.Camera, "", new {@class = "text-danger"})
-            </div>
+                <div class="form-group col-md-6">
+                    @Html.LabelFor(model => model.CameraId, new {@class = "control-label"})<span class="required">*</span>
+                    @Html.DropDownListFor(model => model.CameraId, null, "Select the Camera Used", new {@class = "form-control", placeholder = ""})
+                    @Html.ValidationMessageFor(model => model.CameraId, "", new {@class = "text-danger"})
+                </div>
                 <div class="form-group col-md-6">
                     @Html.LabelFor(model => model.SellingPrice, new {@class = "control-label"})<span class="required">*</span>
                     @Html.EditorFor(model => model.SellingPrice, new {htmlAttributes = new {@class = "form-control", placeholder = "Please enter the selling price for the image"}})

@@ -1,9 +1,9 @@
-﻿@model List<Image.Models.Entities.PhotographerCategory>
+﻿@model List<Image.Models.Entities.Camera>
 @{
     Layout = "Layout/Dashboard/_LayoutTable";
-    ViewBag.PageTitle = "List of Photographer Categories";
-    ViewBag.PageHeader = "Manage Photographer Categories";
-    ViewBag.FormHeader = "List of Photographer Categories";
+    ViewBag.PageTitle = "List of Cameras";
+    ViewBag.PageHeader = "Manage Cameras";
+    ViewBag.FormHeader = "List of Cameras";
 }
 <div class="modal fade" id="myModal1" tabindex="-1" role="dialog" aria-labelledby="myModalLabel1">
     <div class="modal-dialog" role="document">
@@ -13,14 +13,14 @@
                     <span aria-hidden="true">&times;</span>
                 </button>
                 <h4 class="modal-title" id="myModalLabel1">Delete Category</h4>
-            </div>@using (Html.BeginForm("Delete", "PhotographerCategory"))
+            </div>@using (Html.BeginForm("Delete", "Camera"))
                   {
                       <input type="hidden" id="id" name="CategoryId" />
                       <div class="modal-body">
 
                           @Html.AntiForgeryToken()
                           <p>
-                              Are you sure you want to delete the Category?
+                              Are you sure you want to delete the Camera?
                           </p>
 
                       </div>
@@ -64,12 +64,12 @@
                     </button>
                     <ul class="dropdown-menu pull-right" role="menu">
                         <li>
-                            <a href="@Url.Action("Edit", "ImageCategory", new {id = item.PhotographerCategoryId})" data-toggle="tooltip" title="Edit the Category">
+                            <a href="@Url.Action("Edit", "Camera", new {id = item.CameraId})" data-toggle="tooltip" title="Edit the Category">
                                 <i class="icon-pencil"></i> Edit
                             </a>
                         </li>
                         <li>
-                            <a href="#" data-toggle="tooltip" title="Delete the Category" data-id="@item.PhotographerCategoryId" data-toggle="modal" class="loadModal3">
+                            <a href="#" data-toggle="tooltip" title="Delete the Category" data-id="@item.CameraId" data-toggle="modal" class="loadModal3">
                                 <i class="icon-trash"></i> Delete
                             </a>
                         </li>

@@ -53,13 +53,16 @@
                 </ul>
             </li>
         }
-        @if (userRole.ManageImageCategory)
+        @if (userRole.ManageImageCategory || userRole.ManagePhotographerCategory)
         {
             <li class="panel">
-                <a role="button" data-toggle="collapse" data-parent=".navigation" href="#collapse3" aria-expanded="false" aria-controls="collapse3" class="collapsed"><i class="ti-brush-alt"></i> System Set-Up</a>
+                <a role="button" data-toggle="collapse" data-parent=".navigation" href="#collapse3" aria-expanded="false" aria-controls="collapse3" class="collapsed"><i class="ti-brush-alt"></i> Category Management</a>
                 <ul id="collapse3" class="list-unstyled collapse">
                     <li>
                         <a href="@Url.Action("Index", "ImageCategory")">Image Category</a>
+                    </li>
+                    <li>
+                        <a href="@Url.Action("Index", "ImageCategory")">Photographer Category</a>
                     </li>
                 </ul>
             </li>
@@ -89,8 +92,19 @@
         @if (userRole.ManageOrders)
         {
             <li class="panel">
-                <a role="button" data-toggle="collapse" data-parent=".navigation" href="#collapse6" aria-expanded="false" aria-controls="collapse6" class="collapsed"><i class="ti-shopping-cart"></i> Orders @*<span class="label label-outline label-success">New</span>*@</a>
+                <a role="button" data-toggle="collapse" data-parent=".navigation" href="#collapse6" aria-expanded="false" aria-controls="collapse6" class="collapsed"><i class="ti-shopping-cart"></i> My Camera's @*<span class="label label-outline label-success">New</span>*@</a>
                 <ul id="collapse6" class="list-unstyled collapse">
+                    <li>
+                        <a href="@Url.Action("Index", "Camera")">Camera's</a>
+                    </li>
+                </ul>
+            </li>
+        }
+        @if (userRole.ManageOrders)
+        {
+            <li class="panel">
+                <a role="button" data-toggle="collapse" data-parent=".navigation" href="#collapse7" aria-expanded="false" aria-controls="collapse7" class="collapsed"><i class="ti-shopping-cart"></i> Orders @*<span class="label label-outline label-success">New</span>*@</a>
+                <ul id="collapse7" class="list-unstyled collapse">
                     <li>
                         <a href="product-list.html">Product list</a>
                     </li>

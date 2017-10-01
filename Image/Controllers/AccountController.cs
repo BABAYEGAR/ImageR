@@ -7,6 +7,7 @@ using Image.Models.Enum;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Newtonsoft.Json;
 
 namespace Image.Controllers
@@ -25,6 +26,8 @@ namespace Image.Controllers
         }
         public ActionResult Register()
         {
+            ViewBag.PhotographerCategoryId = new SelectList(_databaseConnection.PhotographerCategories.ToList(), "PhotographerCategoryId",
+                "Name");
             return View();
         }
 
@@ -42,6 +45,7 @@ namespace Image.Controllers
             appUser.DateCreated = DateTime.Now;
             appUser.DateLastModified = DateTime.Now;
             appUser.RoleId = 2;
+            appUser.PhotographerCategoryId = model.PhotographerCategoryId;
 
 
             _databaseConnection.AppUsers.Add(appUser);
