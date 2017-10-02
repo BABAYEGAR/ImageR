@@ -44,7 +44,7 @@ namespace Image
 
             services.AddMvc(options => options.MaxModelValidationErrors = 50).AddJsonOptions(options => {
                 options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
-                options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+                options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Serialize;
 
             });
             // Adds a default in-memory implementation of IDistributedCache.

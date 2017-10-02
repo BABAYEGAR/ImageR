@@ -24,8 +24,15 @@
                 <img src="~/Dashboard/build/images/users/04.jpg" alt="" class="avatar img-circle"><span class="status bg-success"></span>
             </div>
         </a>
-        <h4 class="fs-14 text-muted mt-15 mb-5 fw-300">@appUser?.Name</h4>
-        <p class="fs-13 mb-0 text-muted">@appUser?.PhotographerCategory.Name</p>
+        @if (appUser != null)
+        {
+            <h4 class="fs-14 text-muted mt-15 mb-5 fw-300">@appUser.Name</h4>
+            if (appUser.PhotographerCategory != null)
+             {
+                 <p class="fs-13 mb-0 text-muted">@appUser.PhotographerCategory.Name</p>
+             }
+        }
+     
     </div>
     <ul class="list-unstyled navigation mb-0">
         <li class="sidebar-header pt-0">Main Menu</li>
@@ -69,7 +76,7 @@
                         <a href="@Url.Action("Index", "ImageCategory")">Image Category</a>
                     </li>
                     <li>
-                        <a href="@Url.Action("Index", "ImageCategory")">Photographer Category</a>
+                        <a href="@Url.Action("Index", "PhotographerCategory")">Photographer Category</a>
                     </li>
                 </ul>
             </li>
@@ -91,18 +98,7 @@
                 <a role="button" data-toggle="collapse" data-parent=".navigation" href="#collapse5" aria-expanded="false" aria-controls="collapse5" class="collapsed"><i class="ti-shopping-cart"></i> My Images @*<span class="label label-outline label-success">New</span>*@</a>
                 <ul id="collapse5" class="list-unstyled collapse">
                     <li>
-                        <a href="product-list.html">Product list</a>
-                    </li>
-                </ul>
-            </li>
-        }
-        @if (userRole != null && userRole.ManageOrders)
-        {
-            <li class="panel">
-                <a role="button" data-toggle="collapse" data-parent=".navigation" href="#collapse6" aria-expanded="false" aria-controls="collapse6" class="collapsed"><i class="ti-shopping-cart"></i> My Camera's @*<span class="label label-outline label-success">New</span>*@</a>
-                <ul id="collapse6" class="list-unstyled collapse">
-                    <li>
-                        <a href="@Url.Action("Index", "Camera")">Camera's</a>
+                        <a href="@Url.Action("Index", "Image")">Images </a>
                     </li>
                 </ul>
             </li>
@@ -118,5 +114,28 @@
                 </ul>
             </li>
         }
+        @if (userRole != null && userRole.ManageCameras)
+        {
+            <li class="panel">
+                <a role="button" data-toggle="collapse" data-parent=".navigation" href="#collapse6" aria-expanded="false" aria-controls="collapse6" class="collapsed"><i class="ti-shopping-cart"></i> My Camera's @*<span class="label label-outline label-success">New</span>*@</a>
+                <ul id="collapse6" class="list-unstyled collapse">
+                    <li>
+                        <a href="@Url.Action("Index", "Camera")">Camera's</a>
+                    </li>
+                </ul>
+            </li>
+        }
+        @if (userRole != null && userRole.ManageLocations)
+        {
+            <li class="panel">
+                <a role="button" data-toggle="collapse" data-parent=".navigation" href="#collapse8" aria-expanded="false" aria-controls="collapse8" class="collapsed"><i class="ti-shopping-cart"></i> My Camera's @*<span class="label label-outline label-success">New</span>*@</a>
+                <ul id="collapse8" class="list-unstyled collapse">
+                    <li>
+                        <a href="@Url.Action("Index", "Location")">Locations</a>
+                    </li>
+                </ul>
+            </li>
+        }
+
     </ul>
 </aside>

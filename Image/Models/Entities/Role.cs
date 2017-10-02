@@ -31,6 +31,8 @@ namespace Image.Models.Entities
         public bool ManageOrders { get; set; }
         [DisplayName("Manage Payments")]
         public bool ManagePayments { get; set; }
+        [DisplayName("Manage Locations")]
+        public bool ManageLocations { get; set; }
         public IEnumerable<AppUser> AppUsers { get; set; }
         public IEnumerable<UserSubscription> UserSubscriptions { get; set; }
     }

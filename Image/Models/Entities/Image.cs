@@ -15,12 +15,14 @@ namespace Image.Models.Entities
         [Required]
         public string Description { get; set; }
         public string FileName { get; set; }
-        [Required]
-        public string Location { get; set; }
         [Display(Name = "Camera")]
         public long? CameraId { get; set; }
         [ForeignKey("CameraId")]
         public Camera Camera { get; set; }
+        [Display(Name = "Location")]
+        public long? LocationId { get; set; }
+        [ForeignKey("LocationId")]
+        public Location Location { get; set; }
         [Display(Name = "Selling Price")]
         [Required]
         public string SellingPrice { get; set; }

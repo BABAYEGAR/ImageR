@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Newtonsoft.Json;
 
 namespace Image.Models.Entities
 {
@@ -29,10 +30,11 @@ namespace Image.Models.Entities
 
         [Required]
         public string ConfirmPassword { get; set; }
-
+        [Required]
         public long? RoleId { get; set; }
 
         [ForeignKey("RoleId")]
+        [JsonIgnore]
         public virtual Role Role { get; set; }
 
         public string Status { get; set; }
@@ -58,5 +60,6 @@ namespace Image.Models.Entities
         public IEnumerable<Competition> Competitions { get; set; }
         public IEnumerable<CompetitionVote> CompetitionVotes { get; set; }
         public IEnumerable<ImageComment> ImageComments { get; set; }
+        public IEnumerable<SystemNotification> SystemNotifications { get; set; }
     }
 }

@@ -39,7 +39,8 @@ namespace Image.Controllers
                 Name = model.Username,
                 Mobile = model.Mobile,
                 Email = model.Email,
-                Password = new Hashing().HashPassword(model.ConfirmPassword)
+                Password = new Hashing().HashPassword(model.ConfirmPassword),
+                Username = model.Username
             };
             appUser.ConfirmPassword = appUser.Password;
             appUser.DateCreated = DateTime.Now;
@@ -54,7 +55,7 @@ namespace Image.Controllers
             //display notification
             TempData["display"] = "You have successfully registered to Image R, Login and start uploading your Images!";
             TempData["notificationtype"] = NotificationType.Success.ToString();
-            return View();
+            return RedirectToAction("Login");
         }
 
         [HttpGet]
@@ -87,7 +88,7 @@ namespace Image.Controllers
                 TempData["notificationtype"] = NotificationType.Success.ToString();
                 return View(model);
             }
-            var passwordCorrect = new Hashing().ValidatePassword(model.ConfirmPassword, userExist.ConfirmPassword);
+            var passwordCorrect = new Hashing().ValidatePassword(model.Password, userExist.ConfirmPassword);
             if (passwordCorrect == false)
             {
                 //display notification
@@ -95,9 +96,15 @@ namespace Image.Controllers
                 TempData["notificationtype"] = NotificationType.Success.ToString();
                 return View(model);
             }
+
+            var role = _databaseConnection.Roles.Find(userExist.RoleId);
             //convert object to json string and insert into session
             var userString = JsonConvert.SerializeObject(userExist);
             HttpContext.Session.SetString("ImageLoggedInUser", userString);
+
+            //convert object to json string and insert into session
+            var roleString = JsonConvert.SerializeObject(role);
+            HttpContext.Session.SetString("Role", roleString);
 
             return RedirectToAction("Dashboard", "Home");
         }

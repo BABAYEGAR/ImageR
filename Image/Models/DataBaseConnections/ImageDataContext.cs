@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Image.Models.DataBaseConnections
 {
-    public partial class ImageDataContext : DbContext
+    public class ImageDataContext : DbContext
     {
         // Your context has been configured to use a 'VmsDataContext' connection string from your application's 
         // configuration file (App.config or Web.config). By default, this connection string targets the 
@@ -15,11 +15,6 @@ namespace Image.Models.DataBaseConnections
             : base(options)
         {
 
-        }
-
-        public ImageDataContext()
-        {
-            
         }
 
         // Add a DbSet for each entity type that you want to include in your model. For more information 
@@ -42,6 +37,7 @@ namespace Image.Models.DataBaseConnections
         public virtual DbSet<Competition> Competition { get; set; }
         public virtual DbSet<PhotographerCategory> PhotographerCategories { get; set; }
         public virtual DbSet<Camera> Cameras { get; set; }
+        public virtual DbSet<Location> Locations { get; set; }
 
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

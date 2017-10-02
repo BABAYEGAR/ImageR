@@ -1,8 +1,8 @@
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace Image.Views.AppUser
+namespace Image.Views.Location
 {
-    public class IndexModel : PageModel
+    public class CreateModel : PageModel
     {
         public void OnGet()
         {

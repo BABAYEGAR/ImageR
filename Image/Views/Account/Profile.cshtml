@@ -4,9 +4,6 @@
 @{
     Layout = "Layout/Dashboard/_LayoutDashboard";
 
-    Role userRole = null;
-    var roleString = Context.Session.GetString("Role");
-    userRole = JsonConvert.DeserializeObject<Role>(roleString);
 
     AppUser appUser = null;
     var userString = Context.Session.GetString("ImageLoggedInUser");

@@ -11,9 +11,10 @@ using System;
 namespace Image.Migrations
 {
     [DbContext(typeof(ImageDataContext))]
-    partial class ImageDataContextModelSnapshot : ModelSnapshot
+    [Migration("20171002104108_Migrate8")]
+    partial class Migrate8
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -61,8 +62,7 @@ namespace Image.Migrations
 
                     b.Property<string>("ProfilePicture");
 
-                    b.Property<long?>("RoleId")
-                        .IsRequired();
+                    b.Property<long?>("RoleId");
 
                     b.Property<string>("Status");
 
@@ -255,7 +255,8 @@ namespace Image.Migrations
 
                     b.Property<long?>("LastModifiedBy");
 
-                    b.Property<long?>("LocationId");
+                    b.Property<string>("Location")
+                        .IsRequired();
 
                     b.Property<string>("SellingPrice")
                         .IsRequired();
@@ -275,8 +276,6 @@ namespace Image.Migrations
                     b.HasIndex("ImageCategoryId");
 
                     b.HasIndex("ImageSubCategoryId");
-
-                    b.HasIndex("LocationId");
 
                     b.ToTable("Images");
                 });
@@ -414,27 +413,6 @@ namespace Image.Migrations
                     b.HasIndex("ImageId");
 
                     b.ToTable("ImageTags");
-                });
-
-            modelBuilder.Entity("Image.Models.Entities.Location", b =>
-                {
-                    b.Property<long>("LocationId")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<long?>("CreatedBy");
-
-                    b.Property<DateTime>("DateCreated");
-
-                    b.Property<DateTime>("DateLastModified");
-
-                    b.Property<long?>("LastModifiedBy");
-
-                    b.Property<string>("Name")
-                        .IsRequired();
-
-                    b.HasKey("LocationId");
-
-                    b.ToTable("Locations");
                 });
 
             modelBuilder.Entity("Image.Models.Entities.Order", b =>
@@ -580,8 +558,6 @@ namespace Image.Migrations
 
                     b.Property<bool>("ManageImageCategory");
 
-                    b.Property<bool>("ManageLocations");
-
                     b.Property<bool>("ManageOrders");
 
                     b.Property<bool>("ManagePackages");
@@ -706,8 +682,7 @@ namespace Image.Migrations
 
                     b.HasOne("Image.Models.Entities.Role", "Role")
                         .WithMany("AppUsers")
-                        .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("RoleId");
                 });
 
             modelBuilder.Entity("Image.Models.Entities.BillingAddress", b =>
@@ -760,10 +735,6 @@ namespace Image.Migrations
                     b.HasOne("Image.Models.Entities.ImageSubCategory", "ImageSubCategory")
                         .WithMany()
                         .HasForeignKey("ImageSubCategoryId");
-
-                    b.HasOne("Image.Models.Entities.Location", "Location")
-                        .WithMany("Images")
-                        .HasForeignKey("LocationId");
                 });
 
             modelBuilder.Entity("Image.Models.Entities.ImageClick", b =>

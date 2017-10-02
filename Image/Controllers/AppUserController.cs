@@ -8,6 +8,7 @@ using Image.Models.Enum;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 
 namespace Image.Controllers
@@ -25,7 +26,7 @@ namespace Image.Controllers
         // GET: AppUser
         public ActionResult Index()
         {
-            return View(_databaseConnection.AppUsers.ToList());
+            return View(_databaseConnection.AppUsers.Include(n=>n.Role).ToList());
         }
 
         // GET: AppUser/Details/5
@@ -37,6 +38,8 @@ namespace Image.Controllers
         // GET: AppUser/Create
         public ActionResult Create()
         {
+            ViewBag.RoleId = new SelectList(_databaseConnection.Roles.ToList(), "RoleId",
+                "Name");
             return View();
         }
 
@@ -87,7 +90,7 @@ namespace Image.Controllers
 
                 return RedirectToAction("Index");
             }
-            catch
+            catch(Exception ex)
             {
                 return View();
             }
