@@ -1,5 +1,7 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using Image.Models.DataBaseConnections;
+using Image.Models.Enum;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SelectList = Microsoft.AspNetCore.Mvc.Rendering.SelectList;
@@ -17,7 +19,8 @@ namespace Image.Controllers
         // GET: Image
         public ActionResult Index()
         {
-            return View();
+            var signedInUserId = HttpContext.Session.GetInt32("userId");
+            return View(_databaseConnection.Images.Where(n=>n.AppUserId ==signedInUserId ).ToList());
         }
         /// <summary>
         ///     Sends Json responds object to view with sub categories of the categories requested via an Ajax call
@@ -43,19 +46,32 @@ namespace Image.Controllers
                 "Name");
             ViewBag.CameraId = new SelectList(_databaseConnection.Cameras.ToList(), "CameraId",
                 "Name");
+            ViewBag.LocationId = new SelectList(_databaseConnection.Locations.ToList(), "LocationId",
+                "Name");
             return View();
         }
 
         // POST: Image/Create
         [Microsoft.AspNetCore.Mvc.HttpPost]
         [Microsoft.AspNetCore.Mvc.ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
+        public ActionResult Create(Models.Entities.Image image, IFormCollection collection)
         {
             try
             {
                 // TODO: Add insert logic here
+                var signedInUserId = HttpContext.Session.GetInt32("userId");
+                image.DateCreated = DateTime.Now;
+                image.DateLastModified = DateTime.Now;
+                image.CreatedBy = signedInUserId;
+                image.LastModifiedBy = signedInUserId;
 
-                return RedirectToAction(nameof(Index));
+                _databaseConnection.Images.Add(image);
+                _databaseConnection.SaveChanges();
+
+                //display notification
+                TempData["display"] = "You have successfully uploaded a new image!";
+                TempData["notificationtype"] = NotificationType.Success.ToString();
+                return RedirectToAction("Index");
             }
             catch
             {

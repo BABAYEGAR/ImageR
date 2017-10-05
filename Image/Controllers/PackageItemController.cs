@@ -98,10 +98,11 @@ namespace Image.Controllers
         }
 
         // GET: PackageItem/Delete/5
-        public ActionResult Delete(long id, IFormCollection collection)
+        public ActionResult Delete(IFormCollection collection)
         {
             try
             {
+                var id = Convert.ToInt64(collection["ItemId"]);
                 var packageItem = _databaseConnection.PackageItem.Find(id);
 
                 _databaseConnection.PackageItem.Remove(packageItem);

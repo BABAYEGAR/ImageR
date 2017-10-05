@@ -95,8 +95,9 @@ namespace Image.Controllers
         }
 
         // GET: ImageCategory/Delete/5
-        public ActionResult Delete(long id)
+        public ActionResult Delete(IFormCollection collection)
         {
+            var id = Convert.ToInt64(collection["CategoryId"]);
             var photographerCategory = _databaseConnection.PhotographerCategories.Find(id);
 
             _databaseConnection.PhotographerCategories.Remove(photographerCategory);

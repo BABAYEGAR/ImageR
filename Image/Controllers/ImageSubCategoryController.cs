@@ -98,19 +98,11 @@ namespace Image.Controllers
             }
         }
 
-        // GET: ImageSubCategory/Delete/5
-        public ActionResult Delete(int id)
-        {
-            return View();
-        }
-
-        // POST: ImageSubCategory/Delete/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
+        public ActionResult Delete(IFormCollection collection)
         {
             try
             {
+                var id = Convert.ToInt64(collection["CategoryId"]);
                 var imageSubCategory = _databaseConnection.ImageSubCategories.Find(id);
                 long? categoryId = imageSubCategory.ImageCategoryId;
                 _databaseConnection.ImageSubCategories.Remove(imageSubCategory);

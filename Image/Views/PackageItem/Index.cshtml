@@ -16,7 +16,7 @@
                 <h4 class="modal-title" id="myModalLabel1">Delete Item</h4>
             </div>@using (Html.BeginForm("Delete", "PackageItem"))
             {
-                <input type="hidden" id="id" name="PackageItemId" />
+                <input type="hidden" id="id" name="ItemId" />
                     <div class="modal-body">
 
                         @Html.AntiForgeryToken()

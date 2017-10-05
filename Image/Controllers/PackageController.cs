@@ -94,10 +94,11 @@ namespace Image.Controllers
                 return View();
             }
         }
-        public ActionResult Delete(long id, IFormCollection collection)
+        public ActionResult Delete(IFormCollection collection)
         {
             try
             {
+                var id = Convert.ToInt64(collection["PackageId"]);
                 var package = _databaseConnection.Packages.Find(id);
 
                 _databaseConnection.Packages.Remove(package);

@@ -63,11 +63,7 @@
                         <i class="fa fa-angle-down"></i>
                     </button>
                     <ul class="dropdown-menu pull-right" role="menu">
-                        <li>
-                            <a href="@Url.Action("Index", "ImageSubCategory", new {id = item.ImageCategoryId})" data-toggle="tooltip" title="Edit the Category">
-                                <i class="icon-pencil"></i> Sub-Categories
-                            </a>
-                        </li>
+
                         <li>
                             <a href="@Url.Action("Edit", "ImageCategory", new {id = item.ImageCategoryId})" data-toggle="tooltip" title="Edit the Category">
                                 <i class="icon-pencil"></i> Edit
@@ -76,6 +72,11 @@
                         <li>
                             <a href="#" data-toggle="tooltip" title="Delete the Category" data-id="@item.ImageCategoryId" data-toggle="modal" class="loadModal3">
                                 <i class="icon-trash"></i> Delete
+                            </a>
+                        </li>
+                        <li>
+                            <a href="@Url.Action("Index", "ImageSubCategory", new {id = item.ImageCategoryId})" data-toggle="tooltip" title="View Sub Category">
+                                <i class="icon-pencil"></i> Sub-Categories
                             </a>
                         </li>
                     </ul>
