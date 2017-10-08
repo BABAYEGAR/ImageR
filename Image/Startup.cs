@@ -3,7 +3,9 @@ using Image.Models.DataBaseConnections;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
+using Microsoft.AspNetCore.Rewrite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -15,6 +17,7 @@ namespace Image
 {
     public class Startup
     {
+        string _testSecret = null;
         public Startup(IHostingEnvironment env)
         {
             var builder = new ConfigurationBuilder()
@@ -22,11 +25,11 @@ namespace Image
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
                 .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true);
 
-            //if (env.IsDevelopment())
-            //{
-            //    // For more details on using the user secret store see https://go.microsoft.com/fwlink/?LinkID=532709
-            //    builder.AddUserSecrets<Startup>();
-            //}
+            if (env.IsDevelopment())
+            {
+                // For more details on using the user secret store see https://go.microsoft.com/fwlink/?LinkID=532709
+                builder.AddUserSecrets<Startup>();
+            }
 
             builder.AddEnvironmentVariables();
             Configuration = builder.Build();
@@ -41,7 +44,7 @@ namespace Image
             //vendor management System
             services.AddDbContext<ImageDataContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("Image")));
-
+            _testSecret = Configuration["MySecret"];
             services.AddMvc(options => options.MaxModelValidationErrors = 50).AddJsonOptions(options => {
                 options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
                 options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Serialize;
@@ -54,6 +57,10 @@ namespace Image
             {
                 // Set a short timeout for easy testing.
                 options.IdleTimeout = TimeSpan.FromMinutes(30);
+            });
+            services.Configure<MvcOptions>(options =>
+            {
+                options.Filters.Add(new RequireHttpsAttribute());
             });
             services.AddSingleton<ITempDataProvider, CookieTempDataProvider>();
         }
@@ -73,6 +80,10 @@ namespace Image
             {
                 app.UseExceptionHandler("/Home/Error");
             }
+            var options = new RewriteOptions()
+                .AddRedirectToHttps();
+
+            app.UseRewriter(options);
             app.UseStaticFiles();
             app.UseSession();
             app.UseMvc(routes =>

@@ -41,7 +41,11 @@
                             <i class="ti-briefcase text-info"></i>
                         </div>
                         <div class="media-body">
-                            <p>@appUser.PhotographerCategory.Name</p>
+                            @if (appUser.PhotographerCategory != null)
+                            {
+                                <p>@appUser.PhotographerCategory.Name</p>
+                            }
+                      
                         </div>
                     </li>
                     <li class="media">
@@ -97,68 +101,76 @@
         </div>
     </div>
     <div class="col-md-6">
-        @foreach (var item in images)
+        @if (images != null)
         {
-            <div class="widget clear">
-                <div class="widget-heading">
-                    <div class="media">
-                        <div class="media-left">
-                            <img src="~/Dashboard/build/images/users/10.jpg" alt="" class="media-object mo-lg img-circle">
-                        </div>
-                        <div class="media-body media-middle">
-                            <p class="mb-0">
-                                <span class="fw-500">@item.AppUser.Name</span> uploaded a new photo
-                            </p>
-                            <time datetime="2015-12-10T20:50:48+07:00" class="text-muted fs-12">
-                                @item.DateCreated.ToString("D") <i class="ti-time"></i>@item.DateCreated.ToString("h:mm:ss tt")</time>
-                        </div>
-                    </div>
-                </div>
-                <div class="widget-body">
-                    <p>
-                        @item.Description
-                    </p>
-                    <div class="thumbnail">
-                        <img src="~/Dashboard/build/images/backgrounds/02.jpg" alt="">
-                        <div class="text-right caption">
-                            <ul class="list-inline mb-0">
-                                <li>
-                                    <i class="ti-comment text-info"></i>@item.ImageComments.ToList().Count</li>
-                                <li>
-                                    <i class="ti-heart text-danger"></i> @item.ImageClicks.ToList().Count</li>
-                            </ul>
-                        </div>
-                    </div>
-                    <ul class="media-list">
-                        <li class="media">
-                            <div class="media-left avatar">
-                                <img alt="" src="~/Dashboard/build/images/users/01.jpg" class="media-object img-circle"><span class="status bg-success"></span>
+            foreach (var item in images)
+            {
+                <div class="widget clear">
+                    <div class="widget-heading">
+                        <div class="media">
+                            <div class="media-left">
+                                <img src="~/Dashboard/build/images/users/10.jpg" alt="" class="media-object mo-lg img-circle">
                             </div>
-                            <div class="media-body">
-                                <h5 class="media-heading inline-block">Philip Fernandez</h5>
-                                <time datetime="2015-12-10T20:50:48+07:00" class="text-muted fs-12">20 Jan 2016 <i class="ti-time"></i> 12:12 PM</time>
-                                <p>@item.Caption</p>
-                                @foreach (var items in item.ImageComments)
-                                {
-                                    <div class="media">
-                                        <div class="media-left avatar">
-                                            <img alt="" src="~/Dashboard/build/images/users/12.jpg" class="media-object img-circle"><span class="status bg-success"></span>
+                            <div class="media-body media-middle">
+                                <p class="mb-0">
+                                    <span class="fw-500">@item.AppUser.Name</span> uploaded a new photo
+                                </p>
+                                <time datetime="2015-12-10T20:50:48+07:00" class="text-muted fs-12">
+                                    @item.DateCreated.ToString("D") <i class="ti-time"></i>@item.DateCreated.ToString("h:mm:ss tt")
+                                </time>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="widget-body">
+                        <p>
+                            @item.Description
+                        </p>
+                        <div class="thumbnail">
+                            <img src="~/Dashboard/build/images/backgrounds/02.jpg" alt="">
+                            <div class="text-right caption">
+                                <ul class="list-inline mb-0">
+                                    <li>
+                                        <i class="ti-comment text-info"></i>@item.ImageComments.ToList().Count
+                                    </li>
+                                    <li>
+                                        <i class="ti-heart text-danger"></i> @item.ImageClicks.ToList().Count
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        <ul class="media-list">
+                            <li class="media">
+                                <div class="media-left avatar">
+                                    <img alt="" src="~/Dashboard/build/images/users/01.jpg" class="media-object img-circle"><span class="status bg-success"></span>
+                                </div>
+                                <div class="media-body">
+                                    <h5 class="media-heading inline-block">Philip Fernandez</h5>
+                                    <time datetime="2015-12-10T20:50:48+07:00" class="text-muted fs-12">20 Jan 2016 <i class="ti-time"></i> 12:12 PM</time>
+                                    <p>@item.Caption</p>
+                                    @foreach (var items in item.ImageComments)
+                                    {
+                                        <div class="media">
+                                            <div class="media-left avatar">
+                                                <img alt="" src="~/Dashboard/build/images/users/12.jpg" class="media-object img-circle"><span class="status bg-success"></span>
+                                            </div>
+                                            <div class="media-body">
+                                                <h5 class="media-heading inline-block">@items.AppUser.Name</h5>
+                                                <time datetime="2015-12-10T20:50:48+07:00" class="text-muted fs-12">
+                                                    @item.DateCreated.ToString("D") <i class="ti-time"></i>@item.DateCreated.ToString("h:mm:ss tt")
+                                                </time>
+                                                <p>@items.Comment</p>
+                                            </div>
                                         </div>
-                                        <div class="media-body">
-                                            <h5 class="media-heading inline-block">@items.AppUser.Name</h5>
-                                            <time datetime="2015-12-10T20:50:48+07:00" class="text-muted fs-12">
-                                                @item.DateCreated.ToString("D") <i class="ti-time"></i>@item.DateCreated.ToString("h:mm:ss tt")</time>
-                                            <p>@items.Comment</p>
-                                        </div>
-                                    </div>
-                                }
+                                    }
 
-                            </div>
-                        </li>
-                    </ul>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
                 </div>
-            </div>
+            }
         }
+
 
     </div>
 
