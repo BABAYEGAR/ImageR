@@ -1,30 +1,166 @@
-﻿
-
-@model Image.Models.Entities.Image
+﻿@model Image.Models.Entities.Image
 @{
     Layout = "Layout/Dashboard/_LayoutForm";
-    ViewBag.PageTitle = "Create Image Category";
-    ViewBag.PageHeader = "Image Category";
-    ViewBag.FormHeader = "Edit the Image Category (Make sure to fill all compulsory fields *)";
+    ViewBag.PageTitle = "Image Upload";
+    ViewBag.PageHeader = "Image Upload";
+    ViewBag.FormHeader = "Edit Image Upload (Make sure to fill all compulsory fields *)";
+}
+@section css{
+
+    <!-- Bootstrap Markdown-->
+    <link rel="stylesheet" type="text/css" href="~/Dashboard/plugins/bootstrap-markdown/css/bootstrap-markdown.min.css">
+}
+<div class="widget-body">
+    <p>
+        * Make sure to upload an Image in the next tab
+    </p>
+    <p>
+        * Note That the Maximum Size for Image Uploads is <strong>15MB</strong>
+    </p>
+    @using (Html.BeginForm("Create", "Image", FormMethod.Post, new {enctype = "multipart/form-data", role = "form"}))
+    {
+        @Html.AntiForgeryToken()
+        @Html.ValidationSummary(true, "", new {@class = "text-danger"})
+        @Html.HiddenFor(m=>m.ImageId)
+        @Html.HiddenFor(m=>m.AppUserId)
+        @Html.HiddenFor(m=>m.CreatedBy)
+        @Html.HiddenFor(m=>m.DateCreated)
+        @Html.HiddenFor(m=>m.FilePath)
+        <div class="form-body">
+            <div class="row">
+                <div class="form-group col-md-6">
+                    @Html.LabelFor(model => model.Title, new {@class = "control-label"})<span class="required">*</span>
+                    @Html.EditorFor(model => model.Title, new {htmlAttributes = new {@class = "form-control", placeholder = "Please enter the category name"}})
+                    @Html.ValidationMessageFor(model => model.Title, "", new {@class = "text-danger"})
+                </div>
+                <div class="form-group col-md-6">
+                    @Html.LabelFor(model => model.Theme, new {@class = "control-label"})<span class="required">*</span>
+                    @Html.EditorFor(model => model.Theme, new {htmlAttributes = new {@class = "form-control", placeholder = "Please enter the category name"}})
+                    @Html.ValidationMessageFor(model => model.Theme, "", new {@class = "text-danger"})
+                </div>
+                <div class="form-group col-md-6">
+                    @Html.LabelFor(model => model.ImageCategoryId, new {@class = "control-label"})<span class="required">*</span>
+                    @Html.DropDownListFor(model => model.ImageCategoryId, null, "Select an Image Category/Genre", new {@class = "form-control", placeholder = "", id = "category"})
+                    @Html.ValidationMessageFor(model => model.ImageCategoryId, "", new {@class = "text-danger"})
+                </div>
+                <div class="form-group col-md-6">
+                    @Html.LabelFor(model => model.ImageSubCategoryId, new {@class = "control-label"})<span class="required">*</span>
+                    @Html.DropDownListFor(m => m.ImageSubCategoryId, new SelectList(string.Empty, "Value", "Text"), "--Please select a Sub-Category/ Sub-Genre--", new {@class = "form-control", id = "sub"})
+                    @Html.ValidationMessageFor(model => model.ImageSubCategoryId, "", new {@class = "text-danger"})
+                </div>
+                <div class="form-group col-md-6">
+                    @Html.LabelFor(model => model.LocationId, new {@class = "control-label"})<span class="required">*</span>
+                    @Html.DropDownListFor(model => model.LocationId, null, "Select an Image Location", new {@class = "form-control", placeholder = ""})
+                    @Html.ValidationMessageFor(model => model.LocationId, "", new {@class = "text-danger"})
+                </div>
+                <div class="form-group col-md-6">
+                    @Html.LabelFor(model => model.Inspiration, new {@class = "control-label"})<span class="required">*</span>
+                    @Html.EditorFor(model => model.Inspiration, new {htmlAttributes = new {@class = "form-control", placeholder = "Please enter the your inspiration for taking the image"}})
+                    @Html.ValidationMessageFor(model => model.Inspiration, "", new {@class = "text-danger"})
+                </div>
+                <div class="form-group col-md-6">
+                    @Html.LabelFor(model => model.CameraId, new {@class = "control-label"})
+                    @Html.DropDownListFor(model => model.CameraId, null, "Select the Camera Used", new {@class = "form-control", placeholder = ""})
+                    @Html.ValidationMessageFor(model => model.CameraId, "", new {@class = "text-danger"})
+                </div>
+                <div class="form-group col-md-6">
+                    @Html.LabelFor(model => model.SellingPrice, new {@class = "control-label"})<span class="required">*</span>
+                    @Html.EditorFor(model => model.SellingPrice, new {htmlAttributes = new {@class = "form-control", placeholder = "Please enter the selling price for the image"}})
+                    @Html.ValidationMessageFor(model => model.SellingPrice, "", new {@class = "text-danger"})
+                </div>
+            </div>
+            <div class="row">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Description, new {@class = "control-label"})<span class="required">*</span>
+                    <textarea name="Description" data-provide="markdown" rows="10"></textarea>
+                    @Html.ValidationMessageFor(model => model.Description, "", new {@class = "text-danger"})
+                </div>
+            </div>
+
+        </div>
+
+
+        <div class="form-group">
+            <button type="submit" class="btn btn-primary">
+                <i class="glyphicon glyphicon-upload"></i>
+                Submit
+            </button>
+            <a href="@Url.Action("Index", "Image")" class="btn btn-default">Cancel</a>
+        </div>
+    }
+</div >
+
+
+@section Scripts
+{
+    <!-- Bootstrap Markdown-->
+    <script type="text/javascript" src="~/Dashboard/plugins/bootstrap-markdown/js/bootstrap-markdown.js"></script>
+
 }
 
-@using (Html.BeginForm("Edit", "ImageCategory", FormMethod.Post, new {enctype = "multipart/form-data", role = "form"}))
-{
-    @Html.AntiForgeryToken()
-    @Html.HiddenFor(m=>m.ImageCategoryId)
-    @Html.HiddenFor(m=>m.DateCreated)
-    @Html.HiddenFor(m=>m.CreatedBy)
-    @Html.ValidationSummary(true, "", new {@class = "text-danger"})
+@section Functions {
+    <script>
+        $(document)
+            .ready(function() {
 
-    <div class="form-body">
-        <div class="form-group">
-            @Html.LabelFor(model => model.Name, new {@class = "control-label"})<span class="required">*</span>
-            @Html.EditorFor(model => model.Name, new {htmlAttributes = new {@class = "form-control", placeholder = "Please enter the category name"}})
-            @Html.ValidationMessageFor(model => model.Name, "", new {@class = "text-danger"})
-        </div>
-    </div>
-    <div class="form-group">
-        <button type="submit" class="btn btn-primary">Submit</button>
-        <a href="@Url.Action("Index","ImageCategory")"  class="btn btn-default">Cancel</a>
-    </div>
+
+                //checks if the state has a value before displaying assigned lga
+                if ($('#category').val() != '') {
+                    getSubCategories();
+                }
+
+                //loads assigned lga for state on change/select
+                $('#category').on('change', function() { getSubCategories(); });
+
+                //Ajax call for SUB assigned to state
+                function getSubCategories() {
+
+                    $("#sub").empty();
+                    $.ajax({
+                        type: 'GET',
+                        url: '@Url.Action("GetSubForCategories", "Image")',
+                        dataType: 'json',
+                        data: { id: $("#category").val() },
+                        success: function(sub) {
+
+                            $.each(sub,
+                                function(i, sub) {
+                                    $("#sub").append('<option value="' +
+                                        sub.ImageSubCategoryId +
+                                        '">' +
+                                        sub.Name +
+                                        '</option>');
+                                });
+                        },
+                        error: function(ex) {
+                            alert('Failed to retrieve Sub-Categories.' + ex);
+                        }
+                    });
+                }
+
+                //Ajax ends
+            });
+
+
+    </script>
+    <!-- jQuery read image data and show preview code -->
+    <script type="text/javascript">
+        $(document).ready(function() {
+            //Image file input change event
+            $("#input-5").change(function() {
+                readImageData(this); //Call image read and render function
+            });
+        });
+
+        function readImageData(imgData) {
+            if (imgData.files && imgData.files[0]) {
+                var readerObj = new FileReader();
+
+                readerObj.onload = function(element) {
+                    $('#avatar').attr('src', element.target.result);
+                };
+                readerObj.readAsDataURL(imgData.files[0]);
+            }
+        }
+    </script>
 }

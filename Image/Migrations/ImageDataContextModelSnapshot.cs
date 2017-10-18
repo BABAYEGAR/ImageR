@@ -246,6 +246,8 @@ namespace Image.Migrations
 
                     b.Property<string>("FileName");
 
+                    b.Property<string>("FilePath");
+
                     b.Property<long?>("ImageCategoryId")
                         .IsRequired();
 

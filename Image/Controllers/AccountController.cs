@@ -106,6 +106,9 @@ namespace Image.Controllers
             var roleString = JsonConvert.SerializeObject(role);
             HttpContext.Session.SetString("Role", roleString);
 
+            //set user id inti=o session string
+            HttpContext.Session.SetInt32("userId", (int) userExist.AppUserId);
+
             return RedirectToAction("Dashboard", "Home");
         }
         [HttpGet]

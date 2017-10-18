@@ -16,8 +16,11 @@
     </style>
 }
 <div class="widget-body">
+<p style="font-size: 16px">
+   <span class="required">*</span> Make sure to <strong>upload an Image</strong>  in the <strong>next tab</strong> ..
+</p>
 <p>
-    Make sure to upload an Image in the next tab
+    <span class="required">*</span> Note That the <strong>Maximum Size</strong> for Image Uploads is <strong>15MB</strong>..
 </p>
 <div role="tabpanel">
 <ul role="tablist" class="nav nav-tabs nav-justified mb-15">
@@ -100,7 +103,7 @@
             <br/>
             <label class="col-sm-2 control-label">Image Upload</label>
             <div class="col-sm-10">
-                <input id="input-5" name="file" type="file" multiple="" class="file-loading">
+                <input id="input-5" name="file" type="file" multiple="" class="file-loading" required="required">
                 <p class="help-block">Initialize file input widget via javascript. Hide the caption and display widget with only buttons. You can add the <code>file-loading</code> class to show a spinning indicator, while the plugin loads.
                 </p>
             </div>
@@ -373,7 +376,7 @@
                 //loads assigned lga for state on change/select
                 $('#category').on('change', function() { getSubCategories(); });
 
-                //Ajax call for Lga assigned to state
+                //Ajax call for SUB assigned to state
                 function getSubCategories() {
 
                     $("#sub").empty();

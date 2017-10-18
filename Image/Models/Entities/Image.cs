@@ -14,6 +14,7 @@ namespace Image.Models.Entities
         public string Caption { get; set; }
         [Required]
         public string Description { get; set; }
+        public string FilePath { get; set; }
         public string FileName { get; set; }
         [Display(Name = "Camera")]
         public long? CameraId { get; set; }
