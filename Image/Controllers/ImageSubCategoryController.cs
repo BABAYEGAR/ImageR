@@ -67,9 +67,9 @@ namespace Image.Controllers
         }
 
         // GET: ImageSubCategory/Edit/5
-        public ActionResult Edit(int id)
+        public ActionResult Edit(long id)
         {
-            return View();
+            return View(_databaseConnection.ImageSubCategories.Find(id));
         }
 
         // POST: ImageSubCategory/Edit/5

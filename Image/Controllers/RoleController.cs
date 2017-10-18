@@ -65,9 +65,10 @@ namespace Image.Controllers
         }
 
         // GET: Role/Edit/5
-        public ActionResult Edit(int id)
+        public ActionResult Edit(long id)
         {
-            return View();
+            var role = _databaseConnection.Roles.Find(id);
+            return View(role);
         }
 
         // POST: Role/Edit/5

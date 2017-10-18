@@ -1,9 +1,14 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using CloudinaryDotNet;
+using CloudinaryDotNet.Actions;
 using Image.Models.DataBaseConnections;
 using Image.Models.Enum;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using SelectList = Microsoft.AspNetCore.Mvc.Rendering.SelectList;
 
 namespace Image.Controllers
@@ -20,7 +25,7 @@ namespace Image.Controllers
         public ActionResult Index()
         {
             var signedInUserId = HttpContext.Session.GetInt32("userId");
-            return View(_databaseConnection.Images.Where(n=>n.AppUserId ==signedInUserId ).ToList());
+            return View(_databaseConnection.Images.Include(n=>n.Camera).Include(n=>n.Location).Include(n => n.ImageCategory).Include(n => n.ImageSubCategory).Where(n=>n.AppUserId ==signedInUserId ).ToList());
         }
         /// <summary>
         ///     Sends Json responds object to view with sub categories of the categories requested via an Ajax call
@@ -54,16 +59,31 @@ namespace Image.Controllers
         // POST: Image/Create
         [Microsoft.AspNetCore.Mvc.HttpPost]
         [Microsoft.AspNetCore.Mvc.ValidateAntiForgeryToken]
-        public ActionResult Create(Models.Entities.Image image, IFormCollection collection)
+        public ActionResult Create(Models.Entities.Image image, IFormCollection collection, IFormFile file)
         {
             try
             {
+                //var fs = System.IO.File.Create(file.OpenReadStream().BeginRead().)
+
+                Account account = new Account(
+                    "cloudmab",
+                    "988581656515289",
+                    "Odh29Eet7Ajilw0O0kCflwtnj9E");
+
+                Cloudinary cloudinary = new Cloudinary(account);
+                var uploadParams = new ImageUploadParams()
+                {
+                    File = new FileDescription(DateTime.Now.ToFileTime().ToString(),file.OpenReadStream())
+                };
+                var uploadResult = cloudinary.Upload(uploadParams);
                 // TODO: Add insert logic here
                 var signedInUserId = HttpContext.Session.GetInt32("userId");
+                image.AppUserId = signedInUserId;
                 image.DateCreated = DateTime.Now;
                 image.DateLastModified = DateTime.Now;
                 image.CreatedBy = signedInUserId;
                 image.LastModifiedBy = signedInUserId;
+                image.FileName = uploadResult.Uri.AbsolutePath;
 
                 _databaseConnection.Images.Add(image);
                 _databaseConnection.SaveChanges();
@@ -79,10 +99,11 @@ namespace Image.Controllers
             }
         }
 
+
         // GET: Image/Edit/5
-        public ActionResult Edit(int id)
+        public ActionResult Edit(long id)
         {
-            return View();
+            return View(_databaseConnection.Images.Find(id));
         }
 
         // POST: Image/Edit/5

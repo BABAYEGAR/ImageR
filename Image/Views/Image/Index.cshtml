@@ -59,12 +59,14 @@
     <tbody>
     @foreach (var item in Model)
     {
+        var pic = "https://res.cloudinary.com/" + @item.FileName;
         <tr>
-            <td>Image</td>
+            <td><img src='@pic' 
+                     width='100' height='80' /></td>
             <td>@item.DateCreated.ToString("D")</td>
             <td>@item.Title</td>
-            <td>@item.Camera</td>
-            <td>@item.Location</td>
+            <td>@item.Camera.Name</td>
+            <td>@item.Location.Name</td>
             <td>@item.SellingPrice</td>
             <td>
                 <div class="btn-group">

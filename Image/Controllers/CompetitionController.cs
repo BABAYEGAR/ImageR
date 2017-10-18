@@ -65,9 +65,9 @@ namespace Image.Controllers
         }
 
         // GET: Package/Edit/5
-        public ActionResult Edit(int id)
+        public ActionResult Edit(long id)
         {
-            return View();
+            return View(_databaseConnection.Competition.Find(id));
         }
 
         // POST: Package/Edit/5
