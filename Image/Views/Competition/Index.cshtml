@@ -69,6 +69,11 @@
                             </a>
                         </li>
                         <li>
+                            <a href="@Url.Action("SelectCategories", "Competition", new {id = item.CompetitionId})" data-toggle="tooltip" title="Select the Competition Categories">
+                                <i class="icon-pencil"></i> Select Categories
+                            </a>
+                        </li>
+                        <li>
                             <a href="#" data-toggle="tooltip" title="Delete the Competition" data-id="@item.CompetitionId" data-toggle="modal" class="loadModal3">
                                 <i class="icon-trash"></i> Delete
                             </a>

@@ -25,12 +25,12 @@
             @Html.ValidationMessageFor(model => model.Mobile, "", new {@class = "text-danger"})
         </div>
     </div>
-    <div class="form-group">
+    @*<div class="form-group">
     <div class="col-xs-12">
         @Html.DropDownListFor(m => m.PhotographerCategoryId, null, "Select an Expertise in Photography", new {@class = "form-control",placeholder = "Photographer Category/Expertise" })
         @Html.ValidationMessageFor(model => model.PhotographerCategoryId, "", new {@class = "text-danger"})
     </div>
-    </div>
+    </div>*@
     <div class="form-group">
         <div class="col-xs-12">
             @Html.PasswordFor(model => model.Password, new {@class = "form-control", placeholder = "Password*"})

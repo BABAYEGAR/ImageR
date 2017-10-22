@@ -6,10 +6,13 @@ using CloudinaryDotNet;
 using CloudinaryDotNet.Actions;
 using Image.Data;
 using Image.Models.DataBaseConnections;
+using Image.Models.Encryption;
+using Image.Models.Entities;
 using Image.Models.Enum;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using SelectList = Microsoft.AspNetCore.Mvc.Rendering.SelectList;
 
 namespace Image.Controllers
@@ -17,16 +20,37 @@ namespace Image.Controllers
     public class ImageController : Controller
     {
         private readonly ImageDataContext _databaseConnection;
+        Role _userRole;
+        List<Models.Entities.Image> _images = new List<Models.Entities.Image>();
 
         public ImageController(ImageDataContext databaseConnection)
         {
             _databaseConnection = databaseConnection;
+
+
         }
         // GET: Image
+        [SessionExpireFilter]
         public ActionResult Index()
         {
             var signedInUserId = HttpContext.Session.GetInt32("userId");
-            return View(_databaseConnection.Images.Include(n=>n.Camera).Include(n=>n.Location).Include(n => n.ImageCategory).Include(n => n.ImageSubCategory).Where(n=>n.AppUserId ==signedInUserId ).ToList());
+            if (HttpContext.Session.GetString("Role") != null)
+            {
+                var roleString = HttpContext.Session.GetString("Role");
+                _userRole = JsonConvert.DeserializeObject<Role>(roleString);
+            }
+            if (_userRole.ManageImages)
+            {
+                _images = _databaseConnection.Images.Include(n => n.Camera).Include(n => n.Location)
+                    .Include(n => n.ImageCategory).Include(n => n.ImageSubCategory)
+                    .Where(n => n.AppUserId == signedInUserId).ToList();
+            }
+            if (_userRole.UploadImage)
+            {
+                _images = _databaseConnection.Images.Include(n => n.Camera).Include(n => n.Location)
+                    .Include(n => n.ImageCategory).Include(n => n.ImageSubCategory).ToList();
+            }
+            return View(_images);
         }
         /// <summary>
         ///     Sends Json responds object to view with sub categories of the categories requested via an Ajax call
@@ -47,13 +71,15 @@ namespace Image.Controllers
         }
 
         // GET: Image/Create
+        [SessionExpireFilter]
         public ActionResult Create()
         {
+            var signedInUserId = HttpContext.Session.GetInt32("userId");
             ViewBag.ImageCategoryId = new SelectList(_databaseConnection.ImageCategories.ToList(), "ImageCategoryId",
                 "Name");
-            ViewBag.CameraId = new SelectList(_databaseConnection.Cameras.ToList(), "CameraId",
+            ViewBag.CameraId = new SelectList(_databaseConnection.Cameras.Where(n=>n.CreatedBy == signedInUserId).ToList(), "CameraId",
                 "Name");
-            ViewBag.LocationId = new SelectList(_databaseConnection.Locations.ToList(), "LocationId",
+            ViewBag.LocationId = new SelectList(_databaseConnection.Locations.Where(n => n.CreatedBy == signedInUserId).ToList(), "LocationId",
                 "Name");
             return View();
         }
@@ -61,6 +87,7 @@ namespace Image.Controllers
         // POST: Image/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [SessionExpireFilter]
         public ActionResult Create(Models.Entities.Image image, IFormCollection collection, IFormFile file)
         {
             try
@@ -107,6 +134,12 @@ namespace Image.Controllers
                     //display notification
                     TempData["display"] = "No Image was Selected or selected image violate the Upload Size Rule of 15MB!";
                     TempData["notificationtype"] = NotificationType.Error.ToString();
+                    ViewBag.ImageCategoryId = new SelectList(_databaseConnection.ImageCategories.ToList(), "ImageCategoryId",
+                        "Name",image.ImageCategoryId);
+                    ViewBag.CameraId = new SelectList(_databaseConnection.Cameras.ToList(), "CameraId",
+                        "Name",image.CameraId);
+                    ViewBag.LocationId = new SelectList(_databaseConnection.Locations.ToList(), "LocationId",
+                        "Name",image.LocationId);
                     return View(image);
 
                 }
@@ -116,20 +149,36 @@ namespace Image.Controllers
                 //display notification
                 TempData["display"] = "There was an issue uploading the image, Try Again!";
                 TempData["notificationtype"] = NotificationType.Error.ToString();
+                ViewBag.ImageCategoryId = new SelectList(_databaseConnection.ImageCategories.ToList(), "ImageCategoryId",
+                    "Name", image.ImageCategoryId);
+                ViewBag.CameraId = new SelectList(_databaseConnection.Cameras.ToList(), "CameraId",
+                    "Name", image.CameraId);
+                ViewBag.LocationId = new SelectList(_databaseConnection.Locations.ToList(), "LocationId",
+                    "Name", image.LocationId);
                 return View(image);
             }
         }
 
 
         // GET: Image/Edit/5
+        [SessionExpireFilter]
         public ActionResult Edit(long id)
         {
-            return View(_databaseConnection.Images.Find(id));
+            var signedInUserId = HttpContext.Session.GetInt32("userId");
+            var image = _databaseConnection.Images.Find(id);
+            ViewBag.ImageCategoryId = new SelectList(_databaseConnection.ImageCategories.ToList(), "ImageCategoryId",
+                "Name",image.ImageCategoryId);
+            ViewBag.CameraId = new SelectList(_databaseConnection.Cameras.Where(n => n.CreatedBy == signedInUserId).ToList(), "CameraId",
+                "Name",image.CameraId);
+            ViewBag.LocationId = new SelectList(_databaseConnection.Locations.Where(n => n.CreatedBy == signedInUserId).ToList(), "LocationId",
+                "Name",image.LocationId);
+            return View(image);
         }
 
         // POST: Image/Edit/5
         [Microsoft.AspNetCore.Mvc.HttpPost]
         [Microsoft.AspNetCore.Mvc.ValidateAntiForgeryToken]
+        [SessionExpireFilter]
         public ActionResult Edit(Models.Entities.Image image, IFormCollection collection)
         {
             try
@@ -154,6 +203,7 @@ namespace Image.Controllers
             }
         }
         // POST: Image/Delete/5
+        [SessionExpireFilter]
         public ActionResult Delete(IFormCollection collection)
         {
             var id = Convert.ToInt64(collection["ImageId"]);

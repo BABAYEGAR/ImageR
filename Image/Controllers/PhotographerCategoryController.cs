@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using Image.Models.DataBaseConnections;
+using Image.Models.Encryption;
 using Image.Models.Entities;
 using Image.Models.Enum;
 using Microsoft.AspNetCore.Http;
@@ -17,19 +18,23 @@ namespace Image.Controllers
         {
             _databaseConnection = databaseConnection;
         }
+
         // GET: ImageCategory
+        [SessionExpireFilter]
         public ActionResult Index()
         {
             return View(_databaseConnection.PhotographerCategories.ToList());
         }
 
         // GET: ImageCategory/Details/5
+        [SessionExpireFilter]
         public ActionResult Details(int id)
         {
             return View(_databaseConnection.PhotographerCategories.Find(id));
         }
 
         // GET: ImageCategory/Create
+        [SessionExpireFilter]
         public ActionResult Create()
         {
             return View();
@@ -38,7 +43,8 @@ namespace Image.Controllers
         // POST: ImageCategory/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(PhotographerCategory photographerCategory,  IFormCollection collection)
+        [SessionExpireFilter]
+        public ActionResult Create(PhotographerCategory photographerCategory, IFormCollection collection)
         {
             try
             {
@@ -56,13 +62,68 @@ namespace Image.Controllers
                 TempData["notificationtype"] = NotificationType.Success.ToString();
                 return RedirectToAction("Index");
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 return View();
             }
         }
 
+        public ActionResult SelectCategories()
+        {
+            ViewBag.Mapping = _databaseConnection.PhotographerCategoryMappings.ToList();
+            return View(_databaseConnection.PhotographerCategories.OrderByDescending(n => n.Name).ToList());
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult MapPhotographyCategory(int[] table_records, IFormCollection collection)
+        {
+            var allMappings = _databaseConnection.PhotographerCategoryMappings.ToList();
+            var signedInUserId = Convert.ToInt64(HttpContext.Session.GetInt32("userId"));
+            if (table_records != null)
+            {
+                var length = table_records.Length;
+                for (var i = 0; i < length; i++)
+                {
+                    var id = table_records[i];
+                    var singleMapping = allMappings.SingleOrDefault(
+                        n =>
+                            n.PhotographerCategoryId == id && n.AppUserId == signedInUserId);
+                    if (singleMapping != null)
+                    {
+                    }
+                    else
+                    {
+                        var categoryMapping = new PhotographerCategoryMapping
+                        {
+                            PhotographerCategoryId = id,
+                            AppUserId = signedInUserId,
+                            DateCreated = DateTime.Now,
+                            DateLastModified = DateTime.Now,
+                            LastModifiedBy = signedInUserId,
+                            CreatedBy = signedInUserId
+                        };
+                        _databaseConnection.PhotographerCategoryMappings.Add(categoryMapping);
+                        _databaseConnection.SaveChanges();
+
+
+                        TempData["display"] = "you have succesfully added the category(s) to the profile!";
+                        TempData["notificationtype"] = NotificationType.Success.ToString();
+                        return RedirectToAction("Dashboard", "Home");
+                    }
+                }
+            }
+            else
+            {
+                TempData["display"] = "no category has been selected!";
+                TempData["notificationtype"] = NotificationType.Error.ToString();
+                return RedirectToAction("Index", "Competition");
+            }
+            return RedirectToAction("Dashboard", "Home");
+        }
+
         // GET: ImageCategory/Edit/5
+        [SessionExpireFilter]
         public ActionResult Edit(long id)
         {
             return View(_databaseConnection.PhotographerCategories.Find(id));
@@ -71,7 +132,8 @@ namespace Image.Controllers
         // POST: ImageCategory/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(PhotographerCategory photographerCategory,IFormCollection collection)
+        [SessionExpireFilter]
+        public ActionResult Edit(PhotographerCategory photographerCategory, IFormCollection collection)
         {
             try
             {
@@ -80,7 +142,8 @@ namespace Image.Controllers
                 photographerCategory.DateLastModified = DateTime.Now;
                 photographerCategory.LastModifiedBy = signedInUserId;
 
-                _databaseConnection.Entry(photographerCategory).State = EntityState.Modified;;
+                _databaseConnection.Entry(photographerCategory).State = EntityState.Modified;
+                ;
                 _databaseConnection.SaveChanges();
 
                 //display notification
@@ -94,7 +157,33 @@ namespace Image.Controllers
             }
         }
 
+        [SessionExpireFilter]
+        public ActionResult RemovePhographerCategoryMapping(IFormCollection collection)
+        {
+            try
+            {
+                var signedInUserId = HttpContext.Session.GetInt32("userId");
+                var categoryId = Convert.ToInt64(collection["PhtographerCategoryId"]);
+                var mapping =
+                    _databaseConnection.PhotographerCategoryMappings.SingleOrDefault(
+                        n => n.PhotographerCategoryId == categoryId && n.AppUserId == signedInUserId);
+
+                _databaseConnection.PhotographerCategoryMappings.Remove(mapping);
+                _databaseConnection.SaveChanges();
+
+                //display notification
+                TempData["display"] = "You have successfully removed the Category!";
+                TempData["notificationtype"] = NotificationType.Success.ToString();
+                return RedirectToAction("SelectCategories");
+            }
+            catch
+            {
+                return View();
+            }
+        }
+
         // GET: ImageCategory/Delete/5
+        [SessionExpireFilter]
         public ActionResult Delete(IFormCollection collection)
         {
             var id = Convert.ToInt64(collection["CategoryId"]);
@@ -108,6 +197,5 @@ namespace Image.Controllers
             TempData["notificationtype"] = NotificationType.Success.ToString();
             return RedirectToAction("Index");
         }
-
     }
 }

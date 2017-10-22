@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using Image.Models.DataBaseConnections;
+using Image.Models.Encryption;
 using Image.Models.Entities;
 using Image.Models.Enum;
 using Microsoft.AspNetCore.Http;
@@ -18,18 +19,21 @@ namespace Image.Controllers
             _databaseConnection = databaseConnection;
         }
         // GET: ImageCategory
+        [SessionExpireFilter]
         public ActionResult Index()
         {
             return View(_databaseConnection.ImageCategories.ToList());
         }
 
         // GET: ImageCategory/Details/5
+        [SessionExpireFilter]
         public ActionResult Details(int id)
         {
             return View(_databaseConnection.ImageCategories.Find(id));
         }
 
         // GET: ImageCategory/Create
+        [SessionExpireFilter]
         public ActionResult Create()
         {
             return View();
@@ -38,6 +42,7 @@ namespace Image.Controllers
         // POST: ImageCategory/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [SessionExpireFilter]
         public ActionResult Create(ImageCategory imageCategory,  IFormCollection collection)
         {
             try
@@ -63,6 +68,7 @@ namespace Image.Controllers
         }
 
         // GET: ImageCategory/Edit/5
+        [SessionExpireFilter]
         public ActionResult Edit(long id)
         {
             return View(_databaseConnection.ImageCategories.Find(id));
@@ -71,6 +77,7 @@ namespace Image.Controllers
         // POST: ImageCategory/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [SessionExpireFilter]
         public ActionResult Edit(ImageCategory imageCategory,IFormCollection collection)
         {
             try
@@ -95,6 +102,7 @@ namespace Image.Controllers
         }
 
         // GET: ImageCategory/Delete/5
+        [SessionExpireFilter]
         public ActionResult Delete(IFormCollection collection)
         {
             var id = Convert.ToInt64(collection["CategoryId"]);

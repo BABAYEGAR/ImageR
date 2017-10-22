@@ -2,7 +2,7 @@
 
 namespace Image.Models.Entities
 {
-    public class ImageComment
+    public class ImageComment  : Transport
     {
         public long ImageCommentId { get; set; }
         public string Comment { get; set; }

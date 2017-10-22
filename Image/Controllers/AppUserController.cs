@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Image.Models.DataBaseConnections;
+using Image.Models.Encryption;
 using Image.Models.Entities;
 using Image.Models.Enum;
 using Microsoft.AspNetCore.Hosting;
@@ -24,18 +25,21 @@ namespace Image.Controllers
             _databaseConnection = databaseConnection;
         }
         // GET: AppUser
+        [SessionExpireFilter]
         public ActionResult Index()
         {
             return View(_databaseConnection.AppUsers.Include(n=>n.Role).ToList());
         }
 
         // GET: AppUser/Details/5
+        [SessionExpireFilter]
         public ActionResult Details(int id)
         {
             return View();
         }
 
         // GET: AppUser/Create
+        [SessionExpireFilter]
         public ActionResult Create()
         {
             ViewBag.RoleId = new SelectList(_databaseConnection.Roles.ToList(), "RoleId",
@@ -46,6 +50,7 @@ namespace Image.Controllers
         // POST: AppUser/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [SessionExpireFilter]
         public ActionResult Create(AppUser user, IList<IFormFile> images, IFormCollection collection)
         {
             try
@@ -56,31 +61,6 @@ namespace Image.Controllers
                 user.DateLastModified = DateTime.Now;
                 user.CreatedBy = signedInUserId;
                 user.LastModifiedBy = signedInUserId;
-
-                if (images.Count > 0)
-                {
-                    {
-                        foreach (var file in images)
-                        {
-                            var fileInfo = new FileInfo(file.FileName);
-                            var ext = fileInfo.Extension.ToLower();
-                            var name = DateTime.Now.ToFileTime().ToString();
-                            var fileName = name + ext;
-                            var uploadedImage = _hostingEnv.WebRootPath + $@"\UploadedFiles\ProfilePicture\{fileName}";
-
-                            using (var fs = System.IO.File.Create(uploadedImage))
-                            {
-                                if (fs != null)
-                                {
-                                    file.CopyTo(fs);
-                                    fs.Flush();
-
-                                }
-                            }
-                        }
-                    }
-                }
-
                 _databaseConnection.Add(user);
                 _databaseConnection.SaveChanges();
            
@@ -95,65 +75,9 @@ namespace Image.Controllers
                 return View();
             }
         }
-        // GET: AppUser/Create
-        public ActionResult Register()
-        {
-            return View();
-        }
 
-        // POST: AppUser/Create
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Register(AppUser user, IList<IFormFile> images, IFormCollection collection)
-        {
-            try
-            {
-                // TODO: Add insert logic here
-                var signedInUserId = HttpContext.Session.GetInt32("userId");
-                user.DateCreated = DateTime.Now;
-                user.DateLastModified = DateTime.Now;
-                user.CreatedBy = signedInUserId;
-                user.LastModifiedBy = signedInUserId;
-
-                if (images.Count > 0)
-                {
-                    {
-                        foreach (var file in images)
-                        {
-                            var fileInfo = new FileInfo(file.FileName);
-                            var ext = fileInfo.Extension.ToLower();
-                            var name = DateTime.Now.ToFileTime().ToString();
-                            var fileName = name + ext;
-                            var uploadedImage = _hostingEnv.WebRootPath + $@"\UploadedFiles\ProfilePicture\{fileName}";
-
-                            using (var fs = System.IO.File.Create(uploadedImage))
-                            {
-                                if (fs != null)
-                                {
-                                    file.CopyTo(fs);
-                                    fs.Flush();
-
-                                }
-                            }
-                        }
-                    }
-                }
-
-                _databaseConnection.Add(user);
-                _databaseConnection.SaveChanges();
-
-                //display notification
-                TempData["display"] = "You have successfully added a new user!";
-                TempData["notificationtype"] = NotificationType.Success.ToString();
-
-                return RedirectToAction("Index");
-            }
-            catch
-            {
-                return View();
-            }
-        }
         // GET: AppUser/Edit/5
+        [SessionExpireFilter]
         public ActionResult Edit(long id)
         {
             return View();
@@ -162,6 +86,7 @@ namespace Image.Controllers
         // POST: AppUser/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [SessionExpireFilter]
         public ActionResult Edit(AppUser user, IFormCollection collection)
         {
             try
@@ -184,16 +109,8 @@ namespace Image.Controllers
                 return View();
             }
         }
-
-        // GET: AppUser/Delete/5
-        public ActionResult Delete(int id)
-        {
-            return View();
-        }
-
         // POST: AppUser/Delete/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
+        [SessionExpireFilter]
         public ActionResult Delete(int id, IFormCollection collection)
         {
             try

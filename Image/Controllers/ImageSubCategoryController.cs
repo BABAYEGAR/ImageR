@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using Image.Models.DataBaseConnections;
+using Image.Models.Encryption;
 using Image.Models.Entities;
 using Image.Models.Enum;
 using Microsoft.AspNetCore.Http;
@@ -18,6 +19,7 @@ namespace Image.Controllers
             _databaseConnection = databaseConnection;
         }
         // GET: ImageSubCategory
+        [SessionExpireFilter]
         public ActionResult Index(long id)
         {
             ViewBag.CategoryId = id;
@@ -25,12 +27,14 @@ namespace Image.Controllers
         }
 
         // GET: ImageSubCategory/Details/5
+        [SessionExpireFilter]
         public ActionResult Details(int id)
         {
             return View();
         }
 
         // GET: ImageSubCategory/Create
+        [SessionExpireFilter]
         public ActionResult Create(long id)
         {
             ViewBag.CategoryId = id;
@@ -40,6 +44,7 @@ namespace Image.Controllers
         // POST: ImageSubCategory/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [SessionExpireFilter]
         public ActionResult Create(ImageSubCategory imageSubCategory,IFormCollection collection)
         {
             try
@@ -67,6 +72,7 @@ namespace Image.Controllers
         }
 
         // GET: ImageSubCategory/Edit/5
+        [SessionExpireFilter]
         public ActionResult Edit(long id)
         {
             return View(_databaseConnection.ImageSubCategories.Find(id));
@@ -75,6 +81,7 @@ namespace Image.Controllers
         // POST: ImageSubCategory/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [SessionExpireFilter]
         public ActionResult Edit(ImageSubCategory imageSubCategory, IFormCollection collection)
         {
             try
@@ -97,7 +104,7 @@ namespace Image.Controllers
                 return View();
             }
         }
-
+        [SessionExpireFilter]
         public ActionResult Delete(IFormCollection collection)
         {
             try

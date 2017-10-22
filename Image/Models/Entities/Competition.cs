@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -24,5 +25,8 @@ namespace Image.Models.Entities
         public long? AppUserId { get; set; }
         [ForeignKey("AppUserId")]
         public AppUser AppUser { get; set; }
+        public IEnumerable<CompetitionCategory> CompetitionCategories { get; set; }
+        public IEnumerable<CompetitionVote> CompetitionVotes { get; set; }
+        public IEnumerable<CompetitionUpload> CompetitionUploads { get; set; }
     }
 }

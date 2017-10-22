@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using Image.Models.DataBaseConnections;
+using Image.Models.Encryption;
 using Image.Models.Entities;
 using Image.Models.Enum;
 using Microsoft.AspNetCore.Http;
@@ -18,18 +19,22 @@ namespace Image.Controllers
             _databaseConnection = databaseConnection;
         }
         // GET: ImageCategory
+        [SessionExpireFilter]
         public ActionResult Index()
         {
-            return View(_databaseConnection.Locations.ToList());
+            var signedInUserId = HttpContext.Session.GetInt32("userId");
+            return View(_databaseConnection.Locations.Where(n=>n.CreatedBy == signedInUserId).ToList());
         }
 
         // GET: ImageCategory/Details/5
+        [SessionExpireFilter]
         public ActionResult Details(int id)
         {
             return View(_databaseConnection.Locations.Find(id));
         }
 
         // GET: ImageCategory/Create
+        [SessionExpireFilter]
         public ActionResult Create()
         {
             return View();
@@ -38,6 +43,7 @@ namespace Image.Controllers
         // POST: ImageCategory/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [SessionExpireFilter]
         public ActionResult Create(Location location,  IFormCollection collection)
         {
             try
@@ -63,6 +69,7 @@ namespace Image.Controllers
         }
 
         // GET: ImageCategory/Edit/5
+        [SessionExpireFilter]
         public ActionResult Edit(int id)
         {
             return View();
@@ -71,6 +78,7 @@ namespace Image.Controllers
         // POST: ImageCategory/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [SessionExpireFilter]
         public ActionResult Edit(Location location,IFormCollection collection)
         {
             try
@@ -95,6 +103,7 @@ namespace Image.Controllers
         }
 
         // GET: ImageCategory/Delete/5
+        [SessionExpireFilter]
         public ActionResult Delete(IFormCollection collection)
         {
             var id = Convert.ToInt64(collection["LocationId"]);

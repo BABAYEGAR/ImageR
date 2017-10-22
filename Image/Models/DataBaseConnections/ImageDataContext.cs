@@ -38,8 +38,11 @@ namespace Image.Models.DataBaseConnections
         public virtual DbSet<PhotographerCategory> PhotographerCategories { get; set; }
         public virtual DbSet<Camera> Cameras { get; set; }
         public virtual DbSet<Location> Locations { get; set; }
+        public virtual DbSet<CompetitionCategory> CompetitionCategories { get; set; }
+        public virtual DbSet<PhotographerCategoryMapping> PhotographerCategoryMappings { get; set; }
+        public virtual DbSet<CompetitionUpload> CompetitionUploads { get; set; }
 
-
+        public virtual DbSet<AppUserAccessKey> AccessKeys { get; set; }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder.UseSqlServer(@"Server=.;Database=Image;Trusted_Connection=True;");

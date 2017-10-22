@@ -1,0 +1,106 @@
+﻿@using Image.Models.Entities
+@using Microsoft.AspNetCore.Http
+@model List<PhotographerCategory>
+@{
+    Layout = "Layout/Dashboard/_LayoutTable";
+    ViewBag.PageTitle = "List of Photographer Categories";
+    ViewBag.PageHeader = "Manage My Photographer Categories";
+    ViewBag.FormHeader = "Select and Remove the below listed photographer categories";
+    List<PhotographerCategoryMapping> mapping = ViewBag.Mapping;
+    var signedInUserId = Context.Session.GetInt32("userId");
+}
+<div class="modal fade" id="myModal1" tabindex="-1" role="dialog" aria-labelledby="myModalLabel1">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title" id="myModalLabel1">Delete Category</h4>
+            </div>@using (Html.BeginForm("Delete", "PhotographerCategory"))
+                  {
+                      <input type="hidden" id="id" name="PhtographerCategoryId" />
+                      <div class="modal-body">
+
+                          @Html.AntiForgeryToken()
+                          <p>
+                              Are you sure you want to remove the Category?
+                          </p>
+
+                      </div>
+                      <div class="modal-footer">
+                          <input type="submit" value="Delete" class="btn btn-danger pull-right fa fa-trash" />
+                          <input type="button" data-dismiss="modal" value="Cancel" class="btn btn-default pull-left" />
+                      </div>
+                  }
+        </div>
+    </div>
+</div>
+
+@using (Html.BeginForm("MapPhotographyCategory", "PhotographerCategory", FormMethod.Post))
+{
+    @Html.AntiForgeryToken()
+    <div class="form-group">
+        <input type="submit" id="sumbitForm" value="Add Categories" class="btn btn-success pull-left icon-plus"/>
+    </div>
+    <br/>
+    <br/>
+    <table id="example-2" cellspacing="0" width="100%" class="table table-striped table-bordered">
+        <thead>
+
+        <tr>
+            <th class="text-center">
+                <div class="checkbox-custom">
+                    <input id="checkAll" type="checkbox" value="option1">
+                    <label for="checkAll" class="pl-0">&nbsp;</label>
+                </div>
+            </th>
+            <th>Name</th>
+            <th>Action</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var item in Model)
+        {
+            var mappingExist = mapping.SingleOrDefault(n => n.PhotographerCategoryId == item.PhotographerCategoryId && n.AppUserId == signedInUserId);
+            <tr>
+                <td class="text-center">
+                        <input name="table_records" class="pl-0" type="checkbox" value="@item.PhotographerCategoryId">
+                </td>
+                <td>@item.Name</td>
+                <td>
+                    <div class="btn-group">
+                        <button class="btn btn-xs btn-primary dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false">
+                            Actions
+                            <i class="fa fa-angle-down"></i>
+                        </button>
+                        <ul class="dropdown-menu pull-right" role="menu">
+                            @if (mappingExist != null)
+                            {
+                                <li>
+                                    <a href="#" data-toggle="tooltip" title="Delete the Category" data-id="@item.PhotographerCategoryId" data-toggle="modal" class="loadModal3">
+                                        <i class="icon-trash"></i> Remove
+                                    </a>
+                                </li>
+                            }
+                        </ul>
+                    </div>
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}
+@section scripts{ 
+    <script type="text/javascript" src="~/Dashboard/build/js/page-content/e-commerce/product-list.js"></script>
+}
+@section Functions {
+    <script>
+        $(document).ready(function() {
+            $(".loadModal3").click(function() { // Click to only happen on announce links
+                $("#id").val($(this).data('id'));
+                $('#myModal1').modal('show');
+            });
+        });
+    </script>
+}

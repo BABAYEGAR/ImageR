@@ -41,16 +41,14 @@ namespace Image.Models.Entities
 
         [DisplayName("Profile Picture")]
         public string ProfilePicture { get; set; }
+        public string Rank { get; set; }
+        public string BackgroundPicture { get; set; }
         public string Website { get; set; }
         [Display(Name = "Date Of Birth")]
         public DateTime? DateOfBirth { get; set; }
         public string Biography { get; set; }
         [Required]
         public string Username { get; set; }
-        [Display(Name = "Photographer Category")]
-        public long? PhotographerCategoryId { get; set; }
-        [ForeignKey("PhotographerCategoryId")]
-        public PhotographerCategory PhotographerCategory { get; set; }
         public IEnumerable<Image> Images { get; set; }
         public IEnumerable<Cart> Carts { get; set; }
         public IEnumerable<Order> Orders { get; set; }
@@ -61,5 +59,7 @@ namespace Image.Models.Entities
         public IEnumerable<CompetitionVote> CompetitionVotes { get; set; }
         public IEnumerable<ImageComment> ImageComments { get; set; }
         public IEnumerable<SystemNotification> SystemNotifications { get; set; }
+        public IEnumerable<PhotographerCategoryMapping> PhotographerCategoryMappings { get; set; }
+        public IEnumerable<CompetitionUpload> CompetitionUploads { get; set; }
     }
 }

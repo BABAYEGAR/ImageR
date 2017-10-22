@@ -21,6 +21,8 @@ namespace Image.Models.Entities
         public bool ManagePackages { get; set; }
         [DisplayName("Purchase Images")]
         public bool PurchaseImage { get; set; }
+        [DisplayName("Manage Images")]
+        public bool ManageImages { get; set; }
         [DisplayName("Manage Image Categories")]
         public bool ManageImageCategory { get; set; }
         [DisplayName("Manage Photographer Categories")]
@@ -34,6 +36,5 @@ namespace Image.Models.Entities
         [DisplayName("Manage Locations")]
         public bool ManageLocations { get; set; }
         public IEnumerable<AppUser> AppUsers { get; set; }
-        public IEnumerable<UserSubscription> UserSubscriptions { get; set; }
     }
 }
