@@ -291,7 +291,7 @@ namespace Image.Controllers
 
             var link = _hostingEnv.WebRootPath;
             var mail = new Mailer();
-            mail.SendNewUserEmail(link + "\\email-templates\\NewUser.html", appUser, role, accessKey);
+            mail.SendNewUserEmail(link + "\\EmailTemplates\\NewUser.html", appUser, role, accessKey);
             //display notification
             TempData["display"] = "You have successfully registered to SOS Photo Studio, Check your email to confirm your account!";
             TempData["notificationtype"] = NotificationType.Success.ToString();

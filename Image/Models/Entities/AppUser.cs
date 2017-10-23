@@ -27,8 +27,9 @@ namespace Image.Models.Entities
         public string Address { get; set; }
         [Required]
         public string Password { get; set; }
-
         [Required]
+        [Compare("Password")]
+        [Display(Name = "Confirm Password")]
         public string ConfirmPassword { get; set; }
         [Required]
         public long? RoleId { get; set; }
