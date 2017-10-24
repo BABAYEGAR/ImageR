@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using CloudinaryDotNet;
 using CloudinaryDotNet.Actions;
@@ -9,13 +10,16 @@ using Image.Models.Entities;
 using Image.Models.Enum;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 
 namespace Image.Controllers
 {
     public class CompetitionController : Controller
     {
         private readonly ImageDataContext _databaseConnection;
+        Role _userRole;
 
         public CompetitionController(ImageDataContext databaseConnection)
         {
@@ -26,12 +30,62 @@ namespace Image.Controllers
         [SessionExpireFilter]
         public ActionResult Index()
         {
-            return View(_databaseConnection.Competition.ToList());
+            var signedInUserId = HttpContext.Session.GetInt32("userId");
+            List<Competition> competitions = new List<Competition>();
+            if (HttpContext.Session.GetString("Role") != null)
+            {
+                var roleString = HttpContext.Session.GetString("Role");
+                _userRole = JsonConvert.DeserializeObject<Role>(roleString);
+            }
+            if (_userRole.ParticipateCompetition)
+            {
+                            competitions = (from a in _databaseConnection.Competition
+                join b in _databaseConnection.CompetitionCategories
+                on a.CompetitionId equals b.CompetitionId
+                join c in _databaseConnection.PhotographerCategoryMappings on b.PhotographerCategoryId
+                equals c.PhotographerCategoryId
+                where c.AppUserId == signedInUserId
+                select a).ToList();
+            }
+            if (_userRole.ManageCompetition)
+            {
+                competitions = _databaseConnection.Competition.ToList();
+            }
+            ViewBag.Role = _userRole;
+            return View(competitions);
         }
-
+        [SessionExpireFilter]
+        public ActionResult CompetitionUpload(long? id)
+        {
+            var signedInUserId = HttpContext.Session.GetInt32("userId");
+            List<CompetitionUpload> competitionUploads = new List<CompetitionUpload>();
+            if (HttpContext.Session.GetString("Role") != null)
+            {
+                var roleString = HttpContext.Session.GetString("Role");
+                _userRole = JsonConvert.DeserializeObject<Role>(roleString);
+            }
+        
+            if (_userRole.ManageCompetition)
+            {
+                competitionUploads = id != null ? _databaseConnection.CompetitionUploads
+                    .Include(n=>n.AppUser).Include(n=>n.Competition).Include(n=>n.Location).Include(n=>n.Camera)
+                    .Where(n=>n.CompetitionId == id).ToList() : _databaseConnection.CompetitionUploads.Include(n => n.AppUser)
+                    .Include(n => n.Competition).Include(n => n.Location).Include(n => n.Camera).ToList();
+            }
+            if (_userRole.ParticipateCompetition)
+            {
+                competitionUploads = id != null ? _databaseConnection.CompetitionUploads.Include(n => n.AppUser).Include(n => n.Competition).Include(n => n.Location).Include(n => n.Camera)
+                    .Where(n => n.AppUserId == signedInUserId && n.CompetitionId == id).ToList() : 
+                    _databaseConnection.CompetitionUploads.Include(n => n.AppUser).Include(n => n.Competition).Include(n => n.Location).Include(n => n.Camera)
+                    .Where(n => n.AppUserId == signedInUserId)
+                    .ToList();
+            }
+            ViewBag.Role = _userRole;
+            return View(competitionUploads);
+        }
         // GET: Package/Details/5
         [SessionExpireFilter]
-        public ActionResult Details(int id)
+        public ActionResult Details(long id)
         {
             return View();
         }
@@ -40,6 +94,7 @@ namespace Image.Controllers
         [SessionExpireFilter]
         public ActionResult Create()
         {
+         
             return View();
         }
 
@@ -121,8 +176,26 @@ namespace Image.Controllers
                             where c.PhotographerCategoryId == b.PhotographerCategoryId
                             select a).ToList();
 
+                        foreach (var item in users)
+                        {
+                            var notification = new SystemNotification
+                            {
+                                AppUserId = item.AppUserId,
+                                ControllerId = competitionId,
+                                Read = false,
+                                Message = "Check out the new Phtotogragh Category Competiton",
+                                DateCreated = DateTime.Now,
+                                DateLastModified = DateTime.Now,
+                                LastModifiedBy = signedInUserId,
+                                CreatedBy = signedInUserId
+                            };
+                            _databaseConnection.SystemNotifications.Add(notification);
+                            _databaseConnection.SaveChanges();
+                        }
+
                         TempData["display"] = "you have succesfully added the category(s) to the competition!";
                         TempData["notificationtype"] = NotificationType.Success.ToString();
+                        return RedirectToAction("Index", "Competition");
                     }
                 }
             }
@@ -173,8 +246,17 @@ namespace Image.Controllers
 
         // GET: Image/Create
         [SessionExpireFilter]
-        public ActionResult UploadImage()
+        public ActionResult UploadImage(long id)
         {
+            // TODO: Add insert logic here
+            var signedInUserId = HttpContext.Session.GetInt32("userId");
+
+            ViewBag.Competition = _databaseConnection.Competition.Find(id);
+            //view bags for lists
+            ViewBag.CameraId = new SelectList(_databaseConnection.Cameras.Where(n => n.CreatedBy == signedInUserId).ToList(), "CameraId",
+                "Name");
+            ViewBag.LocationId = new SelectList(_databaseConnection.Locations.Where(n => n.CreatedBy == signedInUserId).ToList(), "LocationId",
+                "Name");
             return View();
         }
 
@@ -191,12 +273,12 @@ namespace Image.Controllers
                     // TODO: Add insert logic here
                     var signedInUserId = HttpContext.Session.GetInt32("userId");
                     competitionUpload.AppUserId = signedInUserId;
+                    competitionUpload.CompetitionId = Convert.ToInt64(collection["CompetitionId"]);
                     competitionUpload.DateCreated = DateTime.Now;
                     competitionUpload.DateLastModified = DateTime.Now;
                     competitionUpload.CreatedBy = signedInUserId;
                     competitionUpload.LastModifiedBy = signedInUserId;
                     competitionUpload.FileName = DateTime.Now.ToFileTime().ToString();
-
 
                     //upload image via Cloudinary API Call
                     var account = new Account(
@@ -219,11 +301,18 @@ namespace Image.Controllers
                     }
 
                     //display notification
-                    TempData["display"] = "You have successfully uploaded a an image for the competition!";
+                    TempData["display"] = "You have successfully uploaded an image for the competition!";
                     TempData["notificationtype"] = NotificationType.Success.ToString();
                     return RedirectToAction("Index");
                 }
                 {
+                    // TODO: Add insert logic here
+                    var signedInUserId = HttpContext.Session.GetInt32("userId");
+                    ViewBag.CameraId = new SelectList(_databaseConnection.Cameras.Where(n => n.CreatedBy == signedInUserId).ToList(), "CameraId",
+                        "Name", competitionUpload.CameraId);
+                    ViewBag.LocationId = new SelectList(_databaseConnection.Locations.Where(n => n.CreatedBy == signedInUserId).ToList(), "LocationId",
+                        "Name", competitionUpload.LocationId);
+                    ViewBag.Competition = _databaseConnection.Competition.Find(competitionUpload.CompetitionId);
                     //display notification
                     TempData["display"] =
                         "No Image was Selected or selected image violate the Upload Size Rule of 15MB!";
@@ -233,11 +322,36 @@ namespace Image.Controllers
             }
             catch (Exception ex)
             {
+                // TODO: Add insert logic here
+                var signedInUserId = HttpContext.Session.GetInt32("userId");
+                ViewBag.CameraId = new SelectList(_databaseConnection.Cameras.Where(n => n.CreatedBy == signedInUserId).ToList(), "CameraId",
+                    "Name",competitionUpload.CameraId);
+                ViewBag.LocationId = new SelectList(_databaseConnection.Locations.Where(n => n.CreatedBy == signedInUserId).ToList(), "LocationId",
+                    "Name", competitionUpload.LocationId);
+                ViewBag.Competition = _databaseConnection.Competition.Find(competitionUpload.CompetitionId);
                 //display notification
                 TempData["display"] = "There was an issue uploading the image, Try Again!";
                 TempData["notificationtype"] = NotificationType.Error.ToString();
                 return View(competitionUpload);
             }
+        }
+
+        [SessionExpireFilter]
+        public ActionResult SelectWinner(long? competitionId,long userId)
+        {
+            var signedInUserId = HttpContext.Session.GetInt32("userId");
+            var competition = _databaseConnection.Competition.Find(competitionId);
+            competition.AppUserId = userId;
+            competition.Status = CompetitionStatus.Closed.ToString();
+            competition.DateLastModified = DateTime.Now;
+            competition.LastModifiedBy = signedInUserId;
+            _databaseConnection.Entry(competition).State = EntityState.Modified;
+            _databaseConnection.SaveChanges();
+
+            //display notification
+            TempData["display"] = "You have successfully selected the winner!";
+            TempData["notificationtype"] = NotificationType.Success.ToString();
+            return RedirectToAction("CompetitionUploads",new{id = competitionId});
         }
 
         [SessionExpireFilter]

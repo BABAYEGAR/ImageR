@@ -173,25 +173,4 @@
 
 
     </script>
-    <!-- jQuery read image data and show preview code -->
-    <script type="text/javascript">
-        $(document).ready(function () {
-            //Image file input change event
-            $("#input-5").change(function () {
-                readImageData(this);//Call image read and render function
-            });
-        });
-
-        function readImageData(imgData) {
-            if (imgData.files && imgData.files[0]) {
-                var readerObj = new FileReader();
-
-                readerObj.onload = function (element) {
-                    $('#avatar').attr('src', element.target.result);
-                }
-
-                readerObj.readAsDataURL(imgData.files[0]);
-            }
-        }
-    </script>
 }

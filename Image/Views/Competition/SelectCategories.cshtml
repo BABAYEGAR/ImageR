@@ -15,8 +15,8 @@
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
-                <h4 class="modal-title" id="myModalLabel1">Delete Category</h4>
-            </div>@using (Html.BeginForm("Delete", "PhotographerCategory"))
+                <h4 class="modal-title" id="myModalLabel1">Remove Category</h4>
+            </div>@using (Html.BeginForm("RemovePhographerCategoryMapping", "Competition"))
                   {
                       @Html.Hidden("CompetitionId", competitionId)
                       <input type="hidden" id="id" name="CategoryId"/>
@@ -24,7 +24,7 @@
 
                           @Html.AntiForgeryToken()
                           <p>
-                              Are you sure you want to delete the Category?
+                              Are you sure you want to remove the Category?
                           </p>
 
                       </div>
@@ -43,7 +43,7 @@
     <input type="hidden" id="id" name="PhtographerCategoryId" />
     @Html.AntiForgeryToken()
     <div class="form-group">
-            <input type="submit" id="sumbitForm" value="Add Categories" class="btn btn-success pull-left icon-plus"/>
+        <input type="submit" id="sumbitForm" value="Add Categories" class="btn btn-success pull-left fa fa-plus" />
     </div>
     <br/>
     <br/>
@@ -66,12 +66,23 @@
         {
             var mappingExist = mapping.SingleOrDefault(n => n.PhotographerCategoryId == item.PhotographerCategoryId && n.CompetitionId == competitionId);
             <tr>
-                <td class="text-center">
-                    <div class="checkbox-custom">
-                        <input id="product-18" name="table_records" type="checkbox" value="@item.PhotographerCategoryId">
-                        <label for="product-18" class="pl-0">&nbsp;</label>
-                    </div>
-                </td>
+                @if (mappingExist != null)
+                {
+                    <td class="text-center">
+                        <a href="#" data-toggle="tooltip" style="color: red" ; title="Delete the Category" data-id="@item.PhotographerCategoryId" data-toggle="modal" class="loadModal3">
+                            <i class="fa fa-trash fa-2x"></i>
+                        </a>
+                    </td>
+                }
+                else
+                {
+                    <td class="text-center">
+                        <div class="checkbox-custom">
+                            <input name="table_records" id="@item.PhotographerCategoryId" type="checkbox" value="@item.PhotographerCategoryId">
+                            <label for="@item.PhotographerCategoryId" class="pl-0">&nbsp;</label>
+                        </div>
+                    </td>
+                }
                 <td>@item.Name</td>
                 <td>
                     <div class="btn-group">
@@ -80,14 +91,7 @@
                             <i class="fa fa-angle-down"></i>
                         </button>
                         <ul class="dropdown-menu pull-right" role="menu">
-                            @if (mappingExist != null)
-                            {
-                                <li>
-                                    <a href="#" data-toggle="tooltip" title="Delete the Category" data-id="@item.PhotographerCategoryId" data-toggle="modal" class="loadModal3">
-                                        <i class="icon-trash"></i> Remove
-                                    </a>
-                                </li>
-                            }
+
                         </ul>
                     </div>
                 </td>
@@ -103,6 +107,12 @@
                 $("#id").val($(this).data('id'));
                 $('#myModal1').modal('show');
             });
+        });
+    </script>
+    <script>
+        $('#checkAll').change(function() {
+            var checkboxes = $(this).closest('form').find(':checkbox');
+            checkboxes.prop('checked', $(this).is(':checked'));
         });
     </script>
 }

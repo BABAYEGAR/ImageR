@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
@@ -18,7 +19,17 @@ namespace Image.Models.Entities
         public Competition Competition { get; set; }
         public string FilePath { get; set; }
         public string FileName { get; set; }
+        public string Title { get; set; }
+        public string Inspiration { get; set; }
         public string Description { get; set; }
+        [Display(Name = "Camera")]
+        public long? CameraId { get; set; }
+        [ForeignKey("CameraId")]
+        public Camera Camera { get; set; }
+        [Display(Name = "Location")]
+        public long? LocationId { get; set; }
+        [ForeignKey("LocationId")]
+        public Location Location { get; set; }
 
     }
 }

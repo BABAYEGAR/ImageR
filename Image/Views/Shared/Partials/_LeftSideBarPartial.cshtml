@@ -97,6 +97,9 @@
                     <li>
                         <a href="@Url.Action("Index", "Competition")">Competitions</a>
                     </li>
+                    <li>
+                        <a href="@Url.Action("CompetitionUpload", "Competition")">Competition Uploads</a>
+                    </li>
                 </ul>
             </li>
         }
@@ -111,6 +114,7 @@
                 </ul>
             </li>
         }
+
         @if (userRole != null && userRole.ManageOrders)
         {
             <li class="panel">
@@ -118,6 +122,31 @@
                 <ul id="collapse7" class="list-unstyled collapse">
                     <li>
                         <a href="product-list.html">Product list</a>
+                    </li>
+                </ul>
+            </li>
+        }
+        @if (userRole != null && userRole.UploadImage)
+        {
+            <li class="panel">
+                <a role="button" data-toggle="collapse" data-parent=".navigation" href="#collapse9" aria-expanded="false" aria-controls="collapse9" class="collapsed"><i class="ti-file"></i> My Categories @*<span class="label label-outline label-success">New</span>*@</a>
+                <ul id="collapse9" class="list-unstyled collapse">
+                    <li>
+                        <a href="@Url.Action("SelectCategories", "PhotographerCategory")">Categories </a>
+                    </li>
+                </ul>
+            </li>
+        }
+        @if (userRole != null && userRole.ParticipateCompetition)
+        {
+            <li class="panel">
+                <a role="button" data-toggle="collapse" data-parent=".navigation" href="#collapse10" aria-expanded="false" aria-controls="collapse10" class="collapsed"><i class="ti-crown"></i> My Competitions @*<span class="label label-outline label-success">New</span>*@</a>
+                <ul id="collapse10" class="list-unstyled collapse">
+                    <li>
+                        <a href="@Url.Action("Index", "Competition")">Competitions </a>
+                    </li>
+                    <li>
+                        <a href="@Url.Action("CompetitionUpload", "Competition")">Competition Uploads</a>
                     </li>
                 </ul>
             </li>

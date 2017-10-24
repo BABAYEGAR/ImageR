@@ -17,6 +17,8 @@ namespace Image.Models.Entities
         public bool UploadImage { get; set; }
         [DisplayName("Manage Competitions")]
         public bool ManageCompetition { get; set; }
+        [DisplayName("Participate In Competitions")]
+        public bool ParticipateCompetition { get; set; }
         [DisplayName("Manage Subscription Pacakges")]
         public bool ManagePackages { get; set; }
         [DisplayName("Purchase Images")]

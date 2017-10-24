@@ -1,9 +1,11 @@
-﻿@model List<Image.Models.Entities.Competition>
+﻿@using Image.Models.Entities
+@model List<Competition>
 @{
     Layout = "Layout/Dashboard/_LayoutTable";
     ViewBag.PageTitle = "List of Competitions";
     ViewBag.PageHeader = "Manage Competitions";
     ViewBag.FormHeader = "List of Competitions";
+    Role userRole = ViewBag.Role;
 }
 <div class="modal fade" id="myModal1" tabindex="-1" role="dialog" aria-labelledby="myModalLabel1">
     <div class="modal-dialog" role="document">
@@ -63,21 +65,41 @@
                         <i class="fa fa-angle-down"></i>
                     </button>
                     <ul class="dropdown-menu pull-right" role="menu">
+                        @if (userRole.ManageCompetition)
+                        {
+
+                            <li>
+                                <a href="@Url.Action("Edit", "Package", new {id = item.CompetitionId})" data-toggle="tooltip" title="Edit the Competition">
+                                    <i class="icon-pencil"></i> Edit
+                                </a>
+                            </li>
+                            <li>
+                                <a href="@Url.Action("SelectCategories", "Competition", new {id = item.CompetitionId})" data-toggle="tooltip" title="Select the Competition Categories">
+                                    <i class="icon-pencil"></i> Select Categories
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#" data-toggle="tooltip" title="Delete the Competition" data-id="@item.CompetitionId" data-toggle="modal" class="loadModal3">
+                                    <i class="icon-trash"></i> Delete
+                                </a>
+                            </li>
+                        }
+                    @if (userRole.ParticipateCompetition)
+                    {
+
                         <li>
-                            <a href="@Url.Action("Edit", "Package", new {id = item.CompetitionId})" data-toggle="tooltip" title="Edit the Competition">
-                                <i class="icon-pencil"></i> Edit
+                            <a href="@Url.Action("UploadImage", "Competition", new {id = item.CompetitionId})" data-toggle="tooltip" title="View Details and Upload Competition Image">
+                                <i class="icon-pencil"></i> View Details & Upload
                             </a>
                         </li>
+                    }
+                    @if (item.CompetitionUploads.ToList().Count > 0)
+                    {
                         <li>
-                            <a href="@Url.Action("SelectCategories", "Competition", new {id = item.CompetitionId})" data-toggle="tooltip" title="Select the Competition Categories">
-                                <i class="icon-pencil"></i> Select Categories
-                            </a>
+                            <a href="@Url.Action("CompetitionUploads", "Competition",new{id = item.CompetitionId})">Competition Uploads</a>
                         </li>
-                        <li>
-                            <a href="#" data-toggle="tooltip" title="Delete the Competition" data-id="@item.CompetitionId" data-toggle="modal" class="loadModal3">
-                                <i class="icon-trash"></i> Delete
-                            </a>
-                        </li>
+                    }
+                     
                     </ul>
                 </div>
             </td>

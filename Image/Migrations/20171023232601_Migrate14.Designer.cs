@@ -11,9 +11,10 @@ using System;
 namespace Image.Migrations
 {
     [DbContext(typeof(ImageDataContext))]
-    partial class ImageDataContextModelSnapshot : ModelSnapshot
+    [Migration("20171023232601_Migrate14")]
+    partial class Migrate14
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -261,8 +262,6 @@ namespace Image.Migrations
 
                     b.Property<long?>("AppUserId");
 
-                    b.Property<long?>("CameraId");
-
                     b.Property<long>("CompetitionId");
 
                     b.Property<long?>("CreatedBy");
@@ -277,23 +276,13 @@ namespace Image.Migrations
 
                     b.Property<string>("FilePath");
 
-                    b.Property<string>("Inspiration");
-
                     b.Property<long?>("LastModifiedBy");
-
-                    b.Property<long?>("LocationId");
-
-                    b.Property<string>("Title");
 
                     b.HasKey("CompetitionUploadId");
 
                     b.HasIndex("AppUserId");
 
-                    b.HasIndex("CameraId");
-
                     b.HasIndex("CompetitionId");
-
-                    b.HasIndex("LocationId");
 
                     b.ToTable("CompetitionUploads");
                 });
@@ -902,18 +891,10 @@ namespace Image.Migrations
                         .WithMany("CompetitionUploads")
                         .HasForeignKey("AppUserId");
 
-                    b.HasOne("Image.Models.Entities.Camera", "Camera")
-                        .WithMany("CompetitionUploads")
-                        .HasForeignKey("CameraId");
-
                     b.HasOne("Image.Models.Entities.Competition", "Competition")
                         .WithMany("CompetitionUploads")
                         .HasForeignKey("CompetitionId")
                         .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("Image.Models.Entities.Location", "Location")
-                        .WithMany("CompetitionUploads")
-                        .HasForeignKey("LocationId");
                 });
 
             modelBuilder.Entity("Image.Models.Entities.CompetitionVote", b =>

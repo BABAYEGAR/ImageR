@@ -9,5 +9,6 @@ namespace Image.Models.Entities
         [Required]
         public string Name { get; set; }
         public IEnumerable<Image> Images { get; set; }
+        public IEnumerable<CompetitionUpload> CompetitionUploads { get; set; }
     }
 }

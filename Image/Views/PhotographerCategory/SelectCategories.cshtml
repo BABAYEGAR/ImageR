@@ -16,8 +16,8 @@
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
-                <h4 class="modal-title" id="myModalLabel1">Delete Category</h4>
-            </div>@using (Html.BeginForm("Delete", "PhotographerCategory"))
+                <h4 class="modal-title" id="myModalLabel1">Remove Category</h4>
+            </div>@using (Html.BeginForm("RemovePhographerCategoryMapping", "PhotographerCategory"))
                   {
                       <input type="hidden" id="id" name="PhtographerCategoryId" />
                       <div class="modal-body">
@@ -41,7 +41,7 @@
 {
     @Html.AntiForgeryToken()
     <div class="form-group">
-        <input type="submit" id="sumbitForm" value="Add Categories" class="btn btn-success pull-left icon-plus"/>
+        <input type="submit" id="sumbitForm" value="Add Categories" class="btn btn-success pull-left fa fa-plus"/>
     </div>
     <br/>
     <br/>
@@ -56,7 +56,6 @@
                 </div>
             </th>
             <th>Name</th>
-            <th>Action</th>
         </tr>
         </thead>
         <tbody>
@@ -64,28 +63,25 @@
         {
             var mappingExist = mapping.SingleOrDefault(n => n.PhotographerCategoryId == item.PhotographerCategoryId && n.AppUserId == signedInUserId);
             <tr>
-                <td class="text-center">
-                        <input name="table_records" class="pl-0" type="checkbox" value="@item.PhotographerCategoryId">
-                </td>
+                @if (mappingExist != null)
+                {
+                    <td class="text-center">
+                        <a href="#" data-toggle="tooltip" style="color: red"; title="Delete the Category" data-id="@item.PhotographerCategoryId" data-toggle="modal" class="loadModal3">
+                            <i class="fa fa-trash fa-2x"></i> 
+                        </a>
+                    </td>
+                }
+                else
+                {
+                    <td class="text-center">
+                        <div class="checkbox-custom">
+                            <input name="table_records" id="@item.PhotographerCategoryId" type="checkbox" value="@item.PhotographerCategoryId">
+                            <label for="@item.PhotographerCategoryId" class="pl-0">&nbsp;</label>
+                        </div>
+                    </td> 
+                }
+
                 <td>@item.Name</td>
-                <td>
-                    <div class="btn-group">
-                        <button class="btn btn-xs btn-primary dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false">
-                            Actions
-                            <i class="fa fa-angle-down"></i>
-                        </button>
-                        <ul class="dropdown-menu pull-right" role="menu">
-                            @if (mappingExist != null)
-                            {
-                                <li>
-                                    <a href="#" data-toggle="tooltip" title="Delete the Category" data-id="@item.PhotographerCategoryId" data-toggle="modal" class="loadModal3">
-                                        <i class="icon-trash"></i> Remove
-                                    </a>
-                                </li>
-                            }
-                        </ul>
-                    </div>
-                </td>
             </tr>
         }
         </tbody>
@@ -101,6 +97,12 @@
                 $("#id").val($(this).data('id'));
                 $('#myModal1').modal('show');
             });
+        });
+    </script>
+    <script>
+        $('#checkAll').change(function() {
+            var checkboxes = $(this).closest('form').find(':checkbox');
+            checkboxes.prop('checked', $(this).is(':checked'));
         });
     </script>
 }

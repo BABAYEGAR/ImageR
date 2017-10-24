@@ -109,7 +109,7 @@ namespace Image.Controllers
 
                         TempData["display"] = "you have succesfully added the category(s) to the profile!";
                         TempData["notificationtype"] = NotificationType.Success.ToString();
-                        return RedirectToAction("Dashboard", "Home");
+                        return RedirectToAction("SelectCategories", "PhotographerCategory");
                     }
                 }
             }
@@ -117,9 +117,9 @@ namespace Image.Controllers
             {
                 TempData["display"] = "no category has been selected!";
                 TempData["notificationtype"] = NotificationType.Error.ToString();
-                return RedirectToAction("Index", "Competition");
+                return RedirectToAction("SelectCategories", "PhotographerCategory");
             }
-            return RedirectToAction("Dashboard", "Home");
+            return RedirectToAction("SelectCategories", "PhotographerCategory");
         }
 
         // GET: ImageCategory/Edit/5

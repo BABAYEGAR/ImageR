@@ -43,6 +43,7 @@ namespace Image.Models.DataBaseConnections
         public virtual DbSet<CompetitionUpload> CompetitionUploads { get; set; }
 
         public virtual DbSet<AppUserAccessKey> AccessKeys { get; set; }
+        public virtual DbSet<SystemNotification> SystemNotifications { get; set; }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder.UseSqlServer(@"Server=.;Database=Image;Trusted_Connection=True;");
