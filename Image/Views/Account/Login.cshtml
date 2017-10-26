@@ -10,8 +10,8 @@
     @Html.ValidationSummary(true, "", new { @class = "text-danger" })
     <div class="form-group">
         <div class="col-xs-12">
-            @Html.EditorFor(model => model.Username, new { htmlAttributes = new { @class = "form-control", placeholder = "Username / Email" } })
-            @Html.ValidationMessageFor(model => model.Username, "", new { @class = "text-danger" })
+            @Html.EditorFor(model => model.LoginName, new { htmlAttributes = new { @class = "form-control", placeholder = "Username / Email" } })
+            @Html.ValidationMessageFor(model => model.LoginName, "", new { @class = "text-danger" })
         </div>
     </div>
     <div class="form-group">
@@ -33,5 +33,5 @@
 }
 <hr>
 <div class="clearfix">
-    <p class="text-muted mb-0 pull-left">Want new account?</p><a href="@Url.Action("Register")" class="inline-block pull-right">Sign Up</a>
+    <p class="text-muted mb-0 pull-left">Want new account?</p><a href="@Url.Action("Register")" class="inline-block pull-right">Sign Up (Free Package)</a>
 </div>

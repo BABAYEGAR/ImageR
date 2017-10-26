@@ -3,7 +3,7 @@
     Layout = "Layout/Dashboard/_LayoutTable";
     ViewBag.PageTitle = "List of Image Locations";
     ViewBag.PageHeader = "Manage Image Locations";
-    ViewBag.FormHeader = "List of Image Locations";
+ 
 }
 <div class="modal fade" id="myModal1" tabindex="-1" role="dialog" aria-labelledby="myModalLabel1">
     <div class="modal-dialog" role="document">
@@ -64,7 +64,12 @@
                     </button>
                     <ul class="dropdown-menu pull-right" role="menu">
                         <li>
-                            <a href="@Url.Action("Edit", "ImageCategory", new {id = item.LocationId})" data-toggle="tooltip" title="Edit the Location">
+                            <a href="@Url.Action("Image", "Location", new {id = item.LocationId})" data-toggle="tooltip" title="View Images at this Location">
+                                <i class="icon-pencil"></i> View Images
+                            </a>
+                        </li>
+                        <li>
+                            <a href="@Url.Action("Edit", "Location", new {id = item.LocationId})" data-toggle="tooltip" title="Edit the Location">
                                 <i class="icon-pencil"></i> Edit
                             </a>
                         </li>

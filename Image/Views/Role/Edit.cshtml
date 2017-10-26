@@ -52,6 +52,11 @@
     <div class="form-group">
         <label>Photo Studio Permissions</label>
         <div class="">
+            <label >
+                @Html.LabelFor(model => model.ManageImages)
+                @Html.CheckBoxFor(model => model.ManageImages)
+                <span></span>
+            </label>
             <label>
                 @Html.LabelFor(model => model.UploadImage)
                 @Html.CheckBoxFor(model => model.UploadImage)

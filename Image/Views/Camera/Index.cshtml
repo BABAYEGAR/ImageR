@@ -64,12 +64,17 @@
                     </button>
                     <ul class="dropdown-menu pull-right" role="menu">
                         <li>
-                            <a href="@Url.Action("Edit", "Camera", new {id = item.CameraId})" data-toggle="tooltip" title="Edit the Category">
+                            <a href="@Url.Action("Image", "Camera", new {id = item.CameraId})" data-toggle="tooltip" title="View Images taken with this camera">
+                                <i class="icon-pencil"></i> View Images
+                            </a>
+                        </li>
+                        <li>
+                            <a href="@Url.Action("Edit", "Camera", new {id = item.CameraId})" data-toggle="tooltip" title="Edit the Camera">
                                 <i class="icon-pencil"></i> Edit
                             </a>
                         </li>
                         <li>
-                            <a href="#" data-toggle="tooltip" title="Delete the Category" data-id="@item.CameraId" data-toggle="modal" class="loadModal3">
+                            <a href="#" data-toggle="tooltip" title="Delete the Camera" data-id="@item.CameraId" data-toggle="modal" class="loadModal3">
                                 <i class="icon-trash"></i> Delete
                             </a>
                         </li>

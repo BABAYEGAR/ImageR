@@ -1,7 +1,11 @@
-﻿@{
+﻿@using Image.Models.Entities
+@{
     Layout = "Layout/LandingPage/_LandingPageLayout";
     ViewBag.PageTitle = "Photo Studio | Home";
+
+    List<Package> packages = ViewBag.Packages;
 }
+
 <!-- START HTML5 VIDEO BACKGROUNSD -->
 <section id="home" class="home-static html5-video">
     <video class="text-center" muted="" autoplay="" loop="">
@@ -18,20 +22,26 @@
     </div>
 </section>
 <!-- END HTML5 VIDEO BACKGROUNSD -->
+
+
 <!-- START ABOUT -->
 <section id="about" class="about-us section-padding">
     <div class="container text-center">
         <div class="row">
             <div class="section-title">
                 <h2>About us</h2>
-                <span> <i class="fa fa-heart-o"></i> </span>
+                <span>
+                    <i class="fa fa-heart-o"></i>
+                </span>
                 <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.</p>
             </div>
             <!-- END SECTION TITLE -->
             <div class="col-md-3 col-sm-6 col-xs-12">
                 <div class="about-single">
                     <div class="icon">
-                        <span><i class="fa fa-coffee"></i></span>
+                        <span>
+                            <i class="fa fa-coffee"></i>
+                        </span>
                     </div>
                     <h4>Our history</h4>
                     <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy.</p>
@@ -41,7 +51,9 @@
             <div class="col-md-3 col-sm-6 col-xs-12">
                 <div class="about-single">
                     <div class="icon">
-                        <span><i class="fa fa-tablet"></i></span>
+                        <span>
+                            <i class="fa fa-tablet"></i>
+                        </span>
                     </div>
                     <h4>Our Mission</h4>
                     <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy.</p>
@@ -51,7 +63,9 @@
             <div class="col-md-3 col-sm-6 col-xs-12">
                 <div class="about-single">
                     <div class="icon">
-                        <span><i class="fa fa-codepen"></i></span>
+                        <span>
+                            <i class="fa fa-codepen"></i>
+                        </span>
                     </div>
                     <h4>Our process</h4>
                     <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy.</p>
@@ -61,7 +75,9 @@
             <div class="col-md-3 col-sm-6 col-xs-12">
                 <div class="about-single">
                     <div class="icon">
-                        <span><i class="fa fa-external-link"></i></span>
+                        <span>
+                            <i class="fa fa-external-link"></i>
+                        </span>
                     </div>
                     <h4>Our vision</h4>
                     <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy.</p>
@@ -74,13 +90,16 @@
     <!--- END CONTAINER -->
 </section>
 <!-- END ABOUT -->
+
 <!-- START FEATURES -->
 <section class="template-feature section-padding">
     <div class="container">
         <div class="row">
             <div class="section-title text-center">
                 <h2>Awesome Features</h2>
-                <span> <i class="fa fa-bicycle"></i> </span>
+                <span>
+                    <i class="fa fa-bicycle"></i>
+                </span>
                 <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.</p>
             </div>
             <!-- END SECTION TITLE -->
@@ -146,20 +165,25 @@
     <!-- END CONTAINER -->
 </section>
 <!-- END FEATURES -->
+
 <!-- START SERVICES -->
 <section id="service" class="our-services section-padding section-back-image" data-background="assets/img/bg/service-bg.jpg">
     <div class="container">
         <div class="row text-center">
             <div class="section-title">
                 <h2 class="section-title-white">Our creative services</h2>
-                <span class="section-title-white-span"> <i class="fa fa-sliders"></i> </span>
+                <span class="section-title-white-span">
+                    <i class="fa fa-sliders"></i>
+                </span>
                 <p class="section-dec-white">Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.</p>
             </div>
             <!-- END SECTION TITLE -->
             <div class="services-slider">
                 <div class="services">
                     <div class="icon">
-                        <span><i class="fa fa-mobile"></i></span>
+                        <span>
+                            <i class="fa fa-mobile"></i>
+                        </span>
                     </div>
                     <h4>Development</h4>
                     <span></span>
@@ -167,7 +191,9 @@
                 </div>
                 <div class="services">
                     <div class="icon">
-                        <span><i class="fa fa-camera"></i></span>
+                        <span>
+                            <i class="fa fa-camera"></i>
+                        </span>
                     </div>
                     <h4>Design</h4>
                     <span></span>
@@ -175,7 +201,9 @@
                 </div>
                 <div class="services">
                     <div class="icon">
-                        <span><i class="fa fa-user-o"></i></span>
+                        <span>
+                            <i class="fa fa-user-o"></i>
+                        </span>
                     </div>
                     <h4>Support</h4>
                     <span></span>
@@ -183,7 +211,9 @@
                 </div>
                 <div class="services">
                     <div class="icon">
-                        <span><i class="fa fa-connectdevelop"></i></span>
+                        <span>
+                            <i class="fa fa-connectdevelop"></i>
+                        </span>
                     </div>
                     <h4>Marketing</h4>
                     <span></span>
@@ -197,13 +227,16 @@
     <!-- END CONTAINER -->
 </section>
 <!-- END SERVICES -->
+
 <!-- START TESTIMONIAL -->
 <section id="testimonial" class="section-padding">
     <div class="container">
         <div class="row text-center">
             <div class="section-title">
                 <h2>Customers Stories</h2>
-                <span> <i class="fa fa-user"></i> </span>
+                <span>
+                    <i class="fa fa-user"></i>
+                </span>
                 <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.</p>
             </div>
             <!-- END SECTION TITLE -->
@@ -214,7 +247,11 @@
                 <div class="client-testimonial">
                     <div class="box-testimony">
                         <blockquote>
-                            <span class="quote"><span><i class="fa fa-quote-right"></i></span></span>
+                            <span class="quote">
+                                <span>
+                                    <i class="fa fa-quote-right"></i>
+                                </span>
+                            </span>
                             <p>&ldquo; Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. &rdquo;</p>
                         </blockquote>
                         <p class="author">
@@ -223,7 +260,11 @@
                     </div>
                     <div class="box-testimony">
                         <blockquote>
-                            <span class="quote"><span><i class="fa fa-quote-right"></i></span></span>
+                            <span class="quote">
+                                <span>
+                                    <i class="fa fa-quote-right"></i>
+                                </span>
+                            </span>
                             <p>&ldquo; Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. &rdquo;</p>
                         </blockquote>
                         <p class="author">
@@ -232,7 +273,11 @@
                     </div>
                     <div class="box-testimony">
                         <blockquote>
-                            <span class="quote"><span><i class="fa fa-quote-right"></i></span></span>
+                            <span class="quote">
+                                <span>
+                                    <i class="fa fa-quote-right"></i>
+                                </span>
+                            </span>
                             <p>&ldquo; Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. &rdquo;</p>
                         </blockquote>
                         <p class="author">
@@ -248,6 +293,7 @@
     <!--- END CONTAINER -->
 </section>
 <!-- END TESTIMONIAL -->
+
 <!-- START COUNDOWN -->
 <section class="counter-section section-padding">
     <div class="container">
@@ -282,103 +328,96 @@
     <!--- END CONTAINER -->
 </section>
 <!-- END COUNDOWN -->
-<!-- START TEAM -->
-<section id="team" class="section-padding">
+
+
+<!-- START SKILL -->
+<section class="our-skills section-padding section-back-image" data-background="assets/img/bg/skill-bg.jpg">
     <div class="container">
-        <div class="row text-center">
-            <div class="section-title">
-                <h2>Our talents</h2>
-                <span> <i class="fa fa-id-card-o"></i> </span>
-                <p>Lorem ipsum dolor sit amet consectetur adipisicing elitsed eiusmod tempor enim minim veniam quis notru exercit ation Lorem ipsum dolor sit amet.Veniam quis notru exercit.</p>
+        <div class="row">
+            <div class="section-title text-center">
+                <h2 class="section-title-white">Skills & Awards</h2>
+                <span class="section-title-white-span">
+                    <i class="fa fa-star"></i>
+                </span>
+                <p class="section-dec-white">Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.</p>
             </div>
             <!-- END SECTION TITLE -->
-            <div class="col-md-4 col-sm-6 col-xs-12">
-                <div class="single-team">
-                    <div class="team-img">
-                        <img src="assets/img/team/person2.jpg" class="img-responsive" alt="">
+            <div class="col-md-7 col-sm-7 col-xs-12">
+                <div class="awards">
+                    <div class="row">
+                        <div class="col-md-6 col-sm-12 col-xs-12">
+                            <div class="single-award">
+                                <div class="single-award-icon">
+                                    <i class="fa fa-long-arrow-right"></i>
+                                </div>
+                                <div class="single-award-text">
+                                    <h4>Awards Site Of The Day</h4>
+                                    <p>Best Web Developer 2016</p>
+                                </div>
+                            </div>
+                            <div class="single-award">
+                                <div class="single-award-icon">
+                                    <i class="fa fa-long-arrow-right"></i>
+                                </div>
+                                <div class="single-award-text">
+                                    <h4>Hashtheme LLC.</h4>
+                                    <p>Best Web Developer 2016</p>
+                                </div>
+                            </div>
+                        </div>
+                        <!--- END COL -->
+                        <div class="col-md-6 col-sm-12 col-xs-12">
+                            <div class="single-award">
+                                <div class="single-award-icon">
+                                    <i class="fa fa-long-arrow-right"></i>
+                                </div>
+                                <div class="single-award-text">
+                                    <h4>Hashtheme.com</h4>
+                                    <p>Gold Fastest Developer</p>
+                                </div>
+                            </div>
+                            <div class="single-award">
+                                <div class="single-award-icon">
+                                    <i class="fa fa-long-arrow-right"></i>
+                                </div>
+                                <div class="single-award-text">
+                                    <h4>High Quality Developer</h4>
+                                    <p>Best Web Developer 2016</p>
+                                </div>
+                            </div>
+                        </div>
+                        <!--- END COL -->
                     </div>
-                    <div class="team-dec">
-                        <h4>Rob Smith</h4>
-                        <p>Developer</p>
-                        <span></span>
-                        <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy.</p>
-                    </div>
-                    <div class="member-social">
-                        <ul class="social-links clearfix">
-                            <li>
-                                <a data-toggle="tooltip" data-placement="top" title="Facebook" class="social-fb" href="#"><span class="fa fa-facebook"></span></a>
-                            </li>
-                            <li>
-                                <a data-toggle="tooltip" data-placement="top" title="Youtube" class="social-gp" href="#"><span class="fa fa-youtube"></span></a>
-                            </li>
-                            <li>
-                                <a data-toggle="tooltip" data-placement="top" title="Twitter" class="social-tw" href="#" target="_blank"><span class="fa fa-twitter"></span></a>
-                            </li>
-                            <li>
-                                <a data-toggle="tooltip" data-placement="top" title="Google" class="social-gp" href="#" target="_blank"><span class="fa fa-google-plus"></span></a>
-                            </li>
-                        </ul>
-                    </div>
+                    <!--- END ROW -->
                 </div>
             </div>
             <!--- END COL -->
-            <div class="col-md-4 col-sm-6 col-xs-12">
-                <div class="single-team">
-                    <div class="team-img">
-                        <img src="assets/img/team/person1.jpg" class="img-responsive" alt="">
+            <div class="col-md-5 col-sm-5 col-xs-12">
+                <div class="skill">
+                    <!-- progress start -->
+                    <div class="progress">
+                        <div class="lead">Web Development</div>
+                        <div class="progress-bar wow fadeInLeft" data-progress="95%" style="width: 95%;" data-wow-duration="1.5s" data-wow-delay="1.2s">
+                            <span>95%</span>
+                        </div>
                     </div>
-                    <div class="team-dec">
-                        <h4>Jean Smith</h4>
-                        <p>Designer</p>
-                        <span></span>
-                        <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy.</p>
+                    <!-- progress end -->
+                    <!-- progress start -->
+                    <div class="progress">
+                        <div class="lead">App Development</div>
+                        <div class="progress-bar wow fadeInLeft" data-progress="90%" style="width: 90%;" data-wow-duration="1.5s" data-wow-delay="1.2s">
+                            <span>90%</span>
+                        </div>
                     </div>
-                    <div class="member-social">
-                        <ul class="social-links clearfix">
-                            <li>
-                                <a data-toggle="tooltip" data-placement="top" title="Facebook" class="social-fb" href="#"><span class="fa fa-facebook"></span></a>
-                            </li>
-                            <li>
-                                <a data-toggle="tooltip" data-placement="top" title="Youtube" class="social-gp" href="#"><span class="fa fa-youtube"></span></a>
-                            </li>
-                            <li>
-                                <a data-toggle="tooltip" data-placement="top" title="Twitter" class="social-tw" href="#" target="_blank"><span class="fa fa-twitter"></span></a>
-                            </li>
-                            <li>
-                                <a data-toggle="tooltip" data-placement="top" title="Google" class="social-gp" href="#" target="_blank"><span class="fa fa-google-plus"></span></a>
-                            </li>
-                        </ul>
+                    <!-- progress end -->
+                    <!-- progress start -->
+                    <div class="progress">
+                        <div class="lead">Software Development</div>
+                        <div class="progress-bar wow fadeInLeft" data-progress="85%" style="width: 85%;" data-wow-duration="1.5s" data-wow-delay="1.2s">
+                            <span>85%</span>
+                        </div>
                     </div>
-                </div>
-            </div>
-            <!--- END COL -->
-            <div class="col-md-4 col-sm-6 col-xs-12">
-                <div class="single-team">
-                    <div class="team-img">
-                        <img src="assets/img/team/person3.jpg" class="img-responsive" alt="">
-                    </div>
-                    <div class="team-dec">
-                        <h4>Larry Ben</h4>
-                        <p>Marketer</p>
-                        <span></span>
-                        <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy.</p>
-                    </div>
-                    <div class="member-social">
-                        <ul class="social-links clearfix">
-                            <li>
-                                <a data-toggle="tooltip" data-placement="top" title="Facebook" class="social-fb" href="#"><span class="fa fa-facebook"></span></a>
-                            </li>
-                            <li>
-                                <a data-toggle="tooltip" data-placement="top" title="Youtube" class="social-gp" href="#"><span class="fa fa-youtube"></span></a>
-                            </li>
-                            <li>
-                                <a data-toggle="tooltip" data-placement="top" title="Twitter" class="social-tw" href="#" target="_blank"><span class="fa fa-twitter"></span></a>
-                            </li>
-                            <li>
-                                <a data-toggle="tooltip" data-placement="top" title="Google" class="social-gp" href="#" target="_blank"><span class="fa fa-google-plus"></span></a>
-                            </li>
-                        </ul>
-                    </div>
+                    <!-- progress end -->
                 </div>
             </div>
             <!--- END COL -->
@@ -387,114 +426,80 @@
     </div>
     <!--- END CONTAINER -->
 </section>
-<!-- END TEAM -->
-<!-- START HOME BLOG DESING  -->
-<section id="blog" class="latest-blog section-padding">
+<!-- END SKILL -->
+
+<!-- START PRICING -->
+<section id="pricing" class="pricing-section section-padding">
     <div class="container">
-        <div class="row">
-            <div class="section-title text-center">
-                <h2>Today's Posts</h2>
-                <span> <i class="fa fa-newspaper-o"></i> </span>
+        <div class="row text-center">
+            <div class="section-title">
+                <h2>Our Pricing</h2>
+                <span>
+                    <i class="fa fa-calculator"></i>
+                </span>
                 <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat..</p>
             </div>
-            <!-- END SECTION TITLE -->
-            <div class="col-md-4 col-sm-6 col-xs-12">
-                <div class="single-blog">
-                    <img src="assets/img/blog/blog1.jpg" alt="" class="img-responsive" />
-                    <div class="blog-text">
-                        <span class="posted-on">Nov. 15th</span>
-                        <span class="comment"><a href=""><i class="fa fa-comment"></i>21</a></span>
-                        <a href="#"><h4>Blog title here</h4></a>
-                        <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat.</p>
-                        <span class="category"><a href=""><i class="fa fa-tags"></i> TRAVEl,PHOTOGRAPHY</a></span>
-                        <a class="btn-blog-bg" href="#"><i class="fa fa-long-arrow-right"></i> </a>
+            @foreach (var item in packages)
+            {
+                <div class="col-md-3 col-sm-6">
+                    <div class="pricing-table-default">
+                        <div class="pricing-head">
+                            <h3>@item.Name</h3>
+                            <span class="price">
+                                @if (item.Amount <= 0)
+                                {
+                                    <sup></sup>
+                                    <span class="price-digit">FREE</span>
+                                }
+                                @if (item.Amount > 0)
+                                {
+                                    <sup>N</sup>
+                                    <span class="price-digit">@item.Amount</span>
+                                }
+
+                                <br>/month
+                            </span>
+                        </div>
+                        <div class="pricing-detail" style="height: 450px">
+                            <ul class="pricing-list ">
+                                @if (item.PackageItems != null)
+                                {
+                                    foreach (var items in item.PackageItems)
+                                    {
+                                        <li>@items.Name</li>
+                                    }
+
+                                }
+                         
+                            </ul>
+                        </div>
+                        <a href="@Url.Action("Register","Account",new{packageId = item.PackageId})" class="btn btn-default">Subscribe</a>
                     </div>
                 </div>
-            </div>
-            <!--- END COL -->
-            <div class="col-md-4 col-sm-6 col-xs-12">
-                <div class="single-blog">
-                    <img src="assets/img/blog/blog2.jpg" alt="" class="img-responsive" />
-                    <div class="blog-text">
-                        <span class="posted-on">Nov. 16th</span>
-                        <span class="comment"><a href=""><i class="fa fa-comment"></i>11</a></span>
-                        <a href="#"><h4>Blog title here</h4></a>
-                        <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat.</p>
-                        <span class="category"><a href=""><i class="fa fa-tags"></i> TRAVEl,PHOTOGRAPHY</a></span>
-                        <a class="btn-blog-bg" href="#"><i class="fa fa-long-arrow-right"></i> </a>
-                    </div>
-                </div>
-            </div>
-            <!--- END COL -->
-            <div class="col-md-4 col-sm-6 col-xs-12">
-                <div class="single-blog">
-                    <img src="assets/img/blog/blog3.jpg" alt="" class="img-responsive" />
-                    <div class="blog-text">
-                        <span class="posted-on">Nov. 17th</span>
-                        <span class="comment"><a href=""><i class="fa fa-comment"></i>15</a></span>
-                        <a href="#"><h4>Blog title here</h4></a>
-                        <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat.</p>
-                        <span class="category"><a href=""><i class="fa fa-tags"></i> TRAVEl,PHOTOGRAPHY</a></span>
-                        <a class="btn-blog-bg" href="#"><i class="fa fa-long-arrow-right"></i> </a>
-                    </div>
-                </div>
-            </div>
+                <!-- END SECTION TITLE -->
+            }
+
             <!--- END COL -->
         </div>
         <!--- END ROW -->
     </div>
     <!--- END CONTAINER-->
 </section>
-<!-- END HOME BLOG DESING  -->
-<!-- START COMPANY client LOGO  -->
-<div class="client-logo section-padding">
-    <div class="container">
-        <div class="row">
-            <div class="col-md-12">
-                <div class="client">
-                    <a href="#">
-                        <img src="assets/img/client/1.png" alt="image">
-                    </a>
-                    <a href="#">
-                        <img src="assets/img/client/2.png" alt="image">
-                    </a>
-                    <a href="#">
-                        <img src="assets/img/client/3.png" alt="image">
-                    </a>
-                    <a href="#">
-                        <img src="assets/img/client/4.png" alt="image">
-                    </a>
-                    <a href="#">
-                        <img src="assets/img/client/5.png" alt="image">
-                    </a>
-                    <a href="#">
-                        <img src="assets/img/client/6.png" alt="image">
-                    </a>
-                    <a href="#">
-                        <img src="assets/img/client/1.png" alt="image">
-                    </a>
-                    <a href="#">
-                        <img src="assets/img/client/2.png" alt="image">
-                    </a>
-                </div>
-            </div>
-            <!-- END COL  -->
-        </div>
-        <!--END  ROW  -->
-    </div>
-    <!-- END CONTAINER  -->
-</div>
-<!-- END COMPANY client LOGO -->
+<!-- END PRICING -->
+
 <!-- START CONTACT -->
 <section id="contact" class="contact-area section-padding section-back-image" data-background="assets/img/bg/contact-bg.jpg">
     <div class="container">
         <div class="row">
             <div class="section-title text-center">
                 <h2 class="section-title-white">Connect with us</h2>
-                <span class="section-title-white-span"> <i class="fa fa-rocket"></i> </span>
+                <span class="section-title-white-span">
+                    <i class="fa fa-rocket"></i>
+                </span>
                 <p class="section-dec-white">Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.</p>
             </div>
             <!-- END SECTION TITLE -->
+
             <!-- START CONTACT ADDRESS -->
             <div class="text-center clearfix">
                 <div class="row">
@@ -505,7 +510,7 @@
                             <p>(+1) 0174-765-763</p>
                         </div>
                     </div>
-                    <!-- END COL  -->
+                    <!-- END COL -->
                     <div class="col-md-3 col-sm-6 col-xs-12">
                         <div class="single-address">
                             <i class="fa fa-envelope-o"></i>
@@ -513,14 +518,14 @@
                             <p>mail@example.com</p>
                         </div>
                     </div>
-                    <!-- END COL  -->
+                    <!-- END COL -->
                     <div class="col-md-3 col-sm-6 col-xs-12">
                         <div class="single-address">
                             <i class="fa fa-map-marker"></i>
                             <p>233 Laki Market Chaktsai Goli, CH 26431 </p>
                         </div>
                     </div>
-                    <!-- END COL  -->
+                    <!-- END COL -->
                     <div class="col-md-3 col-sm-6 col-xs-12">
                         <div class="single-address">
                             <i class="fa fa-clock-o"></i>
@@ -528,7 +533,7 @@
                             <p>Mon - Sat: 10.00 - 16.00</p>
                         </div>
                     </div>
-                    <!-- END COL  -->
+                    <!-- END COL -->
 
                 </div>
                 <!-- END ROW -->
@@ -549,8 +554,8 @@
                                 </div>
                                 <div class="form-group col-md-12 mb0 text-center">
                                     <div class="actions">
-                                        <input type="submit" value="Send Message" name="submit" id="submitButton" class="btn btn-lg btn-contact-bg" title="Click here to submit your message!" />
-                                        <img src="assets/img/ajax-loader.gif" width="16" height="16" id="loader" style="display:none" alt="loading">
+                                        <input type="submit" value="Send Message" name="submit" id="submitButton" class="btn btn-lg btn-contact-bg" title="Click here to submit your message!"/>
+                                        <img src="~/LandingPage/assets/img/ajax-loader.gif" width="16" height="16" id="loader" style="display: none" alt="loading">
                                     </div>
                                 </div>
                             </div>
@@ -565,7 +570,8 @@
         <!--- END CON -->
     </div>
 </section>
-<!-- END CONTACT  -->
+<!-- END CONTACT -->
+
 <!-- START MAP -->
 <div id="map"></div>
 <!-- END MAP -->

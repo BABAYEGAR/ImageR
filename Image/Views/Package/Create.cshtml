@@ -25,6 +25,29 @@
         </div>
     </div>
     <div class="form-group">
+        <label>System Setting Permissions</label>
+        <div class="">
+            <label >
+                @Html.LabelFor(model => model.Competition)
+                @Html.CheckBoxFor(model => model.Competition)
+            </label>
+            <label >
+                @Html.LabelFor(model => model.Contracts)
+                @Html.CheckBoxFor(model => model.Contracts)
+            </label>
+            <label >
+                @Html.LabelFor(model => model.ImagePriority)
+                @Html.CheckBoxFor(model => model.ImagePriority)
+            </label>
+            <label >
+                @Html.LabelFor(model => model.Packaging)
+                @Html.CheckBoxFor(model => model.Packaging)
+            </label>
+        </div>
+
+
+    </div>
+    <div class="form-group">
             <button type="submit" class="btn btn-primary">Submit</button>
             <a href="@Url.Action("Index")"  class="btn btn-default">Cancel</a>
     </div>

@@ -2,7 +2,7 @@
 @{
     Layout = "Layout/Dashboard/_LayoutForm";
     ViewBag.PageTitle = "Upload Image";
-    ViewBag.PageHeader = "Image Upload";
+    //ViewBag.PageHeader = "Image Upload";
     ViewBag.FormHeader = "Upload an Image (Make sure to fill all compulsory fields *)";
 }
 @section css{
@@ -13,22 +13,25 @@
         .fileinput-upload-button {
             visibility: hidden
         }
+        .page-header {
+            padding: 0px;
+        }
     </style>
 }
 <div class="widget-body">
-<p style="font-size: 16px">
-   <span class="required">*</span> Make sure to <strong class="annouce">upload an Image</strong>  in the <strong class="annouce">next tab</strong> ..
-</p>
-<p>
-    <span class="required">*</span> Note That the <strong class="annouce">Maximum Size</strong> for Image Uploads is <strong class="annouce">15MB</strong>..
-</p>
+<h3>
+   <span class="required">*</span> Make sure to <strong class="annouce">upload an Image</strong>  in the <strong class="required">next tab</strong> ..
+</h3>
+    <h3>
+    <span class="required">*</span> Note That the <strong class="annouce">Maximum Size</strong> for Image Uploads is <strong class="required">15MB</strong>..
+    </h3>
 <div role="tabpanel">
 <ul role="tablist" class="nav nav-tabs nav-justified mb-15">
     <li role="presentation" class="active">
-        <a id="home-tab5" href="#home5" role="tab" data-toggle="tab" aria-controls="home5" aria-expanded="true">Image Details</a>
+        <a id="home-tab5" href="#home5" role="tab" data-toggle="tab" aria-controls="home5" aria-expanded="true"><h3>Image Details</h3>(Enter Image Details)</a>
     </li>
     <li role="presentation">
-        <a id="profile-tab5" href="#profile5" role="tab" data-toggle="tab" aria-controls="profile5" aria-expanded="False">Image Upload</a>
+        <a id="profile-tab5" href="#profile5" role="tab" data-toggle="tab" aria-controls="profile5" aria-expanded="False"><h3>Image Upload</h3> (Click to upload image)</a>
     </li>
 </ul>
 
@@ -100,6 +103,7 @@
             <br/>
             <label class="col-sm-2 control-label">Image Upload</label>
             <div class="col-sm-10">
+                
                 <input id="input-5" name="file" type="file" multiple="" class="file-loading" required="required">
                 <p class="help-block">Initialize file input widget via javascript. Hide the caption and display widget with only buttons. You can add the <code>file-loading</code> class to show a spinning indicator, while the plugin loads.
                 </p>

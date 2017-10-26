@@ -6,6 +6,7 @@ using Image.Models.DataBaseConnections;
 using Image.Models.Encryption;
 using Image.Models.Entities;
 using Image.Models.Enum;
+using Image.Models.Services;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -39,7 +40,7 @@ namespace Image.Controllers
         }
 
         // GET: AppUser/Create
-        [SessionExpireFilter]
+        //[SessionExpireFilter]
         public ActionResult Create()
         {
             ViewBag.RoleId = new SelectList(_databaseConnection.Roles.ToList(), "RoleId",
@@ -50,29 +51,79 @@ namespace Image.Controllers
         // POST: AppUser/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [SessionExpireFilter]
+        //[SessionExpireFilter]
         public ActionResult Create(AppUser user, IList<IFormFile> images, IFormCollection collection)
         {
             try
             {
                 // TODO: Add insert logic here
-                var signedInUserId = HttpContext.Session.GetInt32("userId");
+                var signedInUserId = Convert.ToInt64(HttpContext.Session.GetInt32("userId"));
                 user.DateCreated = DateTime.Now;
+                user.Password = new Hashing().HashPassword(user.ConfirmPassword);
+                user.ConfirmPassword = user.Password;
                 user.DateLastModified = DateTime.Now;
                 user.CreatedBy = signedInUserId;
                 user.LastModifiedBy = signedInUserId;
-                _databaseConnection.Add(user);
+                user.Status = UserStatus.Inactive.ToString();
+
+                if (_databaseConnection.AppUsers.Any(n => n.Email == user.Email || n.Username == user.Username))
+                {
+                    //display notification
+                    TempData["display"] = "A user with the same Username/Email already exist, try another credential again!";
+                    TempData["notificationtype"] = NotificationType.Error.ToString();
+                    return View(user);
+                }
+                _databaseConnection.AppUsers.Add(user);
                 _databaseConnection.SaveChanges();
-           
+
+                //define acceskeys
+                var accessKey = new AppUserAccessKey
+                {
+                    AppUserId = user.AppUserId,
+                    PasswordAccessCode = new Md5Ecryption().RandomString(15),
+                    AccountActivationAccessCode = new Md5Ecryption().RandomString(20),
+                    CreatedBy = signedInUserId,
+                    LastModifiedBy = signedInUserId,
+                    DateCreated = DateTime.Now,
+                    DateLastModified = DateTime.Now,
+                    ExpiryDate = DateTime.Now.AddDays(1)
+                };
+
+                _databaseConnection.AccessKeys.Add(accessKey);
+                _databaseConnection.SaveChanges();
+
+                //var userSubscription = new UserSubscription
+                //{
+                //    AppUserId = user.AppUserId,
+                //    DateCreated = DateTime.Now,
+                //    DateLastModified = DateTime.Now,
+                //    CreatedBy = signedInUserId,
+                //    LastModifiedBy = signedInUserId,
+                //    PackageId = 1,
+                //    Status = UserStatus.Active.ToString()
+                //};
+
+                //_databaseConnection.UserSubscriptions.Add(userSubscription);
+                //_databaseConnection.SaveChanges();
+                var role = _databaseConnection.Roles.Find(user.RoleId);
+
+                var link = _hostingEnv.WebRootPath;
+                var mail = new Mailer();
+                mail.SendNewUserEmail(link + "\\EmailTemplates\\NewUser.html", user, role, accessKey);
                 //display notification
-                TempData["display"] = "You have successfully added a new user!";
+                TempData["display"] = "You have successfully registered to SOS Photo Studio, The user should check email to confirm your account!";
                 TempData["notificationtype"] = NotificationType.Success.ToString();
 
                 return RedirectToAction("Index");
             }
             catch(Exception ex)
             {
-                return View();
+                //display notification
+                TempData["display"] = "Registration of new user is incomplete,Try again!";
+                TempData["notificationtype"] = NotificationType.Error.ToString();
+                ViewBag.RoleId = new SelectList(_databaseConnection.Roles.ToList(), "RoleId",
+                    "Name");
+                return View(user);
             }
         }
 

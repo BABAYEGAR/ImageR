@@ -9,6 +9,9 @@ namespace Image.Models.Entities
     public class AccountModel
     {
         [Required]
+        [Display(Name = "Email/Username")]
+        public string LoginName { get; set; }
+        [Required]
         public string Username { get; set; }
         [Required]
         [EmailAddress]

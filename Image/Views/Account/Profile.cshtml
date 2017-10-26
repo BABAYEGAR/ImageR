@@ -41,10 +41,10 @@
                             <i class="ti-briefcase text-info"></i>
                         </div>
                         <div class="media-body">
-                            @if (appUser.PhotographerCategory != null)
+                            @*@if (appUser.PhotographerCategory != null)
                             {
                                 <p>@appUser.PhotographerCategory.Name</p>
-                            }
+                            }*@
 
                         </div>
                     </li>
@@ -132,9 +132,9 @@
                                     <li>
                                         <i class="ti-comment text-info"></i>@item.ImageComments.ToList().Count
                                     </li>
-                                    <li>
+                                    @*<li>
                                         <i class="ti-heart text-danger"></i> @item.ImageClicks.ToList().Count
-                                    </li>
+                                    </li>*@
                                 </ul>
                             </div>
                         </div>

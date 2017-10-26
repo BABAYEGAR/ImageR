@@ -4,13 +4,17 @@ using System.Collections.Generic;
 
 namespace Image.Migrations
 {
-    public partial class Migrate12 : Migration
+    public partial class Migrate4 : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropColumn(
+                name: "ImageUploadNumber",
+                table: "Packages");
+
             migrationBuilder.AddColumn<bool>(
-                name: "ManageImages",
-                table: "Roles",
+                name: "Packaging",
+                table: "Packages",
                 type: "bit",
                 nullable: false,
                 defaultValue: false);
@@ -19,8 +23,13 @@ namespace Image.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropColumn(
-                name: "ManageImages",
-                table: "Roles");
+                name: "Packaging",
+                table: "Packages");
+
+            migrationBuilder.AddColumn<long>(
+                name: "ImageUploadNumber",
+                table: "Packages",
+                nullable: true);
         }
     }
 }

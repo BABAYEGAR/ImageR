@@ -40,8 +40,9 @@ namespace Image.Models.Entities
         public long? AppUserId { get; set; }
         [ForeignKey("AppUserId")]
         public AppUser AppUser { get; set; }
-        public IEnumerable<ImageClick> ImageClicks { get; set; }
-        public IEnumerable<ImageRating> ImageRatings { get; set; }
+        public long? Like { get; set; }
+        public long? DisLike { get; set; }
+        public string Status { get; set; }
         public IEnumerable<ImageTag> ImageTags { get; set; }
         public IEnumerable<ImageComment> ImageComments { get; set; }
     }

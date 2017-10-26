@@ -351,9 +351,38 @@ namespace Image.Controllers
             //display notification
             TempData["display"] = "You have successfully selected the winner!";
             TempData["notificationtype"] = NotificationType.Success.ToString();
-            return RedirectToAction("CompetitionUploads",new{id = competitionId});
+            return RedirectToAction("CompetitionUpload",new{id = competitionId});
         }
+        [SessionExpireFilter]
+        public ActionResult AutoSelectWinner(long? competitionId, long userId)
+        {
+            var signedInUserId = HttpContext.Session.GetInt32("userId");
+            var competitionUploads = _databaseConnection.CompetitionUploads.Where(n=>n.CompetitionId == competitionId);
 
+            foreach (var item in competitionUploads)
+            {
+                var rating =
+                    _databaseConnection.ImageCompetitionRatings.Where(
+                        n => n.CompetitionUploadId == item.CompetitionUploadId);
+                foreach (var items in rating)
+                {
+                    var totalScore = items.DescriptionRating + items.ClearityRating
+                                     + items.ConceptRating + items.QualityRating + items.TimeDeliveryRating;
+                }
+            }
+            var competition = _databaseConnection.Competition.Find(competitionId);
+            competition.AppUserId = userId;
+            competition.Status = CompetitionStatus.Closed.ToString();
+            competition.DateLastModified = DateTime.Now;
+            competition.LastModifiedBy = signedInUserId;
+            _databaseConnection.Entry(competition).State = EntityState.Modified;
+            _databaseConnection.SaveChanges();
+
+            //display notification
+            TempData["display"] = "You have successfully selected the winner!";
+            TempData["notificationtype"] = NotificationType.Success.ToString();
+            return RedirectToAction("CompetitionUpload", new { id = competitionId });
+        }
         [SessionExpireFilter]
         public ActionResult RemovePhographerCategoryMapping(IFormCollection collection)
         {

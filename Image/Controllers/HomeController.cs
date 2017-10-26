@@ -25,6 +25,7 @@ namespace Image.Controllers
         }
         public IActionResult Index()
         {
+            ViewBag.Packages = _databaseConnection.Packages.Include(n=>n.PackageItems).ToList();
             return View();
         }
 

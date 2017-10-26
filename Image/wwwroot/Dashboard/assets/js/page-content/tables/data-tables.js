@@ -8,6 +8,20 @@ $(document).ready(function() {
 
     table.buttons().container().appendTo('#example-2_wrapper .col-sm-6:eq(0)');
 
+    var table1 = $('#example-2a').DataTable({
+        lengthChange: false,
+        buttons: ['copy', 'excel', 'pdf', 'print']
+    });
+
+    table1.buttons().container().appendTo('#example-2a_wrapper .col-sm-6:eq(0)');
+
+    var table2 = $('#example-2b').DataTable({
+        lengthChange: false,
+        buttons: ['copy', 'excel', 'pdf', 'print']
+    });
+
+    table1.buttons().container().appendTo('#example-2b_wrapper .col-sm-6:eq(0)');
+
     $('#example-3').DataTable({
         colReorder: true
     });

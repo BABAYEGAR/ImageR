@@ -48,6 +48,7 @@
     <thead>
     <tr>
         <th>Name</th>
+        <th>Description</th>
         <th>Action</th>
     </tr>
     </thead>
@@ -56,6 +57,7 @@
     {
         <tr>
             <td>@item.Name</td>
+            <td>@item.Description</td>
             <td>
                 <div class="btn-group">
                     <button class="btn btn-xs btn-primary dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false">
@@ -64,7 +66,7 @@
                     </button>
                     <ul class="dropdown-menu pull-right" role="menu">
                         <li>
-                            <a href="@Url.Action("Edit", "ImageCategory", new {id = item.PhotographerCategoryId})" data-toggle="tooltip" title="Edit the Category">
+                            <a href="@Url.Action("Edit", "PhotographerCategory", new {id = item.PhotographerCategoryId})" data-toggle="tooltip" title="Edit the Category">
                                 <i class="icon-pencil"></i> Edit
                             </a>
                         </li>

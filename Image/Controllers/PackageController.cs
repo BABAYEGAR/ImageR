@@ -20,7 +20,7 @@ namespace Image.Controllers
         // GET: Package
         public ActionResult Index()
         {
-            return View(_databaseConnection.Packages.ToList());
+            return View(_databaseConnection.Packages.Include(n=>n.PackageItems).ToList());
         }
 
         // GET: Package/Details/5
@@ -64,9 +64,10 @@ namespace Image.Controllers
         }
 
         // GET: Package/Edit/5
-        public ActionResult Edit(int id)
+        public ActionResult Edit(long id)
         {
-            return View();
+            var pacakage = _databaseConnection.Packages.Find(id);
+            return View(pacakage);
         }
 
         // POST: Package/Edit/5

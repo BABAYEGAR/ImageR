@@ -23,8 +23,7 @@ namespace Image.Models.DataBaseConnections
         public virtual DbSet<Role> Roles { get; set; }
         public virtual DbSet<Entities.Image> Images { get; set; }
         public virtual DbSet<ImageTag> ImageTags { get; set; }
-        public virtual DbSet<ImageClick> ImageClicks { get; set; }
-        public virtual DbSet<ImageRating> ImageRatings { get; set; }
+        public virtual DbSet<ImageCompetitionRating> ImageCompetitionRatings { get; set; }
         public virtual DbSet<ImageComment> ImageComments { get; set; }
         public virtual DbSet<ImageCategory> ImageCategories { get; set; }
         public virtual DbSet<Package> Packages { get; set; }

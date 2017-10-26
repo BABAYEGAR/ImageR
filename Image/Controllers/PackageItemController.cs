@@ -46,6 +46,7 @@ namespace Image.Controllers
             {
                 // TODO: Add insert logic here
                 var signedInUserId = HttpContext.Session.GetInt32("userId");
+                packageItem.PackageId = Convert.ToInt64(collection["PackageId"]);
                 packageItem.DateCreated = DateTime.Now;
                 packageItem.DateLastModified = DateTime.Now;
                 packageItem.CreatedBy = signedInUserId;
@@ -57,7 +58,7 @@ namespace Image.Controllers
                 //display notification
                 TempData["display"] = "You have successfully added a new Package Item!";
                 TempData["notificationtype"] = NotificationType.Success.ToString();
-                return RedirectToAction("Index");
+                return RedirectToAction("Index",new{ packageId  = packageItem.PackageId});
             }
             catch
             {
@@ -66,9 +67,10 @@ namespace Image.Controllers
         }
 
         // GET: PackageItem/Edit/5
-        public ActionResult Edit(int id)
+        public ActionResult Edit(long id)
         {
-            return View();
+            var packageItem = _databaseConnection.PackageItem.Find(id);
+            return View(packageItem);
         }
 
         // POST: PackageItem/Edit/5
@@ -89,7 +91,7 @@ namespace Image.Controllers
                 //display notification
                 TempData["display"] = "You have successfully modified the Package Item!";
                 TempData["notificationtype"] = NotificationType.Success.ToString();
-                return RedirectToAction("Index");
+                return RedirectToAction("Index", new { packageId = packageItem.PackageId });
             }
             catch
             {
@@ -104,6 +106,7 @@ namespace Image.Controllers
             {
                 var id = Convert.ToInt64(collection["ItemId"]);
                 var packageItem = _databaseConnection.PackageItem.Find(id);
+                long? packageId = packageItem.PackageId;
 
                 _databaseConnection.PackageItem.Remove(packageItem);
                 _databaseConnection.SaveChanges();
@@ -111,7 +114,7 @@ namespace Image.Controllers
                 //display notification
                 TempData["display"] = "You have successfully deleted the Package Item!";
                 TempData["notificationtype"] = NotificationType.Success.ToString();
-                return RedirectToAction("Index",new{packageId = id});
+                return RedirectToAction("Index",new{packageId = packageId });
             }
             catch
             {

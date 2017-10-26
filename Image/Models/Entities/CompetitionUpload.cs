@@ -30,6 +30,9 @@ namespace Image.Models.Entities
         public long? LocationId { get; set; }
         [ForeignKey("LocationId")]
         public Location Location { get; set; }
+        public long? Like { get; set; }
+        public long? DisLike { get; set; }
+        public IEnumerable<ImageCompetitionRating> ImageCompetitionRatings { get; set; }
 
     }
 }

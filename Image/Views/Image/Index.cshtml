@@ -1,9 +1,15 @@
-﻿@model List<Image.Models.Entities.Image>
+﻿@using Image.Models.Entities
+@using Image.Models.Enum
+@using Microsoft.AspNetCore.Http
+@model List<Image>
 @{
+    var signedInUserId = Context.Session.GetInt32("userId");
+    Role role = ViewBag.Role;
+    string status = ViewBag.status;
     Layout = "Layout/Dashboard/_LayoutTable";
     ViewBag.PageTitle = "List of Images";
     ViewBag.PageHeader = "Manage Image";
-    ViewBag.FormHeader = "List of Image";
+    ViewBag.FormHeader = "List of " + ViewBag.status + " Image";
 }
 <div class="modal fade" id="myModal1" tabindex="-1" role="dialog" aria-labelledby="myModalLabel1">
     <div class="modal-dialog" role="document">
@@ -32,22 +38,28 @@
         </div>
     </div>
 </div>
-
-<div class="row">
-    <div class="col-md-6">
-        <div class="btn-group">
-            <a href="@Url.Action("Create", "Image")" class="btn btn-primary" data-toggle="tooltip" title="Upload Image">
-                Add New
-                <i class="fa fa-plus"></i>
-            </a>
+@if (role.UploadImage)
+{
+    <div class="row">
+        <div class="col-md-6">
+            <div class="btn-group">
+                <a href="@Url.Action("Create", "Image")" class="btn btn-primary" data-toggle="tooltip" title="Upload Image">
+                    Add New
+                    <i class="fa fa-plus"></i>
+                </a>
+            </div>
         </div>
     </div>
-</div>
+}
 <br/>
 <table id="example-2" cellspacing="0" width="100%" class="table table-striped table-bordered">
     <thead>
     <tr>
-        <th>Image</th>
+        @if (status != null && status != ImageStatus.Rejected.ToString())
+        {
+            <th>Image</th>
+        }
+
         <th>Date Added</th>
         <th>Title</th>
         <th>Camera</th>
@@ -59,10 +71,15 @@
     <tbody>
     @foreach (var item in Model)
     {
-        var pic = "https://res.cloudinary.com/" + @item.FilePath;
+        var pic = "https://res.cloudinary.com/" + item.FilePath;
         <tr>
-            <td><img src='@pic' 
-                     width='90' height='70' /></td>
+            @if (status != null && status != ImageStatus.Rejected.ToString())
+            {
+                <td>
+                    <img src='@pic'
+                         width='80' height='70'/>
+                </td>
+            }
             <td>@item.DateCreated.ToString("D")</td>
             <td>@item.Title</td>
             <td>@item.Camera.Name</td>
@@ -80,16 +97,32 @@
                                 <i class="icon-pencil"></i> View Image
                             </a>
                         </li>
-                        <li>
-                            <a href="@Url.Action("Edit", "Image", new {id = item.ImageId})" data-toggle="tooltip" title="Edit the Image">
-                                <i class="icon-pencil"></i> Edit
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#" data-toggle="tooltip" title="Delete the Image" data-id="@item.ImageCategoryId" data-toggle="modal" class="loadModal3">
-                                <i class="icon-trash"></i> Delete
-                            </a>
-                        </li>
+                        @if (item.CreatedBy == signedInUserId)
+                        {
+                            <li>
+                                <a href="@Url.Action("Edit", "Image", new {id = item.ImageId})" data-toggle="tooltip" title="Edit the Image">
+                                    <i class="icon-pencil"></i> Edit
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#" data-toggle="tooltip" title="Delete the Image" data-id="@item.ImageCategoryId" data-toggle="modal" class="loadModal3">
+                                    <i class="icon-trash"></i> Delete
+                                </a>
+                            </li>
+                        }
+                        @if (role.ManageImages && item.Status == ImageStatus.Pending.ToString())
+                        {
+                            <li>
+                                <a href="@Url.Action("ApproveOrRejectImage", "Image", new {id = item.ImageId, status = ImageStatus.Accepted.ToString()})" data-toggle="tooltip" title="Edit the Image">
+                                    <i class="icon-pencil"></i> Accept Image
+                                </a>
+                            </li>
+                            <li>
+                                <a href="@Url.Action("ApproveOrRejectImage", "Image", new {id = item.ImageId, status = ImageStatus.Rejected.ToString()})" data-toggle="tooltip" title="Edit the Image">
+                                    <i class="icon-pencil"></i> Reject Image
+                                </a>
+                            </li>
+                        }
                     </ul>
                 </div>
             </td>

@@ -32,8 +32,8 @@ namespace Image.Controllers
         {
             var signedInUserId = HttpContext.Session.GetInt32("userId");
             ViewBag.Images = _databaseConnection.Images.Include(n => n.AppUser).Include(n => n.ImageCategory)
-                .Include(n => n.ImageComments).Include(n => n.ImageTags).Include(n => n.ImageRatings)
-                .Include(n => n.ImageClicks).Include(n => n.Location).Include(n => n.ImageSubCategory)
+                .Include(n => n.ImageComments).Include(n => n.ImageTags)
+                .Include(n => n.Location).Include(n => n.ImageSubCategory)
                 .Where(n => n.CreatedBy == signedInUserId).ToList();
             return View();
         }
@@ -231,13 +231,21 @@ namespace Image.Controllers
             }
         }
 
-        public ActionResult Register()
+        public ActionResult Register(long? packageId)
         {
+            if (packageId != null)
+            {
+                ViewBag.PackageId = packageId;
+            }
+            else
+            {
+                ViewBag.PackageId = 1;
+            }
             return View();
         }
 
         [HttpPost]
-        public ActionResult Register(AccountModel model)
+        public ActionResult Register(AccountModel model, IFormCollection collection)
         {
             var appUser = new AppUser
             {
@@ -268,11 +276,18 @@ namespace Image.Controllers
             {
                 AppUserId = appUser.AppUserId,
                 PasswordAccessCode = new Md5Ecryption().RandomString(15),
-                AccountActivationAccessCode = new Md5Ecryption().RandomString(20)
+                AccountActivationAccessCode = new Md5Ecryption().RandomString(20),
+                CreatedBy = appUser.AppUserId,
+                LastModifiedBy = appUser.AppUserId,
+                DateCreated = DateTime.Now,
+                DateLastModified = DateTime.Now,
+                ExpiryDate = DateTime.Now.AddDays(1)
             };
 
             _databaseConnection.AccessKeys.Add(accessKey);
             _databaseConnection.SaveChanges();
+
+            long? packageId = Convert.ToInt64(collection["PackageId"]);
 
             var userSubscription = new UserSubscription
             {
@@ -281,7 +296,7 @@ namespace Image.Controllers
                 DateLastModified = DateTime.Now,
                 CreatedBy = appUser.AppUserId,
                 LastModifiedBy = appUser.AppUserId,
-                PackageId = 1,
+                PackageId = packageId,
                 Status = UserStatus.Active.ToString()
             };
 
@@ -322,7 +337,7 @@ namespace Image.Controllers
             List<PhotographerCategoryMapping> mapping = null;
                 userExist =
                 _databaseConnection.AppUsers.SingleOrDefault(
-                    n => n.Email == model.Email || n.Username == model.Username);
+                    n => n.Email == model.LoginName || n.Username == model.LoginName);
        
             if (userExist != null && userExist.Status == UserStatus.Inactive.ToString())
             {
@@ -353,6 +368,18 @@ namespace Image.Controllers
             //convert object to json string and insert into session
             var userString = JsonConvert.SerializeObject(userExist);
             HttpContext.Session.SetString("ImageLoggedInUser", userString);
+
+            var userSubscription =
+                _databaseConnection.UserSubscriptions.Include(n=>n.Package).SingleOrDefault(
+                    n => n.AppUserId == userExist.AppUserId && n.Status == UserStatus.Active.ToString());
+            if (userSubscription != null)
+            {
+                var package = _databaseConnection.Packages.Find(userSubscription.PackageId);
+                //convert object to json string and insert into session
+                var packageString = JsonConvert.SerializeObject(package);
+                HttpContext.Session.SetString("Package", packageString);
+            }
+ 
 
             //convert object to json string and insert into session
             var roleString = JsonConvert.SerializeObject(role);

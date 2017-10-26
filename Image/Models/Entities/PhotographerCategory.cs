@@ -8,6 +8,7 @@ namespace Image.Models.Entities
         public long PhotographerCategoryId { get; set; }
         [Required]
         public string Name { get; set; }
+        public string Description { get; set; }
         public IEnumerable<PhotographerCategoryMapping> PhotographerCategoryMappings { get; set; }
     }
 }

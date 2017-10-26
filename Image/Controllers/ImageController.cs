@@ -31,7 +31,7 @@ namespace Image.Controllers
         }
         // GET: Image
         [SessionExpireFilter]
-        public ActionResult Index()
+        public ActionResult Index(string status)
         {
             var signedInUserId = HttpContext.Session.GetInt32("userId");
             if (HttpContext.Session.GetString("Role") != null)
@@ -39,17 +39,38 @@ namespace Image.Controllers
                 var roleString = HttpContext.Session.GetString("Role");
                 _userRole = JsonConvert.DeserializeObject<Role>(roleString);
             }
-            if (_userRole.ManageImages)
-            {
-                _images = _databaseConnection.Images.Include(n => n.Camera).Include(n => n.Location)
-                    .Include(n => n.ImageCategory).Include(n => n.ImageSubCategory)
-                    .Where(n => n.AppUserId == signedInUserId).ToList();
-            }
             if (_userRole.UploadImage)
             {
-                _images = _databaseConnection.Images.Include(n => n.Camera).Include(n => n.Location)
-                    .Include(n => n.ImageCategory).Include(n => n.ImageSubCategory).ToList();
+                if (status != null)
+                {
+                    _images = _databaseConnection.Images.Include(n => n.Camera).Include(n => n.Location)
+                        .Include(n => n.ImageCategory).Include(n => n.ImageSubCategory)
+                        .Where(n => n.AppUserId == signedInUserId).Where(n => n.Status == status).ToList();
+                }
+                else
+                {
+                    _images = _databaseConnection.Images.Include(n => n.Camera).Include(n => n.Location)
+                        .Include(n => n.ImageCategory).Include(n => n.ImageSubCategory)
+                        .Where(n => n.AppUserId == signedInUserId).ToList();
+                }
+ 
             }
+            if (_userRole.ManageImages)
+            {
+                if (status != null)
+                {
+                    _images = _databaseConnection.Images.Include(n => n.Camera).Include(n => n.Location)
+                        .Include(n => n.ImageCategory).Include(n => n.ImageSubCategory).Where(n => n.Status == status).ToList();
+                }
+                else
+                {
+                    _images = _databaseConnection.Images.Include(n => n.Camera).Include(n => n.Location)
+                        .Include(n => n.ImageCategory).Include(n => n.ImageSubCategory).ToList();
+                }
+     
+            }
+            ViewBag.status = status;
+            ViewBag.Role = _userRole;
             return View(_images);
         }
         /// <summary>
@@ -68,6 +89,42 @@ namespace Image.Controllers
         public ActionResult Details(int id)
         {
             return View();
+        }
+        // GET: Image/Details/5
+        public ActionResult ApproveOrRejectImage(long id,string status)
+        {
+            var signedInUserId = HttpContext.Session.GetInt32("userId");
+            var image = _databaseConnection.Images.Find(id);
+            if (status == ImageStatus.Accepted.ToString())
+            {
+                image.Status = ImageStatus.Accepted.ToString();
+            }
+            if (status == ImageStatus.Rejected.ToString())
+            {
+                image.Status = ImageStatus.Rejected.ToString();
+                var imageFile = "" + image.FileName;
+                //upload image via Cloudinary API Call
+                Account account = new Account(
+                    new Config().CloudinaryAccoutnName,
+                    new Config().CloudinaryApiKey,
+                    new Config().CloudinaryApiSecret);
+
+                Cloudinary cloudinary = new Cloudinary(account);
+                var delParams = new DelResParams()
+                {
+                    PublicIds = new List<string>() { imageFile },
+                    Invalidate = true
+                };
+                cloudinary.DeleteResources(delParams);
+            }
+            image.DateLastModified = DateTime.Now;
+            image.LastModifiedBy = signedInUserId;
+            _databaseConnection.Entry(image).State = EntityState.Modified;
+            _databaseConnection.SaveChanges();
+            //display notification
+            TempData["display"] = "You have successfully "+ image.Status +" the image!";
+            TempData["notificationtype"] = NotificationType.Success.ToString();
+            return RedirectToAction("Index");
         }
 
         // GET: Image/Create
@@ -102,7 +159,7 @@ namespace Image.Controllers
                     image.CreatedBy = signedInUserId;
                     image.LastModifiedBy = signedInUserId;
                     image.FileName = DateTime.Now.ToFileTime().ToString();
-
+                    image.Status = ImageStatus.Pending.ToString();
 
                         //upload image via Cloudinary API Call
                         Account account = new Account(

@@ -50,6 +50,8 @@ namespace Image.Models.Entities
         public string Biography { get; set; }
         [Required]
         public string Username { get; set; }
+        [Display(Name = "Aevrage Charge Price")]
+        public long? AveragePrice { get; set; }
         public IEnumerable<Image> Images { get; set; }
         public IEnumerable<Cart> Carts { get; set; }
         public IEnumerable<Order> Orders { get; set; }

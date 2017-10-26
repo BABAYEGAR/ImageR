@@ -11,8 +11,8 @@ using System;
 namespace Image.Migrations
 {
     [DbContext(typeof(ImageDataContext))]
-    [Migration("20171024003819_Migrate15")]
-    partial class Migrate15
+    [Migration("20171026101537_Migrate3")]
+    partial class Migrate3
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -27,6 +27,8 @@ namespace Image.Migrations
                         .ValueGeneratedOnAdd();
 
                     b.Property<string>("Address");
+
+                    b.Property<long?>("AveragePrice");
 
                     b.Property<string>("BackgroundPicture");
 
@@ -274,6 +276,8 @@ namespace Image.Migrations
 
                     b.Property<string>("Description");
 
+                    b.Property<long?>("DisLike");
+
                     b.Property<string>("FileName");
 
                     b.Property<string>("FilePath");
@@ -281,6 +285,8 @@ namespace Image.Migrations
                     b.Property<string>("Inspiration");
 
                     b.Property<long?>("LastModifiedBy");
+
+                    b.Property<long?>("Like");
 
                     b.Property<long?>("LocationId");
 
@@ -347,6 +353,8 @@ namespace Image.Migrations
                     b.Property<string>("Description")
                         .IsRequired();
 
+                    b.Property<long?>("DisLike");
+
                     b.Property<string>("FileName");
 
                     b.Property<string>("FilePath");
@@ -360,10 +368,14 @@ namespace Image.Migrations
 
                     b.Property<long?>("LastModifiedBy");
 
+                    b.Property<long?>("Like");
+
                     b.Property<long?>("LocationId");
 
                     b.Property<string>("SellingPrice")
                         .IsRequired();
+
+                    b.Property<string>("Status");
 
                     b.Property<string>("Theme")
                         .IsRequired();
@@ -407,34 +419,6 @@ namespace Image.Migrations
                     b.ToTable("ImageCategories");
                 });
 
-            modelBuilder.Entity("Image.Models.Entities.ImageClick", b =>
-                {
-                    b.Property<long>("ImageClickId")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<string>("Action");
-
-                    b.Property<long?>("CreatedBy");
-
-                    b.Property<DateTime>("DateCreated");
-
-                    b.Property<DateTime>("DateLastModified");
-
-                    b.Property<long>("DisLike");
-
-                    b.Property<long?>("ImageId");
-
-                    b.Property<long?>("LastModifiedBy");
-
-                    b.Property<long>("Like");
-
-                    b.HasKey("ImageClickId");
-
-                    b.HasIndex("ImageId");
-
-                    b.ToTable("ImageClicks");
-                });
-
             modelBuilder.Entity("Image.Models.Entities.ImageComment", b =>
                 {
                     b.Property<long>("ImageCommentId")
@@ -463,20 +447,28 @@ namespace Image.Migrations
                     b.ToTable("ImageComments");
                 });
 
-            modelBuilder.Entity("Image.Models.Entities.ImageRating", b =>
+            modelBuilder.Entity("Image.Models.Entities.ImageCompetitionRating", b =>
                 {
-                    b.Property<long>("ImageRatingId")
+                    b.Property<long>("ImageCompetitionRatingId")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<long?>("ImageId");
+                    b.Property<long?>("ClearityRating");
 
-                    b.Property<long?>("Rating");
+                    b.Property<long>("CompetitionUploadId");
 
-                    b.HasKey("ImageRatingId");
+                    b.Property<long?>("ConceptRating");
 
-                    b.HasIndex("ImageId");
+                    b.Property<long?>("DescriptionRating");
 
-                    b.ToTable("ImageRatings");
+                    b.Property<long?>("QualityRating");
+
+                    b.Property<long?>("TimeDeliveryRating");
+
+                    b.HasKey("ImageCompetitionRatingId");
+
+                    b.HasIndex("CompetitionUploadId");
+
+                    b.ToTable("ImageCompetitionRatings");
                 });
 
             modelBuilder.Entity("Image.Models.Entities.ImageSubCategory", b =>
@@ -669,6 +661,8 @@ namespace Image.Migrations
                     b.Property<DateTime>("DateCreated");
 
                     b.Property<DateTime>("DateLastModified");
+
+                    b.Property<string>("Description");
 
                     b.Property<long?>("LastModifiedBy");
 
@@ -952,13 +946,6 @@ namespace Image.Migrations
                         .HasForeignKey("LocationId");
                 });
 
-            modelBuilder.Entity("Image.Models.Entities.ImageClick", b =>
-                {
-                    b.HasOne("Image.Models.Entities.Image", "Image")
-                        .WithMany("ImageClicks")
-                        .HasForeignKey("ImageId");
-                });
-
             modelBuilder.Entity("Image.Models.Entities.ImageComment", b =>
                 {
                     b.HasOne("Image.Models.Entities.AppUser", "AppUser")
@@ -970,11 +957,12 @@ namespace Image.Migrations
                         .HasForeignKey("ImageId");
                 });
 
-            modelBuilder.Entity("Image.Models.Entities.ImageRating", b =>
+            modelBuilder.Entity("Image.Models.Entities.ImageCompetitionRating", b =>
                 {
-                    b.HasOne("Image.Models.Entities.Image", "Image")
-                        .WithMany("ImageRatings")
-                        .HasForeignKey("ImageId");
+                    b.HasOne("Image.Models.Entities.CompetitionUpload", "CompetitionUpload")
+                        .WithMany("ImageCompetitionRatings")
+                        .HasForeignKey("CompetitionUploadId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("Image.Models.Entities.ImageSubCategory", b =>
