@@ -8,12 +8,12 @@ using Newtonsoft.Json;
 
 namespace Image.Controllers
 {
-    public class APIController : Controller
+    public class ApiController : Controller
     {
         private readonly ImageDataContext _databaseConnection;
         private readonly IHostingEnvironment _hostingEnv;
 
-        public APIController(IHostingEnvironment env, ImageDataContext databaseConnection)
+        public ApiController(IHostingEnvironment env, ImageDataContext databaseConnection)
         {
             _hostingEnv = env;
             _databaseConnection = databaseConnection;

@@ -9,6 +9,7 @@
 
     <!-- Bootstrap Markdown-->
     <link rel="stylesheet" type="text/css" href="~/Dashboard/plugins/bootstrap-markdown/css/bootstrap-markdown.min.css">
+<link href="~/Dashboard/assets/selectize/dist/css/selectize.css" rel="stylesheet" />
     <style>
         .fileinput-upload-button {
             visibility: hidden
@@ -85,6 +86,11 @@
                     @Html.EditorFor(model => model.SellingPrice, new {htmlAttributes = new {@class = "form-control", placeholder = "Please enter the selling price for the image"}})
                     @Html.ValidationMessageFor(model => model.SellingPrice, "", new {@class = "text-danger"})
                 </div>
+                <div class="form-group col-md-12">
+                    @Html.LabelFor(model => model.Tags, new {@class = "control-label"})<span class="required">*</span>
+                    @Html.EditorFor(model => model.Tags, new {htmlAttributes = new {@class = "form-control", placeholder = "Please enter the tags for the image", id = "input-tags" } })
+                    @Html.ValidationMessageFor(model => model.Tags, "", new {@class = "text-danger"})
+                </div>
             </div>
             <div class="row">
                 <div class="form-group">
@@ -129,6 +135,7 @@
 {
     <!-- Bootstrap Markdown-->
     <script type="text/javascript" src="~/Dashboard/plugins/bootstrap-markdown/js/bootstrap-markdown.js"></script>
+    <script src="~/Dashboard/assets/selectize/dist/js/standalone/selectize.min.js"></script>
 
 }
 
@@ -175,6 +182,16 @@
                 //Ajax ends
             });
 
-
+        // Selectize plugin
+        $('#input-tags').selectize({
+            delimiter: ',',
+            persist: false,
+            create: function (input) {
+                return {
+                    value: input,
+                    text: input
+                };
+            }
+        });
     </script>
 }
