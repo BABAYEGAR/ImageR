@@ -149,13 +149,7 @@ namespace Image.Controllers
                     image.FileName = DateTime.Now.ToFileTime().ToString();
                     image.Status = ImageStatus.Pending.ToString();
 
-                    //get tags
-                    var values = image.Tags.Split(',');
-                    for (var i = 0; i < values.Length; i++)
-                    {
-                        values[i] = values[i].Trim();
-                        tags.Add(values[i]);
-                    }
+              
 
                     //upload image via Cloudinary API Call
                     var account = new Account(
@@ -176,22 +170,33 @@ namespace Image.Controllers
                         _databaseConnection.Images.Add(image);
                         _databaseConnection.SaveChanges();
                     }
-
-                    //save tags
-                    foreach (var item in tags)
+                    //get tags
+                    if (!string.IsNullOrEmpty(image.Tags))
                     {
-                        var tag = new ImageTag
+                        var values = image.Tags.Split(',');
+                        for (var i = 0; i < values.Length; i++)
                         {
-                            Name = item,
-                            ImageId = image.ImageId,
-                            DateCreated = DateTime.Now,
-                            DateLastModified = DateTime.Now,
-                            CreatedBy = signedInUserId,
-                            LastModifiedBy = signedInUserId
-                        };
-                        _databaseConnection.ImageTags.AddRange(tag);
+                            values[i] = values[i].Trim();
+                            tags.Add(values[i]);
+                        }
+                        //save tags
+                        foreach (var item in tags)
+                        {
+                            var tag = new ImageTag
+                            {
+                                Name = item,
+                                ImageId = image.ImageId,
+                                DateCreated = DateTime.Now,
+                                DateLastModified = DateTime.Now,
+                                CreatedBy = signedInUserId,
+                                LastModifiedBy = signedInUserId
+                            };
+                            _databaseConnection.ImageTags.AddRange(tag);
+                        }
+                        _databaseConnection.SaveChanges();
                     }
-                    _databaseConnection.SaveChanges();
+
+           
 
                     //display notification
                     TempData["display"] = "You have successfully uploaded a new image!";
@@ -264,34 +269,40 @@ namespace Image.Controllers
                 _databaseConnection.SaveChanges();
 
                 //get tags
-                var values = image.Tags.Split(',');
-                for (var i = 0; i < values.Length; i++)
+                //get tags
+                if (!string.IsNullOrEmpty(image.Tags))
                 {
-                    values[i] = values[i].Trim();
-                    tags.Add(values[i]);
-                }
-                //save tags
-                foreach (var item in tags)
-                {
-                    var allTags = _databaseConnection.ImageTags.Where(n => n.ImageId == image.ImageId);
-                    if (allTags.Any(n => n.Name == item))
+                    var values = image.Tags.Split(',');
+                    for (var i = 0; i < values.Length; i++)
                     {
+                        values[i] = values[i].Trim();
+                        tags.Add(values[i]);
                     }
-                    else
+                    //save tags
+                    foreach (var item in tags)
                     {
-                        var tag = new ImageTag
+                        var allTags = _databaseConnection.ImageTags.Where(n => n.ImageId == image.ImageId);
+                        if (allTags.Any(n => n.Name == item))
                         {
-                            Name = item,
-                            ImageId = image.ImageId,
-                            DateCreated = DateTime.Now,
-                            DateLastModified = DateTime.Now,
-                            CreatedBy = signedInUserId,
-                            LastModifiedBy = signedInUserId
-                        };
-                        _databaseConnection.ImageTags.AddRange(tag);
+                        }
+                        else
+                        {
+                            var tag = new ImageTag
+                            {
+                                Name = item,
+                                ImageId = image.ImageId,
+                                DateCreated = DateTime.Now,
+                                DateLastModified = DateTime.Now,
+                                CreatedBy = signedInUserId,
+                                LastModifiedBy = signedInUserId
+                            };
+                            _databaseConnection.ImageTags.AddRange(tag);
+                        }
                     }
+                    _databaseConnection.SaveChanges();
                 }
-                _databaseConnection.SaveChanges();
+
+          
                 //display notification
                 TempData["display"] = "You have successfully modified the image information!";
                 TempData["notificationtype"] = NotificationType.Success.ToString();
