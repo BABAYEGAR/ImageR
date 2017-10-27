@@ -247,70 +247,123 @@ namespace Image.Controllers
         [HttpPost]
         public ActionResult Register(AccountModel model, IFormCollection collection)
         {
-            var appUser = new AppUser
+            try
             {
-                Name = model.Username,
-                Mobile = model.Mobile,
-                Email = model.Email,
-                Password = new Hashing().HashPassword(model.ConfirmPassword),
-                Username = model.Username,
-                Status = UserStatus.Inactive.ToString()
-            };
-            appUser.ConfirmPassword = appUser.Password;
-            appUser.DateCreated = DateTime.Now;
-            appUser.DateLastModified = DateTime.Now;
-            appUser.RoleId = 2;
+                var appUser = new AppUser
+                {
+                    Name = model.Username,
+                    Mobile = model.Mobile,
+                    Email = model.Email,
+                    Password = new Hashing().HashPassword(model.ConfirmPassword),
+                    Username = model.Username,
+                    Status = UserStatus.Inactive.ToString()
+                };
+                appUser.ConfirmPassword = appUser.Password;
+                appUser.DateCreated = DateTime.Now;
+                appUser.DateLastModified = DateTime.Now;
+                appUser.RoleId = 2;
 
-            if (_databaseConnection.AppUsers.Any(n => n.Email == appUser.Email || n.Username == appUser.Username))
+                if (_databaseConnection.AppUsers.Any(n => n.Email == appUser.Email || n.Username == appUser.Username))
+                {
+                    //display notification
+                    TempData["display"] =
+                        "A user with the same Username/Email already exist, try another credential again!";
+                    TempData["notificationtype"] = NotificationType.Error.ToString();
+                    return View(model);
+                }
+
+                //define acceskeys
+                var accessKey = new AppUserAccessKey
+                {
+                    PasswordAccessCode = new Md5Ecryption().RandomString(15),
+                    AccountActivationAccessCode = new Md5Ecryption().RandomString(20),
+                    CreatedBy = appUser.AppUserId,
+                    LastModifiedBy = appUser.AppUserId,
+                    DateCreated = DateTime.Now,
+                    DateLastModified = DateTime.Now,
+                    ExpiryDate = DateTime.Now.AddDays(1)
+                };
+
+                long? packageId = Convert.ToInt64(collection["PackageId"]);
+                var package = _databaseConnection.Packages.Find(packageId);
+
+                var userSubscription = new UserSubscription
+                {
+                    DateCreated = DateTime.Now,
+                    DateLastModified = DateTime.Now,
+                    CreatedBy = appUser.AppUserId,
+                    LastModifiedBy = appUser.AppUserId,
+                    PackageId = packageId,
+                    Status = UserStatus.Active.ToString(),
+                    ExpiryDate = DateTime.Now.AddMonths(1),
+                    MonthLength = 1
+                };
+
+                if (packageId <= 1)
+                {
+                    Random generator = new Random();
+                    String generatedValues = generator.Next(0, 1000000).ToString("D6");
+                    var invoice = new Invoice
+                    {
+                        InvoiceNumber = "INV" + generatedValues,
+                        Amount = userSubscription.MonthLength * package.Amount,
+                        DateCreated = DateTime.Now,
+                        DateLastModified = DateTime.Now,
+                        CreatedBy = appUser.AppUserId,
+                        LastModifiedBy = appUser.AppUserId,
+                    };
+
+                    _databaseConnection.AppUsers.Add(appUser);
+                    _databaseConnection.SaveChanges();
+
+                    accessKey.AppUserId = appUser.AppUserId;
+                    userSubscription.AppUserId = appUser.AppUserId;
+
+                    _databaseConnection.AccessKeys.Add(accessKey);
+                    _databaseConnection.SaveChanges();
+
+                    _databaseConnection.UserSubscriptions.Add(userSubscription);
+                    _databaseConnection.SaveChanges();
+
+                    _databaseConnection.Invoices.Add(invoice);
+                    _databaseConnection.SaveChanges();
+
+                    var role = _databaseConnection.Roles.Find(appUser.RoleId);
+
+                    var link = _hostingEnv.WebRootPath;
+                    var mail = new Mailer();
+                    mail.SendNewUserEmail(link + "\\EmailTemplates\\NewUser.html", appUser, role, accessKey);
+                    //display notification
+                    TempData["display"] =
+                        "You have successfully registered to SOS Photo Studio, Check your email to confirm your account!";
+                    TempData["notificationtype"] = NotificationType.Success.ToString();
+                    return RedirectToAction("Login");
+                }
+
+                //convert object to json string and insert into session
+                var userString = JsonConvert.SerializeObject(userSubscription);
+                HttpContext.Session.SetString("User", userString);
+
+                //convert object to json string and insert into session
+                var subscriptionString = JsonConvert.SerializeObject(userSubscription);
+                HttpContext.Session.SetString("Subscription", subscriptionString);
+
+                //convert object to json string and insert into session
+                var accessString = JsonConvert.SerializeObject(accessKey);
+                HttpContext.Session.SetString("Access", accessString);
+
+            }
+            catch (Exception ex)
             {
                 //display notification
-                TempData["display"] = "A user with the same Username/Email already exist, try another credential again!";
+                TempData["display"] = "There was an issue trying to register,Check your intenet connection and Try Again!";
                 TempData["notificationtype"] = NotificationType.Error.ToString();
                 return View(model);
             }
-            _databaseConnection.AppUsers.Add(appUser);
-            _databaseConnection.SaveChanges();
-
-            //define acceskeys
-            var accessKey = new AppUserAccessKey
-            {
-                AppUserId = appUser.AppUserId,
-                PasswordAccessCode = new Md5Ecryption().RandomString(15),
-                AccountActivationAccessCode = new Md5Ecryption().RandomString(20),
-                CreatedBy = appUser.AppUserId,
-                LastModifiedBy = appUser.AppUserId,
-                DateCreated = DateTime.Now,
-                DateLastModified = DateTime.Now,
-                ExpiryDate = DateTime.Now.AddDays(1)
-            };
-
-            _databaseConnection.AccessKeys.Add(accessKey);
-            _databaseConnection.SaveChanges();
-
-            long? packageId = Convert.ToInt64(collection["PackageId"]);
-
-            var userSubscription = new UserSubscription
-            {
-                AppUserId = appUser.AppUserId,
-                DateCreated = DateTime.Now,
-                DateLastModified = DateTime.Now,
-                CreatedBy = appUser.AppUserId,
-                LastModifiedBy = appUser.AppUserId,
-                PackageId = packageId,
-                Status = UserStatus.Active.ToString()
-            };
-
-            _databaseConnection.UserSubscriptions.Add(userSubscription);
-            _databaseConnection.SaveChanges();
-            var role = _databaseConnection.Roles.Find(appUser.RoleId);
-
-            var link = _hostingEnv.WebRootPath;
-            var mail = new Mailer();
-            mail.SendNewUserEmail(link + "\\EmailTemplates\\NewUser.html", appUser, role, accessKey);
             //display notification
             TempData["display"] = "You have successfully registered to SOS Photo Studio, Check your email to confirm your account!";
             TempData["notificationtype"] = NotificationType.Success.ToString();
-            return RedirectToAction("Login");
+            return RedirectToAction("SubscriptionInvoice");
         }
 
         [HttpGet]
@@ -398,6 +451,66 @@ namespace Image.Controllers
                 return RedirectToAction("SelectCategories", "PhotographerCategory");
             }
             return RedirectToAction("Dashboard", "Home");
+        }
+
+        public ActionResult SubscriptionInvoice(IFormCollection collection)
+        {
+            var subscriptionString = HttpContext.Session.GetString("Subscription");
+             var userSubscription = JsonConvert.DeserializeObject<UserSubscription>(subscriptionString);
+            ViewBag.Subscription = userSubscription;
+            return View(_databaseConnection.Packages.Find(userSubscription.PackageId));
+        }
+
+        [HttpPost]
+        public ActionResult SubscriptionInvoice(AccountModel model, IFormCollection collection)
+        {
+            var userString = HttpContext.Session.GetString("User");
+            var appUser = JsonConvert.DeserializeObject<AppUser>(userString);
+
+            var accessString = HttpContext.Session.GetString("Access");
+            var accessKey = JsonConvert.DeserializeObject<AppUserAccessKey>(accessString);
+
+            var subscriptionString = HttpContext.Session.GetString("Subscription");
+            var userSubscription = JsonConvert.DeserializeObject<UserSubscription>(subscriptionString);
+
+            var package = _databaseConnection.Packages.Find(userSubscription.PackageId);
+            Random generator = new Random();
+            String generatedValues = generator.Next(0, 1000000).ToString("D6");
+            var invoice = new Invoice
+            {
+                InvoiceNumber = "INV"+ generatedValues,
+                Amount = userSubscription.MonthLength * package.Amount,
+                DateCreated = DateTime.Now,
+                DateLastModified = DateTime.Now,
+                CreatedBy = appUser.AppUserId,
+                LastModifiedBy = appUser.AppUserId,
+            };
+   
+
+            _databaseConnection.AppUsers.Add(appUser);
+            _databaseConnection.SaveChanges();
+
+            accessKey.AppUserId = appUser.AppUserId;
+            userSubscription.AppUserId = appUser.AppUserId;
+
+            _databaseConnection.AccessKeys.Add(accessKey);
+            _databaseConnection.SaveChanges();
+
+            _databaseConnection.UserSubscriptions.Add(userSubscription);
+            _databaseConnection.SaveChanges();
+
+            _databaseConnection.Invoices.Add(invoice);
+            _databaseConnection.SaveChanges();
+
+            var role = _databaseConnection.Roles.Find(appUser.RoleId);
+
+            var link = _hostingEnv.WebRootPath;
+            var mail = new Mailer();
+            mail.SendNewUserEmail(link + "\\EmailTemplates\\NewUser.html", appUser, role, accessKey);
+            //display notification
+            TempData["display"] = "You have successfully registered to SOS Photo Studio, Check your email to confirm your account!";
+            TempData["notificationtype"] = NotificationType.Success.ToString();
+            return RedirectToAction("Login");
         }
 
         [HttpGet]

@@ -11,9 +11,10 @@ using System;
 namespace Image.Migrations
 {
     [DbContext(typeof(ImageDataContext))]
-    partial class ImageDataContextModelSnapshot : ModelSnapshot
+    [Migration("20171027094546_Migrate7")]
+    partial class Migrate7
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -838,8 +839,6 @@ namespace Image.Migrations
                 {
                     b.Property<long>("UserSubscriptionId")
                         .ValueGeneratedOnAdd();
-
-                    b.Property<long?>("Amount");
 
                     b.Property<long?>("AppUserId");
 

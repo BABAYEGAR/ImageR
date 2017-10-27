@@ -11,9 +11,10 @@ using System;
 namespace Image.Migrations
 {
     [DbContext(typeof(ImageDataContext))]
-    partial class ImageDataContextModelSnapshot : ModelSnapshot
+    [Migration("20171027085236_Migrate6")]
+    partial class Migrate6
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -522,28 +523,6 @@ namespace Image.Migrations
                     b.ToTable("ImageTags");
                 });
 
-            modelBuilder.Entity("Image.Models.Entities.Invoice", b =>
-                {
-                    b.Property<long>("InvoiceId")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<long?>("Amount");
-
-                    b.Property<long?>("CreatedBy");
-
-                    b.Property<DateTime>("DateCreated");
-
-                    b.Property<DateTime>("DateLastModified");
-
-                    b.Property<string>("InvoiceNumber");
-
-                    b.Property<long?>("LastModifiedBy");
-
-                    b.HasKey("InvoiceId");
-
-                    b.ToTable("Invoices");
-                });
-
             modelBuilder.Entity("Image.Models.Entities.Location", b =>
                 {
                     b.Property<long>("LocationId")
@@ -838,8 +817,6 @@ namespace Image.Migrations
                 {
                     b.Property<long>("UserSubscriptionId")
                         .ValueGeneratedOnAdd();
-
-                    b.Property<long?>("Amount");
 
                     b.Property<long?>("AppUserId");
 

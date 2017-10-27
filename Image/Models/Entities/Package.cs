@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace Image.Models.Entities
@@ -8,6 +9,7 @@ namespace Image.Models.Entities
         public long PackageId { get; set; }
         [Required]
         public string Name { get; set; }
+        public string Description { get; set; }
         [Required]
         public long? Amount { get; set; }
         [Display(Name = "Participate In Competitions")]
