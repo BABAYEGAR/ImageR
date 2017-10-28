@@ -1,4 +1,6 @@
-﻿using System.Linq;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using Image.Models.DataBaseConnections;
 using Image.Models.Entities;
 using Microsoft.AspNetCore.Hosting;
@@ -24,9 +26,8 @@ namespace Image.Controllers
         /// <returns></returns>
         public JsonResult GetAllImages()
         {
-            var images = _databaseConnection.Images.Include(n => n.Camera).Include(n => n.Location).Include(n=>n.AppUser)
-                .Include(n => n.ImageCategory).Include(n => n.ImageSubCategory);
-            return Json(images);
+            return Json(_databaseConnection.Images.Include(n => n.Camera).Include(n => n.Location).Include(n => n.AppUser)
+                .Include(n => n.ImageCategory).Include(n => n.ImageSubCategory).ToList());
         }
         /// <summary>
         /// The method returns a single images via a json object

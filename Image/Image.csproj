@@ -3,11 +3,12 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp2.0</TargetFramework>
     <UserSecretsId>83cefd9f-42f5-4a57-b4c6-3d05a9d3d844</UserSecretsId>
+    <TypeScriptToolsVersion>2.3</TypeScriptToolsVersion>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="BCrypt-Official" Version="0.1.109" />
-    <PackageReference Include="CloudinaryDotNet" Version="1.0.30" />
+    <PackageReference Include="CloudinaryDotNet" Version="1.0.27" />
     <PackageReference Include="MailKit" Version="1.18.1.1" />
     <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.0" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.0.0" />
@@ -20,6 +21,8 @@
 
   <ItemGroup>
     <Folder Include="wwwroot\css\" />
+    <Folder Include="wwwroot\Dashboard\" />
+    <Folder Include="wwwroot\LandingPage\" />
     <Folder Include="wwwroot\images\" />
     <Folder Include="wwwroot\js\" />
     <Folder Include="wwwroot\UploadedImage\ProfileBackground\" />

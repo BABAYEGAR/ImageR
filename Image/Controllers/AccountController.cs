@@ -341,7 +341,7 @@ namespace Image.Controllers
                 }
 
                 //convert object to json string and insert into session
-                var userString = JsonConvert.SerializeObject(userSubscription);
+                var userString = JsonConvert.SerializeObject(appUser);
                 HttpContext.Session.SetString("User", userString);
 
                 //convert object to json string and insert into session
@@ -457,7 +457,12 @@ namespace Image.Controllers
         {
             var subscriptionString = HttpContext.Session.GetString("Subscription");
              var userSubscription = JsonConvert.DeserializeObject<UserSubscription>(subscriptionString);
+
+            var userString = HttpContext.Session.GetString("User");
+            var appUser = JsonConvert.DeserializeObject<AppUser>(userString);
+
             ViewBag.Subscription = userSubscription;
+            ViewBag.User = appUser;
             return View(_databaseConnection.Packages.Find(userSubscription.PackageId));
         }
 

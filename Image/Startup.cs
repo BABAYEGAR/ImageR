@@ -47,7 +47,7 @@ namespace Image
             //_testSecret = Configuration["MySecret"];
             services.AddMvc(options => options.MaxModelValidationErrors = 50).AddJsonOptions(options => {
                 options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
-                options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Serialize;
+                options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
 
             });
             // Adds a default in-memory implementation of IDistributedCache.

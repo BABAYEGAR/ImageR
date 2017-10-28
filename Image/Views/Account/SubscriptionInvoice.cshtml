@@ -83,12 +83,13 @@
 </div>
 @section Functions
 {
+    <script src="https://js.paystack.co/v1/inline.js"></script>
     <script>
         function payWithPaystack() {
             var handler = window.PaystackPop.setup({
                 key: 'pk_test_d19305d69eba56904f42be1c7a8a1fa0259f0760',
                 email: '@appUser.Email',
-                amount: @subscription.Amount+"00",
+                amount: "400000",
                 ref: "",
                 metadata: {
                     custom_fields: [

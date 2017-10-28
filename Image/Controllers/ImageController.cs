@@ -67,8 +67,7 @@ namespace Image.Controllers
         /// Microsoft.CodeDom.Providers.DotNetCompilerPlatform
         public JsonResult GetSubForCategories(long id)
         {
-            var subs = _databaseConnection.ImageSubCategories.Where(n => n.ImageCategoryId == id).ToList();
-            return Json(subs);
+            return Json(_databaseConnection.ImageSubCategories.Where(n => n.ImageCategoryId == id).ToList());
         }
 
         // GET: Image/Details/5

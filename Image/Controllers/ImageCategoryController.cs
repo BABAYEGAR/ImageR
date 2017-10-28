@@ -30,7 +30,7 @@ namespace Image.Controllers
         }
         // GET: Image
         [SessionExpireFilter]
-        public ActionResult Image(long id)
+        public ActionResult Images(long id)
         {
             var signedInUserId = HttpContext.Session.GetInt32("userId");
             if (HttpContext.Session.GetString("Role") != null)
