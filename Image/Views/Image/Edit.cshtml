@@ -10,6 +10,17 @@
     <!-- Bootstrap Markdown-->
     <link rel="stylesheet" type="text/css" href="~/Dashboard/plugins/bootstrap-markdown/css/bootstrap-markdown.min.css">
 }
+@section Breadcrumbs
+{
+    <div class="pull-left">
+        <h4 class="mt-0 mb-5">@ViewBag.PageHeader</h4>
+        <ol class="breadcrumb mb-0">
+            <li><a href="@Url.Action("Dashboard","Home")">Dashboard</a></li>
+            <li><a href="@Url.Action("Index")">Images</a></li>
+            <li class="active">@ViewBag.PageHeader</li>
+        </ol>
+    </div>
+}
 <div class="widget-body">
     <p>
         * Make sure to upload an Image in the next tab

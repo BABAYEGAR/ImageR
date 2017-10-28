@@ -105,6 +105,7 @@
         {
             foreach (var item in images)
             {
+                var pic = "https://res.cloudinary.com/" + item.FilePath;
                 <div class="widget clear">
                     <div class="widget-heading">
                         <div class="media">
@@ -126,7 +127,8 @@
                             @item.Description
                         </p>
                         <div class="thumbnail">
-                            <img src="https://res.cloudinary.com/ @item.FilePath" alt="">
+                            
+                            <img src="@pic" alt="">
                             <div class="text-right caption">
                                 <ul class="list-inline mb-0">
                                     <li>

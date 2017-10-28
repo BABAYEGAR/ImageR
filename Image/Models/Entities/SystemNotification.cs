@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 namespace Image.Models.Entities
 {
@@ -13,6 +14,7 @@ namespace Image.Models.Entities
         public long? ControllerId { get; set; }
         public long? AppUserId { get; set; }
         [ForeignKey("AppUserId")]
+        [JsonIgnore]
         public AppUser AppUser { get; set; }
         public bool? Read { get; set; }
     }

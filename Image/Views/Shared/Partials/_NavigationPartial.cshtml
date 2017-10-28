@@ -1,3 +1,14 @@
+@using Image.Models.Entities
+@using Microsoft.AspNetCore.Http
+@using Newtonsoft.Json
+@{
+    List<SystemNotification> notifications = new List<SystemNotification>();
+    if (Context.Session.GetString("Notifications") != null)
+    {
+        var notificationString = Context.Session.GetString("Notifications");
+        notifications = JsonConvert.DeserializeObject<List<SystemNotification>>(notificationString);
+    }
+}
 <header>
     <div class="search-bar closed">
         <form>
@@ -22,7 +33,7 @@
             <a id="dropdownMenu1" href="#" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false" class="dropdown-toggle bubble header-icon"><i class="ti-world"></i><span class="badge bg-danger">6</span></a>
             <div aria-labelledby="dropdownMenu1" class="dropdown-menu dropdown-menu-right dm-medium fs-12 animated fadeInDown">
                 @{
-                    @Html.Partial("Partials/_NotificationPartial")
+                    @Html.Partial("Partials/_NotificationPartial",notifications)
                 }
                 <div class="dropdown-footer text-center p-10"><a href="javascript:;" class="fw-500 text-muted">See all notifications</a></div>
             </div>

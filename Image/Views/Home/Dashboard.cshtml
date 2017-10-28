@@ -2,7 +2,6 @@
 @using Image.Models.Enum
 @using Microsoft.AspNetCore.Http
 @using Newtonsoft.Json
-
 @{
     Layout = "Layout/Dashboard/_LayoutDashboard";
     ViewBag.PageTitle = "Dashboard : Home";
@@ -19,146 +18,148 @@
     List<Competition> competitions = ViewBag.Competition;
 }
 <div class="row">
-@if (userRole != null && userRole.ManageApplicationUser)
-{
-    <a class="col-md-3 col-sm-6" href="@Url.Action("Index", "AppUser")">
-        <div class="widget text-center">
-            <div class="widget-body">
-                <h5 class="mb-5">All Users</h5>
-                <div class="fs-36 fw-600 mb-20 counter">@appUsers.Count</div>
-                <div id="esp-user" data-percent="30" style="height: 40px; width: 140px; line-height: 50px; padding: 10px;" class="easy-pie-chart fs-36">
-                    <i class="ti-user text-muted"></i>
+    @if (userRole != null && userRole.ManageApplicationUser)
+    {
+        <a class="col-md-3 col-sm-6" href="@Url.Action("Index", "AppUser")">
+            <div class="widget text-center">
+                <div class="widget-body">
+                    <h5 class="mb-5">All Users</h5>
+                    <div class="fs-36 fw-600 mb-20 counter">@appUsers.Count</div>
+                    <div id="esp-user" data-percent="30" style="height: 10px; line-height: 20px; padding: 5px; width: 140px;" class="easy-pie-chart fs-36">
+                        <i class="ti-user text-muted"></i>
+                    </div>
+
                 </div>
+            </div>
+        </a>
+    }
 
-            </div>
-        </div>
-    </a>
-}
-
-<a class="col-md-3 col-sm-6" href="@Url.Action("Index", "Image")">
-    <div class="widget text-center">
-        <div class="widget-body">
-            <h5 class="mb-5">Uploaded Images</h5>
-            <div class="fs-36 fw-600 mb-20 counter">@images.Count</div>
-            <div id="esp-photo" data-percent="55" style="height: 40px; width: 140px; line-height: 50px; padding: 10px;" class="easy-pie-chart fs-36">
-                <i class="ti-image text-muted"></i>
-            </div>
-        </div>
-    </div>
-</a>
-<a class="col-md-3 col-sm-6" href="@Url.Action("Index", "Image",new{status = ImageStatus.Pending.ToString()})">
-    <div class="widget text-center">
-        <div class="widget-body">
-            <h5 class="mb-5">Pending Images</h5>
-            <div class="fs-36 fw-600 mb-20 counter">@images.Where(n => n.Status == ImageStatus.Pending.ToString()).ToList().Count</div>
-            <div id="esp-comment" data-percent="75" style="height: 40px; width: 140px; line-height: 50px; padding: 10px;" class="easy-pie-chart fs-36">
-                <i class="ti-image text-muted"></i>
-            </div>
-        </div>
-    </div>
-</a>
-
-<a class="col-md-3 col-sm-6" href="@Url.Action("Index", "Image",new{status = ImageStatus.Accepted.ToString()})">
-    <div class="widget text-center">
-        <div class="widget-body">
-            <h5 class="mb-5">Accepted Images</h5>
-            <div class="fs-36 fw-600 mb-20 counter">@images.Where(n => n.Status == ImageStatus.Accepted.ToString()).ToList().Count</div>
-            <div id="esp-feedback" data-percent="20" style="height: 40px; width: 140px; line-height: 50px; padding: 10px;" class="easy-pie-chart fs-36">
-                <i class="ti-image text-muted"></i>
-            </div>
-        </div>
-    </div>
-</a><a class="col-md-3 col-sm-6" href="@Url.Action("Index", "Image",new{status = ImageStatus.Pending.ToString()})">
-    <div class="widget text-center">
-        <div class="widget-body">
-            <h5 class="mb-5">Rejected Images</h5>
-            <div class="fs-36 fw-600 mb-20 counter">@images.Where(n => n.Status == ImageStatus.Rejected.ToString()).ToList().Count</div>
-            <div id="esp-feedback" data-percent="20" style="height: 40px; width: 140px; line-height: 50px; padding: 10px;" class="easy-pie-chart fs-36">
-                <i class="ti-image text-muted"></i>
-            </div>
-        </div>
-    </div>
-</a>
-@if (userRole != null && userRole.ManageCompetition)
-{
-    <a class="col-md-3 col-sm-6" href="@Url.Action("Index", "Competition")">
+    <a class="col-md-3 col-sm-6" href="@Url.Action("Index", "Image")">
         <div class="widget text-center">
             <div class="widget-body">
-                <h5 class="mb-5">Competitions</h5>
-                <div class="fs-36 fw-600 mb-20 counter">@competitions.Count</div>
-                <div id="esp-feedback" data-percent="20" style="height: 40px; width: 140px; line-height: 50px; padding: 10px;" class="easy-pie-chart fs-36">
-                    <i class="ti-crown text-muted"></i>
+                <h5 class="mb-5">Uploaded Images</h5>
+                <div class="fs-36 fw-600 mb-20 counter">@images.Count</div>
+                <div id="esp-photo" data-percent="55" style="height: 10px; line-height: 20px; padding: 5px; width: 140px;" class="easy-pie-chart fs-36">
+                    <i class="ti-image text-muted"></i>
                 </div>
             </div>
         </div>
     </a>
-}
+    <a class="col-md-3 col-sm-6" href="@Url.Action("Index", "Image", new {status = ImageStatus.Pending.ToString()})">
+        <div class="widget text-center">
+            <div class="widget-body">
+                <h5 class="mb-5">Pending Images</h5>
+                <div class="fs-36 fw-600 mb-20 counter">@images.Where(n => n.Status == ImageStatus.Pending.ToString()).ToList().Count</div>
+                <div id="esp-comment" data-percent="75" style="height: 10px; line-height: 20px; padding: 5px; width: 140px;" class="easy-pie-chart fs-36">
+                    <i class="ti-image text-muted"></i>
+                </div>
+            </div>
+        </div>
+    </a>
+
+    <a class="col-md-3 col-sm-6" href="@Url.Action("Index", "Image", new {status = ImageStatus.Accepted.ToString()})">
+        <div class="widget text-center">
+            <div class="widget-body">
+                <h5 class="mb-5">Accepted Images</h5>
+                <div class="fs-36 fw-600 mb-20 counter">@images.Where(n => n.Status == ImageStatus.Accepted.ToString()).ToList().Count</div>
+                <div id="esp-feedback" data-percent="20" style="height: 10px; line-height: 20px; padding: 5px; width: 140px;" class="easy-pie-chart fs-36">
+                    <i class="ti-image text-muted"></i>
+                </div>
+            </div>
+        </div>
+    </a><a class="col-md-3 col-sm-6" href="@Url.Action("Index", "Image", new {status = ImageStatus.Pending.ToString()})">
+        <div class="widget text-center">
+            <div class="widget-body">
+                <h5 class="mb-5">Rejected Images</h5>
+                <div class="fs-36 fw-600 mb-20 counter">@images.Where(n => n.Status == ImageStatus.Rejected.ToString()).ToList().Count</div>
+                <div id="esp-feedback" data-percent="20" style="height: 10px; line-height: 20px; padding: 5px; width: 140px;" class="easy-pie-chart fs-36">
+                    <i class="ti-image text-muted"></i>
+                </div>
+            </div>
+        </div>
+    </a>
+    @if (userRole != null && userRole.ManageCompetition)
+    {
+        <a class="col-md-3 col-sm-6" href="@Url.Action("Index", "Competition")">
+            <div class="widget text-center">
+                <div class="widget-body">
+                    <h5 class="mb-5">Competitions</h5>
+                    <div class="fs-36 fw-600 mb-20 counter">@competitions.Count</div>
+                    <div id="esp-feedback" data-percent="20" style="height: 10px; line-height: 20px; padding: 5px; width: 140px;" class="easy-pie-chart fs-36">
+                        <i class="ti-crown text-muted"></i>
+                    </div>
+                </div>
+            </div>
+        </a>
+    }
 
     <a class="col-md-3 col-sm-6" href="#">
         <div class="widget text-center">
             <div class="widget-body">
                 <h5 class="mb-5">Orders</h5>
                 <div class="fs-36 fw-600 mb-20 counter">1,609</div>
-                <div id="esp-feedback" data-percent="20" style="height: 40px; width: 140px; line-height: 50px; padding: 10px;" class="easy-pie-chart fs-36">
+                <div id="esp-feedback" data-percent="20" style="height: 10px; line-height: 20px; padding: 5px; width: 140px;" class="easy-pie-chart fs-36">
                     <i class="ti-shopping-cart text-muted"></i>
                 </div>
             </div>
         </div>
     </a>
-        <a class="col-md-3 col-sm-6" href="#">
-            <div class="widget text-center">
-                <div class="widget-body">
-                    <h5 class="mb-5">Pending Payments</h5>
-                    <div class="fs-36 fw-600 mb-20 counter">@images.Where(n => n.Status == ImageStatus.Rejected.ToString()).ToList().Count</div>
-                    <div id="esp-feedback" data-percent="20" style="height: 40px; width: 140px; line-height: 50px; padding: 10px;" class="easy-pie-chart fs-36">
-                        <i class="ti-money text-muted"></i>
-                    </div>
+    <a class="col-md-3 col-sm-6" href="#">
+        <div class="widget text-center">
+            <div class="widget-body">
+                <h5 class="mb-5">Pending Payments</h5>
+                <div class="fs-36 fw-600 mb-20 counter">@images.Where(n => n.Status == ImageStatus.Rejected.ToString()).ToList().Count</div>
+                <div id="esp-feedback" data-percent="20" style="height: 10px; line-height: 20px; padding: 5px; width: 140px;" class="easy-pie-chart fs-36">
+                    <i class="ti-money text-muted"></i>
                 </div>
             </div>
-        </a>
-        <a class="col-md-3 col-sm-6" href="#">
-            <div class="widget text-center">
-                <div class="widget-body">
-                    <h5 class="mb-5">Approved Payments</h5>
-                    <div class="fs-36 fw-600 mb-20 counter">@images.Where(n => n.Status == ImageStatus.Rejected.ToString()).ToList().Count</div>
-                    <div id="esp-feedback" data-percent="20" style="height: 40px; width: 140px; line-height: 50px; padding: 10px;" class="easy-pie-chart fs-36">
-                        <i class="ti-money text-muted"></i>
-                    </div>
+        </div>
+    </a>
+    <a class="col-md-3 col-sm-6" href="#">
+        <div class="widget text-center">
+            <div class="widget-body">
+                <h5 class="mb-5">Approved Payments</h5>
+                <div class="fs-36 fw-600 mb-20 counter">@images.Where(n => n.Status == ImageStatus.Rejected.ToString()).ToList().Count</div>
+                <div id="esp-feedback" data-percent="20" style="height: 10px; line-height: 20px; padding: 5px; width: 140px;" class="easy-pie-chart fs-36">
+                    <i class="ti-money text-muted"></i>
                 </div>
             </div>
-        </a>
-            <div class="col-md-12">
-                <div class="widget no-border">
-                    <table id="order-table" style="width: 100%" class="table table-hover dt-responsive nowrap">
-                        <thead>
-                            <tr>
-                                <th style="width: 16%">Order ID</th>
-                                <th style="width: 37%">Customer</th>
-                                <th style="width: 20%">Date Added</th>
-                                <th style="width: 12%">Total</th>
-                                <th style="width: 15%">Completed</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>#6546</td>
-                                <td>
-                                    <div class="media">
-                                        <div class="media-left avatar">
-                                            <img src="../build/images/users/10.jpg" alt="" class="media-object img-circle"><span class="status bg-success"></span>
-                                        </div>
-                                        <div class="media-body">
-                                            <h5 class="media-heading">Philip Fernandez</h5>
-                                            <p class="text-muted mb-0">489 Rhapsody Street</p>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td>20 Feb 2016</td>
-                                <td>$140.00</td>
-                                <td class="text-center text-success"><i class="ti-check"></i></td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-            </div>
+        </div>
+    </a>
+    <div class="col-md-12">
+        <div class="widget no-border">
+            <table id="order-table" style="width: 100%" class="table table-hover dt-responsive nowrap">
+                <thead>
+                <tr>
+                    <th style="width: 16%">Order ID</th>
+                    <th style="width: 37%">Customer</th>
+                    <th style="width: 20%">Date Added</th>
+                    <th style="width: 12%">Total</th>
+                    <th style="width: 15%">Completed</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>#6546</td>
+                    <td>
+                        <div class="media">
+                            <div class="media-left avatar">
+                                <img src="../build/images/users/10.jpg" alt="" class="media-object img-circle"><span class="status bg-success"></span>
+                            </div>
+                            <div class="media-body">
+                                <h5 class="media-heading">Philip Fernandez</h5>
+                                <p class="text-muted mb-0">489 Rhapsody Street</p>
+                            </div>
+                        </div>
+                    </td>
+                    <td>20 Feb 2016</td>
+                    <td>$140.00</td>
+                    <td class="text-center text-success">
+                        <i class="ti-check"></i>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

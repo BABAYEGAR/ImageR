@@ -6,7 +6,17 @@
     ViewBag.PageHeader = "Camera";
     ViewBag.FormHeader = "Create a Camera (Make sure to fill all compulsory fields *)";
 }
-
+@section Breadcrumbs
+    {
+    <div class="pull-left">
+        <h4 class="mt-0 mb-5">@ViewBag.PageHeader</h4>
+        <ol class="breadcrumb mb-0">
+            <li><a href="@Url.Action("Dashboard","Home")">Dashboard</a></li>
+            <li><a href="@Url.Action("Index")">Camera</a></li>
+            <li class="active">@ViewBag.PageHeader</li>
+        </ol>
+    </div>
+}
 @using (Html.BeginForm("Create", "Camera", FormMethod.Post, new {enctype = "multipart/form-data", role = "form"}))
 {
     @Html.AntiForgeryToken()

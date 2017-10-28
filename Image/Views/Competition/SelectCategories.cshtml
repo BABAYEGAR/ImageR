@@ -8,6 +8,17 @@
     long competitionId = ViewBag.CompettitonId;
     List<CompetitionCategory> mapping = ViewBag.Mapping;
 }
+@section Breadcrumbs
+    {
+    <div class="pull-left">
+        <h4 class="mt-0 mb-5">@ViewBag.PageHeader</h4>
+        <ol class="breadcrumb mb-0">
+            <li><a href="@Url.Action("Dashboard","Home")">Dashboard</a></li>
+            <li><a href="@Url.Action("Index")">Competitions</a></li>
+            <li class="active">@ViewBag.PageHeader</li>
+        </ol>
+    </div>
+}
 <div class="modal fade" id="myModal1" tabindex="-1" role="dialog" aria-labelledby="myModalLabel1">
     <div class="modal-dialog" role="document">
         <div class="modal-content">

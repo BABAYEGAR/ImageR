@@ -11,8 +11,23 @@
     ViewBag.PageHeader = "Manage Image";
     if (Model != null && Model.FirstOrDefault() != null)
     {
-        ViewBag.FormHeader = "List of Images taken at " + Model.FirstOrDefault().Location.Name + " Location" ;
+        var firstOrDefault = Model.FirstOrDefault();
+        if (firstOrDefault != null)
+        {
+            ViewBag.FormHeader = "List of Images taken at " + firstOrDefault.Location.Name + " Location";
+        }
     }
+}
+@section Breadcrumbs
+    {
+    <div class="pull-left">
+        <h4 class="mt-0 mb-5">@ViewBag.PageHeader</h4>
+        <ol class="breadcrumb mb-0">
+            <li><a href="@Url.Action("Dashboard","Home")">Dashboard</a></li>
+            <li><a href="@Url.Action("Index")">Locations</a></li>
+            <li class="active">@ViewBag.PageHeader</li>
+        </ol>
+    </div>
 }
 <div class="modal fade" id="myModal1" tabindex="-1" role="dialog" aria-labelledby="myModalLabel1">
     <div class="modal-dialog" role="document">
@@ -81,7 +96,7 @@
             {
                 <td>
                     <img src='@pic'
-                         width='80' height='70'/>
+                         width="100" alt="" class="img-thumbnail img-responsive"/>
                 </td>
             }
             else

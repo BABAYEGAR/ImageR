@@ -26,5 +26,6 @@ namespace Image.Models.Entities
         public string ConfirmPassword { get; set; }
         [Display(Name = "Photographer Category")]
         public long? PhotographerCategoryId { get; set; }
+        public long? TenancyId { get; set; }
     }
 }

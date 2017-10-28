@@ -262,7 +262,7 @@ namespace Image.Controllers
                 appUser.DateCreated = DateTime.Now;
                 appUser.DateLastModified = DateTime.Now;
                 appUser.RoleId = 2;
-
+                var subscriptionStrings = JsonConvert.SerializeObject(model);
                 if (_databaseConnection.AppUsers.Any(n => n.Email == appUser.Email || n.Username == appUser.Username))
                 {
                     //display notification
@@ -284,8 +284,14 @@ namespace Image.Controllers
                     ExpiryDate = DateTime.Now.AddDays(1)
                 };
 
-                long? packageId = Convert.ToInt64(collection["PackageId"]);
-                var package = _databaseConnection.Packages.Find(packageId);
+                long? packageId = null;
+                Package package = null;
+                if (collection["PackageId"] != "")
+                {
+                    packageId = Convert.ToInt64(collection["PackageId"]);
+                    package = _databaseConnection.Packages.Find(packageId);
+                }
+              
 
                 var userSubscription = new UserSubscription
                 {
@@ -299,33 +305,36 @@ namespace Image.Controllers
                     MonthLength = 1
                 };
 
-                if (packageId <= 1)
+                if (packageId == 1 || packageId == null)
                 {
                     Random generator = new Random();
                     String generatedValues = generator.Next(0, 1000000).ToString("D6");
-                    var invoice = new Invoice
+                    if (package != null)
                     {
-                        InvoiceNumber = "INV" + generatedValues,
-                        Amount = userSubscription.MonthLength * package.Amount,
-                        DateCreated = DateTime.Now,
-                        DateLastModified = DateTime.Now,
-                        CreatedBy = appUser.AppUserId,
-                        LastModifiedBy = appUser.AppUserId,
-                    };
+                        var invoice = new Invoice
+                        {
+                            InvoiceNumber = "INV" + generatedValues,
+                            Amount = userSubscription.MonthLength * package.Amount,
+                            DateCreated = DateTime.Now,
+                            DateLastModified = DateTime.Now,
+                            CreatedBy = appUser.AppUserId,
+                            LastModifiedBy = appUser.AppUserId,
+                        };
 
-                    _databaseConnection.AppUsers.Add(appUser);
-                    _databaseConnection.SaveChanges();
+                        _databaseConnection.AppUsers.Add(appUser);
+                        _databaseConnection.SaveChanges();
 
-                    accessKey.AppUserId = appUser.AppUserId;
-                    userSubscription.AppUserId = appUser.AppUserId;
+                        accessKey.AppUserId = appUser.AppUserId;
+                        userSubscription.AppUserId = appUser.AppUserId;
 
-                    _databaseConnection.AccessKeys.Add(accessKey);
-                    _databaseConnection.SaveChanges();
+                        _databaseConnection.AccessKeys.Add(accessKey);
+                        _databaseConnection.SaveChanges();
 
-                    _databaseConnection.UserSubscriptions.Add(userSubscription);
-                    _databaseConnection.SaveChanges();
+                        _databaseConnection.UserSubscriptions.Add(userSubscription);
+                        _databaseConnection.SaveChanges();
 
-                    _databaseConnection.Invoices.Add(invoice);
+                        _databaseConnection.Invoices.Add(invoice);
+                    }
                     _databaseConnection.SaveChanges();
 
                     var role = _databaseConnection.Roles.Find(appUser.RoleId);
@@ -421,6 +430,11 @@ namespace Image.Controllers
             //convert object to json string and insert into session
             var userString = JsonConvert.SerializeObject(userExist);
             HttpContext.Session.SetString("ImageLoggedInUser", userString);
+
+            var notifications = _databaseConnection.SystemNotifications.ToList();
+            //convert object to json string and insert into session
+            var notificationString = JsonConvert.SerializeObject(notifications);
+            HttpContext.Session.SetString("Notifications", notificationString);
 
             var userSubscription =
                 _databaseConnection.UserSubscriptions.Include(n=>n.Package).SingleOrDefault(

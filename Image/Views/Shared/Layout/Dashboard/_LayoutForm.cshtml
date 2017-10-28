@@ -46,9 +46,7 @@
     <!-- Main Sidebar end-->
     <div class="page-container">
         <div class="page-header clearfix">
-            <div class="pull-left">
-                <h2 class="mt-0 mb-5">@ViewBag.PageHeader</h2>
-            </div>
+            @RenderSection("Breadcrumbs", false)
         </div>
 
         @if (TempData["display"] != null)

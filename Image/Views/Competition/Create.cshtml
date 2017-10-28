@@ -10,6 +10,17 @@
     <!-- Bootstrap DateTimePicker-->
     <link rel="stylesheet" type="text/css" href="~/Dashboard/plugins/eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.min.css">
 }
+@section Breadcrumbs
+{
+    <div class="pull-left">
+        <h4 class="mt-0 mb-5">@ViewBag.PageHeader</h4>
+        <ol class="breadcrumb mb-0">
+            <li><a href="@Url.Action("Dashboard","Home")">Dashboard</a></li>
+            <li><a href="@Url.Action("Index")">Competitions</a></li>
+            <li class="active">@ViewBag.PageHeader</li>
+        </ol>
+    </div>
+}
 @using (Html.BeginForm("Create", "Competition", FormMethod.Post, new {enctype = "multipart/form-data", role = "form"}))
 {
     @Html.AntiForgeryToken()
@@ -33,12 +44,12 @@
         </div>
         <div class="form-group col-md-6">
             @Html.LabelFor(model => model.StartDate, new {@class = "control-label"})<span class="required">*</span>
-            @Html.EditorFor(model => model.StartDate, new {htmlAttributes = new {@class = "form-control",id = "minimum-dtpicker", placeholder = "Please select the competition start date"}})
+            @Html.TextBoxFor(model => model.StartDate, new {@class = "form-control", id = "no-icon-dtpicker1", placeholder = "Please select the competition start date"})
             @Html.ValidationMessageFor(model => model.StartDate, "", new {@class = "text-danger"})
         </div>
         <div class="form-group col-md-6">
             @Html.LabelFor(model => model.EndDate, new {@class = "control-label"})<span class="required">*</span>
-            @Html.EditorFor(model => model.EndDate, new {htmlAttributes = new {@class = "form-control", placeholder = "Please select the competition end date"}})
+            @Html.TextBoxFor(model => model.EndDate,  new {@class = "form-control", id = "no-icon-dtpicker2", placeholder = "Please select the competition end date"})
             @Html.ValidationMessageFor(model => model.EndDate, "", new {@class = "text-danger"})
         </div>
 
@@ -62,4 +73,32 @@
     <script type="text/javascript" src="~/Dashboard/build/js/second-layout/app.js"></script>
     <script type="text/javascript" src="~/Dashboard/build/js/second-layout/demo.js"></script>
     <script type="text/javascript" src="~/Dashboard/build/js/page-content/pickers/datetime-picker.js"></script>
+}
+@section Functions
+{
+    <script>
+        $(document).ready(function() {
+            $("#no-icon-dtpicker1")
+                .datetimepicker({ locale: "en-gb", minDate: new Date(), format: "DD/MM/YYYY HH:mm" });
+            $("#no-icon-dtpicker2").datetimepicker({
+                locale: "en-gb",
+                format: "DD/MM/YYYY HH:mm"
+            });
+
+            $('#no-icon-dtpicker1')
+                .datetimepicker({ locale: "en-gb", minDate: new Date(), format: "DD/MM/YYYY HH:mm" });
+            $('#no-icon-dtpicker2').datetimepicker({
+                useCurrent: false,locale: "en-gb",
+                format: "DD/MM/YYYY HH:mm"
+        });
+        $("#no-icon-dtpicker1").on("dp.change",
+            function(e) {
+                $('#no-icon-dtpicker2').data("DateTimePicker").minDate(e.date);
+            });
+        $("#no-icon-dtpicker2").on("dp.change",
+            function(e) {
+                $('#no-icon-dtpicker1').data("DateTimePicker").maxDate(e.date);
+            });
+        });
+    </script>
 }
