@@ -15,9 +15,7 @@
         userRole = JsonConvert.DeserializeObject<Role>(roleString);
     }
     List<Image> images = ViewBag.Images;
-    List<Camera> cameras = ViewBag.Cameras;
     List<AppUser> appUsers = ViewBag.AppUsers;
-    List<Location> locations = ViewBag.Locations;
     List<Competition> competitions = ViewBag.Competition;
 }
 <div class="row">
@@ -28,7 +26,7 @@
             <div class="widget-body">
                 <h5 class="mb-5">All Users</h5>
                 <div class="fs-36 fw-600 mb-20 counter">@appUsers.Count</div>
-                <div id="esp-user" data-percent="30" style="height: 140px; width: 140px; line-height: 120px; padding: 10px;" class="easy-pie-chart fs-36">
+                <div id="esp-user" data-percent="30" style="height: 40px; width: 140px; line-height: 50px; padding: 10px;" class="easy-pie-chart fs-36">
                     <i class="ti-user text-muted"></i>
                 </div>
 
@@ -40,9 +38,9 @@
 <a class="col-md-3 col-sm-6" href="@Url.Action("Index", "Image")">
     <div class="widget text-center">
         <div class="widget-body">
-            <h5 class="mb-5">Uploaded Photos</h5>
+            <h5 class="mb-5">Uploaded Images</h5>
             <div class="fs-36 fw-600 mb-20 counter">@images.Count</div>
-            <div id="esp-photo" data-percent="55" style="height: 140px; width: 140px; line-height: 120px; padding: 10px;" class="easy-pie-chart fs-36">
+            <div id="esp-photo" data-percent="55" style="height: 40px; width: 140px; line-height: 50px; padding: 10px;" class="easy-pie-chart fs-36">
                 <i class="ti-image text-muted"></i>
             </div>
         </div>
@@ -53,7 +51,7 @@
         <div class="widget-body">
             <h5 class="mb-5">Pending Images</h5>
             <div class="fs-36 fw-600 mb-20 counter">@images.Where(n => n.Status == ImageStatus.Pending.ToString()).ToList().Count</div>
-            <div id="esp-comment" data-percent="75" style="height: 140px; width: 140px; line-height: 120px; padding: 10px;" class="easy-pie-chart fs-36">
+            <div id="esp-comment" data-percent="75" style="height: 40px; width: 140px; line-height: 50px; padding: 10px;" class="easy-pie-chart fs-36">
                 <i class="ti-image text-muted"></i>
             </div>
         </div>
@@ -65,7 +63,7 @@
         <div class="widget-body">
             <h5 class="mb-5">Accepted Images</h5>
             <div class="fs-36 fw-600 mb-20 counter">@images.Where(n => n.Status == ImageStatus.Accepted.ToString()).ToList().Count</div>
-            <div id="esp-feedback" data-percent="20" style="height: 140px; width: 140px; line-height: 120px; padding: 10px;" class="easy-pie-chart fs-36">
+            <div id="esp-feedback" data-percent="20" style="height: 40px; width: 140px; line-height: 50px; padding: 10px;" class="easy-pie-chart fs-36">
                 <i class="ti-image text-muted"></i>
             </div>
         </div>
@@ -75,7 +73,7 @@
         <div class="widget-body">
             <h5 class="mb-5">Rejected Images</h5>
             <div class="fs-36 fw-600 mb-20 counter">@images.Where(n => n.Status == ImageStatus.Rejected.ToString()).ToList().Count</div>
-            <div id="esp-feedback" data-percent="20" style="height: 140px; width: 140px; line-height: 120px; padding: 10px;" class="easy-pie-chart fs-36">
+            <div id="esp-feedback" data-percent="20" style="height: 40px; width: 140px; line-height: 50px; padding: 10px;" class="easy-pie-chart fs-36">
                 <i class="ti-image text-muted"></i>
             </div>
         </div>
@@ -88,7 +86,7 @@
             <div class="widget-body">
                 <h5 class="mb-5">Competitions</h5>
                 <div class="fs-36 fw-600 mb-20 counter">@competitions.Count</div>
-                <div id="esp-feedback" data-percent="20" style="height: 140px; width: 140px; line-height: 120px; padding: 10px;" class="easy-pie-chart fs-36">
+                <div id="esp-feedback" data-percent="20" style="height: 40px; width: 140px; line-height: 50px; padding: 10px;" class="easy-pie-chart fs-36">
                     <i class="ti-crown text-muted"></i>
                 </div>
             </div>
@@ -101,7 +99,7 @@
             <div class="widget-body">
                 <h5 class="mb-5">Orders</h5>
                 <div class="fs-36 fw-600 mb-20 counter">1,609</div>
-                <div id="esp-feedback" data-percent="20" style="height: 140px; width: 140px; line-height: 120px; padding: 10px;" class="easy-pie-chart fs-36">
+                <div id="esp-feedback" data-percent="20" style="height: 40px; width: 140px; line-height: 50px; padding: 10px;" class="easy-pie-chart fs-36">
                     <i class="ti-shopping-cart text-muted"></i>
                 </div>
             </div>
@@ -112,8 +110,8 @@
                 <div class="widget-body">
                     <h5 class="mb-5">Pending Payments</h5>
                     <div class="fs-36 fw-600 mb-20 counter">@images.Where(n => n.Status == ImageStatus.Rejected.ToString()).ToList().Count</div>
-                    <div id="esp-feedback" data-percent="20" style="height: 140px; width: 140px; line-height: 120px; padding: 10px;" class="easy-pie-chart fs-36">
-                        <i class="ti-image text-muted"></i>
+                    <div id="esp-feedback" data-percent="20" style="height: 40px; width: 140px; line-height: 50px; padding: 10px;" class="easy-pie-chart fs-36">
+                        <i class="ti-money text-muted"></i>
                     </div>
                 </div>
             </div>
@@ -123,8 +121,8 @@
                 <div class="widget-body">
                     <h5 class="mb-5">Approved Payments</h5>
                     <div class="fs-36 fw-600 mb-20 counter">@images.Where(n => n.Status == ImageStatus.Rejected.ToString()).ToList().Count</div>
-                    <div id="esp-feedback" data-percent="20" style="height: 140px; width: 140px; line-height: 120px; padding: 10px;" class="easy-pie-chart fs-36">
-                        <i class="ti-image text-muted"></i>
+                    <div id="esp-feedback" data-percent="20" style="height: 40px; width: 140px; line-height: 50px; padding: 10px;" class="easy-pie-chart fs-36">
+                        <i class="ti-money text-muted"></i>
                     </div>
                 </div>
             </div>

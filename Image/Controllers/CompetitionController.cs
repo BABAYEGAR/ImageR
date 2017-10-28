@@ -8,6 +8,7 @@ using Image.Models.DataBaseConnections;
 using Image.Models.Encryption;
 using Image.Models.Entities;
 using Image.Models.Enum;
+using Image.Models.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -299,6 +300,22 @@ namespace Image.Controllers
                         _databaseConnection.CompetitionUploads.Add(competitionUpload);
                         _databaseConnection.SaveChanges();
                     }
+                    if (competitionUpload.CompetitionUploadId > 0)
+                    {
+                        var competition = _databaseConnection.Competition.Find(competitionUpload.CompetitionId);
+                        var rating =
+                            new ImageCompetitionRating
+                            {
+                                CompetitionUploadId = competitionUpload.CompetitionUploadId,
+                                DateCreated = DateTime.Now,
+                                DateLastModified = DateTime.Now,
+                                CreatedBy = signedInUserId,
+                                LastModifiedBy = signedInUserId,
+                                TimeDeliveryRating = new CompetitionCalculator().CalculateTimeRating((DateTime) competition.EndDate, competitionUpload.DateCreated)
+                    };
+                        _databaseConnection.ImageCompetitionRatings.Add(rating);
+                        _databaseConnection.SaveChanges();
+                    }
 
                     //display notification
                     TempData["display"] = "You have successfully uploaded an image for the competition!";
@@ -335,42 +352,58 @@ namespace Image.Controllers
                 return View(competitionUpload);
             }
         }
-
         [SessionExpireFilter]
-        public ActionResult SelectWinner(long? competitionId,long userId)
+        public ActionResult CompetitionImageRating(long? id)
+        {
+            var competitionRating = _databaseConnection.ImageCompetitionRatings.SingleOrDefault(n=>n.CompetitionUploadId == id);
+            return View(competitionRating);
+        }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [SessionExpireFilter]
+        public ActionResult CompetitionImageRating(ImageCompetitionRating competitionRating)
         {
             var signedInUserId = HttpContext.Session.GetInt32("userId");
-            var competition = _databaseConnection.Competition.Find(competitionId);
-            competition.AppUserId = userId;
-            competition.Status = CompetitionStatus.Closed.ToString();
-            competition.DateLastModified = DateTime.Now;
-            competition.LastModifiedBy = signedInUserId;
-            _databaseConnection.Entry(competition).State = EntityState.Modified;
+            competitionRating.LastModifiedBy = signedInUserId;
+            competitionRating.DateLastModified = DateTime.Now;
+            _databaseConnection.Entry(competitionRating).State = EntityState.Modified;
             _databaseConnection.SaveChanges();
 
+            long competitionId = _databaseConnection.CompetitionUploads.Find(competitionRating.CompetitionUploadId).CompetitionId;
+
             //display notification
-            TempData["display"] = "You have successfully selected the winner!";
+            TempData["display"] = "You have successfully updated the rating of the contestant!";
             TempData["notificationtype"] = NotificationType.Success.ToString();
-            return RedirectToAction("CompetitionUpload",new{id = competitionId});
+            return RedirectToAction("CompetitionUpload", new { id = competitionId });
         }
         [SessionExpireFilter]
         public ActionResult AutoSelectWinner(long? competitionId, long userId)
         {
             var signedInUserId = HttpContext.Session.GetInt32("userId");
             var competitionUploads = _databaseConnection.CompetitionUploads.Where(n=>n.CompetitionId == competitionId);
-
-            foreach (var item in competitionUploads)
-            {
-                var rating =
-                    _databaseConnection.ImageCompetitionRatings.Where(
-                        n => n.CompetitionUploadId == item.CompetitionUploadId);
-                foreach (var items in rating)
-                {
-                    var totalScore = items.DescriptionRating + items.ClearityRating
-                                     + items.ConceptRating + items.QualityRating + items.TimeDeliveryRating;
-                }
-            }
             var competition = _databaseConnection.Competition.Find(competitionId);
+            foreach (var item in competitionUploads.Where(n=>n.Competition.EndDate.Date == DateTime.Now.Date))
+            {
+                //get rating
+                var rating =
+                    _databaseConnection.ImageCompetitionRatings.Include(n=>n.CompetitionUpload).SingleOrDefault(
+                        n => n.CompetitionUpload.AppUserId == item.AppUserId);
+                rating.AcceptanceRating = new CompetitionCalculator().CalculateUserAcceptanceRating(_databaseConnection.AppUsers.ToList().Count,item.Vote);
+                rating.TotalRating = rating.AcceptanceRating + rating.ClearityRating + rating.ConceptRating +
+                                     rating.DescriptionRating + rating.QualityRating + rating.TimeDeliveryRating;
+
+                //update rating
+                _databaseConnection.Entry(rating).State = EntityState.Modified;
+                _databaseConnection.SaveChanges();
+
+                //get winner
+                var winner =
+                    _databaseConnection.ImageCompetitionRatings.Include(n=>n.CompetitionUpload).Where(
+                        n => n.CompetitionUploadId == item.CompetitionUploadId).OrderByDescending(n => n.TotalRating).FirstOrDefault();
+                competition.AppUserId = winner.CompetitionUpload.AppUserId;
+            }
+        
+         
             competition.AppUserId = userId;
             competition.Status = CompetitionStatus.Closed.ToString();
             competition.DateLastModified = DateTime.Now;

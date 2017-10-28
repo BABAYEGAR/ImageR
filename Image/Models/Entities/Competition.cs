@@ -16,10 +16,10 @@ namespace Image.Models.Entities
         public string Description { get; set; }
         [Required]
         [Display(Name = "Start Date & Time")]
-        public DateTime? StartDate { get; set; }
+        public DateTime StartDate { get; set; }
         [Required]
         [Display(Name = "End Date & Time")]
-        public DateTime? EndDate { get; set; }
+        public DateTime EndDate { get; set; }
         public string Status { get; set; }
         //winner
         public long? AppUserId { get; set; }

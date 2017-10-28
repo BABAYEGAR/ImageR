@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace Image.Views.Competition
 {
-    public class CompetitionImageRatingModel : PageModel
+    public class CreateModel : PageModel
     {
         public void OnGet()
         {
