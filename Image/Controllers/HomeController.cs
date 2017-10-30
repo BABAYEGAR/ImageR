@@ -70,7 +70,7 @@ namespace Image.Controllers
                 ViewBag.Locations = _databaseConnection.Locations
                     .Where(n => n.CreatedBy == signedInUserId).ToList();
             }
-            ViewBag.AppUsers = _databaseConnection.AppUsers.ToList();
+            //ViewBag.AppUsers = _databaseConnection.AppUsers.ToList();
             ViewBag.Competition = _databaseConnection.Competition.ToList();
             return View();
         }

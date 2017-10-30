@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Image.Models.APIFactory;
 using Image.Models.DataBaseConnections;
 using Image.Models.Encryption;
 using Image.Models.Entities;
@@ -29,7 +30,8 @@ namespace Image.Controllers
         [SessionExpireFilter]
         public ActionResult Index()
         {
-            return View(_databaseConnection.AppUsers.Include(n=>n.Role).ToList());
+            var users = new AppUserFactory().GetAllUsersAsync("http://localhost:53017/appuser");
+            return View(users.Result);
         }
 
         // GET: AppUser/Details/5
@@ -52,28 +54,32 @@ namespace Image.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         //[SessionExpireFilter]
-        public ActionResult Create(AppUser user, IList<IFormFile> images, IFormCollection collection)
+        public ActionResult Create(AppUser user,IFormCollection collection)
         {
             try
             {
+                var users = new AppUserFactory().GetAllUsersAsync("http://localhost:53017/appuser");
                 // TODO: Add insert logic here
+                var passwordString = new Md5Ecryption().RandomString(6);
                 var signedInUserId = Convert.ToInt64(HttpContext.Session.GetInt32("userId"));
                 user.DateCreated = DateTime.Now;
-                user.Password = new Hashing().HashPassword(user.ConfirmPassword);
+                user.Password = new Hashing().HashPassword(passwordString);
                 user.ConfirmPassword = user.Password;
                 user.DateLastModified = DateTime.Now;
                 user.CreatedBy = signedInUserId;
                 user.LastModifiedBy = signedInUserId;
                 user.Status = UserStatus.Inactive.ToString();
+                user.ProfilePicture = "Avatar.jpg";
+                user.BackgroundPicture = "photo1";
 
-                if (_databaseConnection.AppUsers.Any(n => n.Email == user.Email || n.Username == user.Username))
+                if (users.Result.Any(n => n.Email == user.Email || n.Username == user.Username))
                 {
                     //display notification
                     TempData["display"] = "A user with the same Username/Email already exist, try another credential again!";
                     TempData["notificationtype"] = NotificationType.Error.ToString();
                     return View(user);
                 }
-                _databaseConnection.AppUsers.Add(user);
+                users.Result.Add(user);
                 _databaseConnection.SaveChanges();
 
                 //define acceskeys
@@ -91,20 +97,6 @@ namespace Image.Controllers
 
                 _databaseConnection.AccessKeys.Add(accessKey);
                 _databaseConnection.SaveChanges();
-
-                //var userSubscription = new UserSubscription
-                //{
-                //    AppUserId = user.AppUserId,
-                //    DateCreated = DateTime.Now,
-                //    DateLastModified = DateTime.Now,
-                //    CreatedBy = signedInUserId,
-                //    LastModifiedBy = signedInUserId,
-                //    PackageId = 1,
-                //    Status = UserStatus.Active.ToString()
-                //};
-
-                //_databaseConnection.UserSubscriptions.Add(userSubscription);
-                //_databaseConnection.SaveChanges();
                 var role = _databaseConnection.Roles.Find(user.RoleId);
 
                 var link = _hostingEnv.WebRootPath;

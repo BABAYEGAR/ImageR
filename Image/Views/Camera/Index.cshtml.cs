@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace Image.Views.AppUser
+namespace Image.Views.Camera
 {
     public class IndexModel : PageModel
     {

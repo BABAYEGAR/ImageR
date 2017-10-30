@@ -4,6 +4,7 @@ using System.Linq;
 using CloudinaryDotNet;
 using CloudinaryDotNet.Actions;
 using Image.Data;
+using Image.Models.APIFactory;
 using Image.Models.DataBaseConnections;
 using Image.Models.Encryption;
 using Image.Models.Entities;
@@ -21,10 +22,13 @@ namespace Image.Controllers
     {
         private readonly ImageDataContext _databaseConnection;
         Role _userRole;
+        private List<AppUser> users;
 
         public CompetitionController(ImageDataContext databaseConnection)
         {
             _databaseConnection = databaseConnection;
+            users = new AppUserFactory().GetAllUsersAsync("http://localhost:53017/appuser").Result;
+
         }
 
         // GET: Package
@@ -68,16 +72,15 @@ namespace Image.Controllers
         
             if (_userRole.ManageCompetition)
             {
-                competitionUploads = id != null ? _databaseConnection.CompetitionUploads
-                    .Include(n=>n.AppUser).Include(n=>n.Competition).Include(n=>n.Location).Include(n=>n.Camera)
-                    .Where(n=>n.CompetitionId == id).ToList() : _databaseConnection.CompetitionUploads.Include(n => n.AppUser)
+                competitionUploads = id != null ? _databaseConnection.CompetitionUploads.Include(n=>n.Competition).Include(n=>n.Location).Include(n=>n.Camera)
+                    .Where(n=>n.CompetitionId == id).ToList() : _databaseConnection.CompetitionUploads
                     .Include(n => n.Competition).Include(n => n.Location).Include(n => n.Camera).ToList();
             }
             if (_userRole.ParticipateCompetition)
             {
-                competitionUploads = id != null ? _databaseConnection.CompetitionUploads.Include(n => n.AppUser).Include(n => n.Competition).Include(n => n.Location).Include(n => n.Camera)
+                competitionUploads = id != null ? _databaseConnection.CompetitionUploads.Include(n => n.Competition).Include(n => n.Location).Include(n => n.Camera)
                     .Where(n => n.AppUserId == signedInUserId && n.CompetitionId == id).ToList() : 
-                    _databaseConnection.CompetitionUploads.Include(n => n.AppUser).Include(n => n.Competition).Include(n => n.Location).Include(n => n.Camera)
+                    _databaseConnection.CompetitionUploads.Include(n => n.Competition).Include(n => n.Location).Include(n => n.Camera)
                     .Where(n => n.AppUserId == signedInUserId)
                     .ToList();
             }
@@ -169,7 +172,7 @@ namespace Image.Controllers
                         _databaseConnection.CompetitionCategories.Add(competitionMapping);
                         _databaseConnection.SaveChanges();
 
-                        var users = (from a in _databaseConnection.AppUsers
+                        var users = (from a in this.users
                             join b in _databaseConnection.PhotographerCategoryMappings
                             on a.AppUserId equals b.AppUserId
                             join c in _databaseConnection.CompetitionCategories on competitionMapping.CompetitionId
@@ -196,7 +199,6 @@ namespace Image.Controllers
 
                         TempData["display"] = "you have succesfully added the category(s) to the competition!";
                         TempData["notificationtype"] = NotificationType.Success.ToString();
-                        return RedirectToAction("Index", "Competition");
                     }
                 }
             }
@@ -206,7 +208,7 @@ namespace Image.Controllers
                 TempData["notificationtype"] = NotificationType.Error.ToString();
                 return RedirectToAction("Index", "Competition");
             }
-            return RedirectToAction("Index", "Competition");
+            return RedirectToAction("SelectCategories", "Competition",new{id=competitionId});
         }
 
 
@@ -388,7 +390,7 @@ namespace Image.Controllers
                 var rating =
                     _databaseConnection.ImageCompetitionRatings.Include(n=>n.CompetitionUpload).SingleOrDefault(
                         n => n.CompetitionUpload.AppUserId == item.AppUserId);
-                rating.AcceptanceRating = new CompetitionCalculator().CalculateUserAcceptanceRating(_databaseConnection.AppUsers.ToList().Count,item.Vote);
+                rating.AcceptanceRating = new CompetitionCalculator().CalculateUserAcceptanceRating(users.Count,item.Vote);
                 rating.TotalRating = rating.AcceptanceRating + rating.ClearityRating + rating.ConceptRating +
                                      rating.DescriptionRating + rating.QualityRating + rating.TimeDeliveryRating;
 

@@ -26,7 +26,7 @@ namespace Image.Controllers
         /// <returns></returns>
         public JsonResult GetAllImages()
         {
-            return Json(_databaseConnection.Images.Include(n => n.Camera).Include(n => n.Location).Include(n => n.AppUser)
+            return Json(_databaseConnection.Images.Include(n => n.Camera).Include(n => n.Location)
                 .Include(n => n.ImageCategory).Include(n => n.ImageSubCategory).ToList());
         }
         /// <summary>
@@ -36,7 +36,7 @@ namespace Image.Controllers
         /// <returns></returns>
         public JsonResult GetSingleImage(long imageId)
         {
-            var image = _databaseConnection.Images.Include(n => n.Camera).Include(n => n.Location).Include(n => n.AppUser)
+            var image = _databaseConnection.Images.Include(n => n.Camera).Include(n => n.Location)
                 .Include(n => n.ImageCategory).Include(n => n.ImageSubCategory).SingleOrDefault(n=>n.ImageId == imageId);
             return Json(image);
         }
@@ -47,7 +47,7 @@ namespace Image.Controllers
         /// <returns></returns>
         public JsonResult SearchImages([FromBody] SearchCriteria criteria)
         {
-            var images = _databaseConnection.Images.Include(n => n.Camera).Include(n => n.Location).Include(n => n.AppUser)
+            var images = _databaseConnection.Images.Include(n => n.Camera).Include(n => n.Location)
                 .Include(n => n.ImageCategory).Include(n => n.ImageSubCategory).Where(
                     n => n.LocationId == criteria.LocationId
                          && n.CameraId == criteria.CameraId && n.ImageCategoryId == criteria.ImageCategoryId &&

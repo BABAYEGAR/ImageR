@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using Image.Models.APIFactory;
 using Image.Models.DataBaseConnections;
 using Image.Models.Encryption;
 using Image.Models.Entities;
@@ -10,7 +12,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 
@@ -20,39 +21,127 @@ namespace Image.Controllers
     {
         private readonly ImageDataContext _databaseConnection;
         private readonly IHostingEnvironment _hostingEnv;
+        private readonly List<AppUser> users;
 
         public AccountController(IHostingEnvironment env, ImageDataContext databaseConnection)
         {
             _hostingEnv = env;
             _databaseConnection = databaseConnection;
+            users = new AppUserFactory().GetAllUsersAsync("http://localhost:53017/appuser").Result;
+        }
+
+        [SessionExpireFilter]
+        public ActionResult ManageApiUrl(ApiUrl url)
+        {
+            var signedInUserId = HttpContext.Session.GetInt32("userId");
+            url.DateLastModified = DateTime.Now;
+            url.LastModifiedBy = signedInUserId;
+            _databaseConnection.Entry(url).State = EntityState.Modified;
+            _databaseConnection.SaveChanges();
+            //display notification
+            TempData["display"] = "You have succesfully updated the API URL's!";
+            TempData["notificationtype"] = NotificationType.Success.ToString();
+            return View(url);
         }
 
         [SessionExpireFilter]
         public ActionResult Profile()
         {
+            ViewBag.Users = users;
             var signedInUserId = HttpContext.Session.GetInt32("userId");
-            ViewBag.Images = _databaseConnection.Images.Include(n => n.AppUser).Include(n => n.ImageCategory)
+            ViewBag.Images = _databaseConnection.Images.Include(n => n.ImageCategory)
                 .Include(n => n.ImageComments).Include(n => n.ImageTags)
                 .Include(n => n.Location).Include(n => n.ImageSubCategory)
                 .Where(n => n.CreatedBy == signedInUserId).ToList();
+            ViewBag.ImageComments = _databaseConnection.ImageComments.Where(n => n.AppUserId == signedInUserId)
+                .ToList();
             return View();
         }
 
-        [SessionExpireFilter]
-        public ActionResult ManageProfile()
+        public ActionResult ChangeProfileImage()
         {
-            var signedInUserId = HttpContext.Session.GetInt32("userId");
-            var user = _databaseConnection.AppUsers.Find(signedInUserId);
-            ViewBag.PhotographerCategoryId = new SelectList(_databaseConnection.PhotographerCategories.ToList(),
-                "PhotographerCategoryId",
-                "Name");
-            return View(user);
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult ChangeProfileImage(IList<IFormFile> profile, IList<IFormFile> background)
+        {
+            ViewBag.Users = users;
+            var signedInUserId = Convert.ToInt64(HttpContext.Session.GetInt32("userId"));
+            var appUser = users.SingleOrDefault(n => n.AppUserId == signedInUserId);
+            if (profile.Count > 0)
+                foreach (var file in profile)
+                {
+                    var fileInfo = new FileInfo(file.FileName);
+                    var ext = fileInfo.Extension.ToLower();
+                    var name = DateTime.Now.ToFileTime().ToString();
+                    var fileName = name + ext;
+                    var uploadedImage = _hostingEnv.WebRootPath + $@"\UploadedImage\ProfilePicture\{fileName}";
+
+                    using (var fs = System.IO.File.Create(uploadedImage))
+                    {
+                        if (fs != null)
+                        {
+                            file.CopyTo(fs);
+                            fs.Flush();
+                            appUser.ProfilePicture = fileName;
+                            _databaseConnection.Entry(appUser).State = EntityState.Modified;
+                            _databaseConnection.SaveChanges();
+                            var userString = JsonConvert.SerializeObject(appUser);
+                            HttpContext.Session.SetString("ImageLoggedInUser", userString);
+                        }
+                    }
+                }
+            if (background.Count > 0)
+                foreach (var file in background)
+                {
+                    var fileInfo = new FileInfo(file.FileName);
+                    var ext = fileInfo.Extension.ToLower();
+                    var name = DateTime.Now.ToFileTime().ToString();
+                    var fileName = name + ext;
+                    var uploadedImage = _hostingEnv.WebRootPath + $@"\UploadedImage\ProfileBackground\{fileName}";
+
+                    using (var fs = System.IO.File.Create(uploadedImage))
+                    {
+                        if (fs != null)
+                        {
+                            file.CopyTo(fs);
+                            fs.Flush();
+                            appUser.BackgroundPicture = fileName;
+                            _databaseConnection.Entry(appUser).State = EntityState.Modified;
+                            _databaseConnection.SaveChanges();
+                            var userString = JsonConvert.SerializeObject(appUser);
+                            HttpContext.Session.SetString("ImageLoggedInUser", userString);
+                        }
+                    }
+                }
+            if (background.Count <= 0 && profile.Count <= 0)
+            {
+                //display notification
+                TempData["display"] = "No Image has been selected!";
+                TempData["notificationtype"] = NotificationType.Error.ToString();
+                return View();
+            }
+            //display notification
+            TempData["display"] = "You have succesfully uploaded a new profile/background!";
+            TempData["notificationtype"] = NotificationType.Success.ToString();
+            return RedirectToAction("Profile");
+        }
+
+        [SessionExpireFilter]
+        public ActionResult EditProfile()
+        {
+            AppUser appUser = null;
+            var userString = HttpContext.Session.GetString("ImageLoggedInUser");
+            appUser = JsonConvert.DeserializeObject<AppUser>(userString);
+            return View(appUser);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         [SessionExpireFilter]
-        public ActionResult ManageProfile(AppUser appUser)
+        public ActionResult EditProfile(AppUser appUser)
         {
             try
             {
@@ -60,11 +149,21 @@ namespace Image.Controllers
                 var signedInUserId = HttpContext.Session.GetInt32("userId");
                 appUser.LastModifiedBy = signedInUserId;
                 appUser.DateLastModified = DateTime.Now;
-                _databaseConnection.Entry(appUser).State = EntityState.Modified;
-                _databaseConnection.SaveChanges();
+             var resonse = new AppUserFactory().EditProfile("",appUser);
+
+
+                if (resonse.Result.AppUser == null)
+                {
+                    //display notification
+                    TempData["display"] = resonse.Result.AccessLog.Message;
+                    TempData["notificationtype"] = NotificationType.Error.ToString();
+                    return View(appUser);
+                }
+                var userString = JsonConvert.SerializeObject(resonse.Result.AppUser);
+                HttpContext.Session.SetString("ImageLoggedInUser", userString);
 
                 //display notification
-                TempData["display"] = "You have succesfully updated your profile, Check and Try again!";
+                TempData["display"] = resonse.Result.AccessLog.Message;
                 TempData["notificationtype"] = NotificationType.Success.ToString();
                 return RedirectToAction("Profile");
             }
@@ -80,38 +179,52 @@ namespace Image.Controllers
         [SessionExpireFilter]
         public ActionResult ChangePassword()
         {
-            var signedInUserId = HttpContext.Session.GetInt32("userId");
-            var user = _databaseConnection.AppUsers.Find(signedInUserId);
-            return View(user);
+            return View();
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         [SessionExpireFilter]
-        public ActionResult ChangePassword(AppUser appUser)
+        public ActionResult ChangePassword(AccountModel model)
         {
             try
             {
-                //populate object and save transaction
                 var signedInUserId = HttpContext.Session.GetInt32("userId");
-                appUser.Password = new Hashing().HashPassword(appUser.Password);
-                appUser.Password = appUser.Password;
-                appUser.LastModifiedBy = signedInUserId;
-                appUser.DateLastModified = DateTime.Now;
-                _databaseConnection.Entry(appUser).State = EntityState.Modified;
-                _databaseConnection.SaveChanges();
+                AppUser appUser = null;
+                var userString = HttpContext.Session.GetString("ImageLoggedInUser");
+                appUser = JsonConvert.DeserializeObject<AppUser>(userString);
+                if (appUser != null)
+                {
+                    appUser.Password = new Hashing().HashPassword(model.Password);
+                    appUser.Password = appUser.Password;
+                    appUser.LastModifiedBy = signedInUserId;
+                    appUser.DateLastModified = DateTime.Now;
+                }
+
+                var resonse = new AppUserFactory().ChangePassword("", appUser);
+
+
+                if (resonse.Result.AppUser == null)
+                {
+                    //display notification
+                    TempData["display"] = resonse.Result.AccessLog.Message;
+                    TempData["notificationtype"] = NotificationType.Error.ToString();
+                    return View(model);
+                }
+                var newUserString = JsonConvert.SerializeObject(resonse.Result.AppUser);
+                HttpContext.Session.SetString("ImageLoggedInUser", newUserString);
 
                 //display notification
-                TempData["display"] = "You have succesfully changed your password!";
+                TempData["display"] = resonse.Result.AccessLog.Message;
                 TempData["notificationtype"] = NotificationType.Success.ToString();
                 return RedirectToAction("Profile");
             }
             catch (Exception ex)
             {
                 //display notification
-                TempData["display"] = "You are unable to update your profile, Check and Try again!";
+                TempData["display"] = "There was an issue changing your password, Check and Try again!";
                 TempData["notificationtype"] = NotificationType.Error.ToString();
-                return View(appUser);
+                return View(model);
             }
         }
 
@@ -120,17 +233,17 @@ namespace Image.Controllers
         {
             var accessKey =
                 _databaseConnection.AccessKeys.SingleOrDefault(n => n.AccountActivationAccessCode == accessCode);
-            var user = _databaseConnection.AppUsers.Find(accessKey.AppUserId);
-            if (user.Status == UserStatus.Inactive.ToString())
+            var appUser = users.SingleOrDefault(n => n.AppUserId == accessKey.AppUserId);
+            if (appUser.Status == UserStatus.Inactive.ToString())
             {
                 //update user
-                user.Status = UserStatus.Active.ToString();
-                _databaseConnection.Entry(user).State = EntityState.Modified;
+                appUser.Status = UserStatus.Active.ToString();
+                _databaseConnection.Entry(appUser).State = EntityState.Modified;
                 _databaseConnection.SaveChanges();
 
-                var role = _databaseConnection.Roles.Find(user.RoleId);
+                var role = _databaseConnection.Roles.Find(appUser.RoleId);
                 //convert object to json string and insert into session
-                var userString = JsonConvert.SerializeObject(user);
+                var userString = JsonConvert.SerializeObject(appUser);
                 HttpContext.Session.SetString("ImageLoggedInUser", userString);
 
                 //convert object to json string and insert into session
@@ -138,7 +251,7 @@ namespace Image.Controllers
                 HttpContext.Session.SetString("Role", roleString);
 
                 //set user id inti=o session string
-                HttpContext.Session.SetInt32("userId", (int) user.AppUserId);
+                HttpContext.Session.SetInt32("userId", (int) appUser.AppUserId);
 
 
                 //update accessKeys
@@ -155,15 +268,17 @@ namespace Image.Controllers
             TempData["notificationtype"] = NotificationType.Info.ToString();
             return RedirectToAction("Login", "Account");
         }
+
         public ActionResult ForgotPasswordLink()
         {
             return View();
         }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult ForgotPasswordLink(AccountModel model)
         {
-            var user = _databaseConnection.AppUsers.SingleOrDefault(n=>n.Email == model.Email);
+            var user = users.SingleOrDefault(n => n.Email == model.Email);
             var access = _databaseConnection.AccessKeys.SingleOrDefault(n => n.AppUserId == user.AppUserId);
             var link = _hostingEnv.WebRootPath;
             var mail = new Mailer();
@@ -174,10 +289,10 @@ namespace Image.Controllers
             return RedirectToAction("Login");
         }
 
-        public ActionResult ForgotPassword(string id)
+        public ActionResult ForgotPassword(string accessCode)
         {
             AppUser user = null;
-            var accessKey = _databaseConnection.AccessKeys.SingleOrDefault(n => n.PasswordAccessCode == id);
+            var accessKey = _databaseConnection.AccessKeys.SingleOrDefault(n => n.PasswordAccessCode == accessCode);
             if (accessKey != null)
             {
                 if (DateTime.Now > accessKey.ExpiryDate)
@@ -187,7 +302,7 @@ namespace Image.Controllers
                     TempData["notificationtype"] = NotificationType.Error.ToString();
                     return RedirectToAction("Login", "Account");
                 }
-                user = _databaseConnection.AppUsers.Find(accessKey.AppUserId);
+                user = users.SingleOrDefault(n => n.AppUserId == accessKey.AppUserId);
                 //update accessKeys
                 accessKey.PasswordAccessCode = new Md5Ecryption().RandomString(15);
                 accessKey.DateLastModified = DateTime.Now;
@@ -234,19 +349,16 @@ namespace Image.Controllers
         public ActionResult Register(long? packageId)
         {
             if (packageId != null)
-            {
                 ViewBag.PackageId = packageId;
-            }
             else
-            {
                 ViewBag.PackageId = 1;
-            }
             return View();
         }
 
         [HttpPost]
         public ActionResult Register(AccountModel model, IFormCollection collection)
         {
+            ActionResponse response = null;
             try
             {
                 var appUser = new AppUser
@@ -254,23 +366,16 @@ namespace Image.Controllers
                     Name = model.Username,
                     Mobile = model.Mobile,
                     Email = model.Email,
-                    Password = new Hashing().HashPassword(model.ConfirmPassword),
                     Username = model.Username,
-                    Status = UserStatus.Inactive.ToString()
+                    Status = UserStatus.Inactive.ToString(),
+                    ProfilePicture = "Avatar.jpg",
+                    BackgroundPicture = "photo1",
+                    DateCreated = DateTime.Now,
+                    DateLastModified = DateTime.Now,
+                    RoleId = 2,
+                    TenancyId = 1, Password = model.Password, ConfirmPassword = model.ConfirmPassword
                 };
-                appUser.ConfirmPassword = appUser.Password;
-                appUser.DateCreated = DateTime.Now;
-                appUser.DateLastModified = DateTime.Now;
-                appUser.RoleId = 2;
                 var subscriptionStrings = JsonConvert.SerializeObject(model);
-                if (_databaseConnection.AppUsers.Any(n => n.Email == appUser.Email || n.Username == appUser.Username))
-                {
-                    //display notification
-                    TempData["display"] =
-                        "A user with the same Username/Email already exist, try another credential again!";
-                    TempData["notificationtype"] = NotificationType.Error.ToString();
-                    return View(model);
-                }
 
                 //define acceskeys
                 var accessKey = new AppUserAccessKey
@@ -291,7 +396,7 @@ namespace Image.Controllers
                     packageId = Convert.ToInt64(collection["PackageId"]);
                     package = _databaseConnection.Packages.Find(packageId);
                 }
-              
+
 
                 var userSubscription = new UserSubscription
                 {
@@ -307,8 +412,8 @@ namespace Image.Controllers
 
                 if (packageId == 1 || packageId == null)
                 {
-                    Random generator = new Random();
-                    String generatedValues = generator.Next(0, 1000000).ToString("D6");
+                    var generator = new Random();
+                    var generatedValues = generator.Next(0, 1000000).ToString("D6");
                     if (package != null)
                     {
                         var invoice = new Invoice
@@ -318,12 +423,20 @@ namespace Image.Controllers
                             DateCreated = DateTime.Now,
                             DateLastModified = DateTime.Now,
                             CreatedBy = appUser.AppUserId,
-                            LastModifiedBy = appUser.AppUserId,
+                            LastModifiedBy = appUser.AppUserId
                         };
 
-                        _databaseConnection.AppUsers.Add(appUser);
-                        _databaseConnection.SaveChanges();
-
+                         response = new AppUserFactory()
+                            .RegisterUser("http://localhost:53017/Account/Register", appUser).Result;
+                        if (response.AccessLog.Status == "Denied")
+                        {
+                            //display notification
+                            TempData["display"] =
+                                response.AccessLog.Message;
+                            TempData["notificationtype"] = NotificationType.Error.ToString();
+                            return View(model);
+                        }
+                        appUser.AppUserId = response.AppUser.AppUserId;
                         accessKey.AppUserId = appUser.AppUserId;
                         userSubscription.AppUserId = appUser.AppUserId;
 
@@ -334,8 +447,9 @@ namespace Image.Controllers
                         _databaseConnection.SaveChanges();
 
                         _databaseConnection.Invoices.Add(invoice);
+                        _databaseConnection.SaveChanges();
                     }
-                    _databaseConnection.SaveChanges();
+                 
 
                     var role = _databaseConnection.Roles.Find(appUser.RoleId);
 
@@ -343,8 +457,9 @@ namespace Image.Controllers
                     var mail = new Mailer();
                     mail.SendNewUserEmail(link + "\\EmailTemplates\\NewUser.html", appUser, role, accessKey);
                     //display notification
-                    TempData["display"] =
-                        "You have successfully registered to SOS Photo Studio, Check your email to confirm your account!";
+                    if (response != null)
+                        TempData["display"] =
+                            response.AccessLog.Message;
                     TempData["notificationtype"] = NotificationType.Success.ToString();
                     return RedirectToAction("Login");
                 }
@@ -360,17 +475,18 @@ namespace Image.Controllers
                 //convert object to json string and insert into session
                 var accessString = JsonConvert.SerializeObject(accessKey);
                 HttpContext.Session.SetString("Access", accessString);
-
             }
             catch (Exception ex)
             {
                 //display notification
-                TempData["display"] = "There was an issue trying to register,Check your intenet connection and Try Again!";
+                TempData["display"] =
+                    "There was an issue trying to register,Check your intenet connection and Try Again!";
                 TempData["notificationtype"] = NotificationType.Error.ToString();
                 return View(model);
             }
-            //display notification
-            TempData["display"] = "You have successfully registered to SOS Photo Studio, Check your email to confirm your account!";
+
+                TempData["display"] =
+                    response.AccessLog.Message;
             TempData["notificationtype"] = NotificationType.Success.ToString();
             return RedirectToAction("SubscriptionInvoice");
         }
@@ -395,37 +511,19 @@ namespace Image.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Login(AccountModel model)
         {
+            model.TenancyId = 1;
             AppUser userExist = null;
             List<PhotographerCategoryMapping> mapping = null;
-                userExist =
-                _databaseConnection.AppUsers.SingleOrDefault(
-                    n => n.Email == model.LoginName || n.Username == model.LoginName);
-       
-            if (userExist != null && userExist.Status == UserStatus.Inactive.ToString())
+            var response =  new AuthenticateFactory().Login("http://localhost:53017/Account/Login", model);
+
+            if (response.Result.AppUser == null)
             {
                 //display notification
-                TempData["display"] =
-                    "You are yet to activate your account from the the link sent to your email when you created the account!";
+                TempData["display"] =response.Result.AccessLog.Message;
                 TempData["notificationtype"] = NotificationType.Error.ToString();
                 return View(model);
             }
-            if (userExist == null)
-            {
-                //display notification
-                TempData["display"] = "The Account does not exist, Check and Try again!";
-                TempData["notificationtype"] = NotificationType.Error.ToString();
-                return View(model);
-            }
-
-            var passwordCorrect = new Hashing().ValidatePassword(model.Password, userExist.ConfirmPassword);
-            if (passwordCorrect == false)
-            {
-                //display notification
-                TempData["display"] = "Dear " + userExist.Name + " your Password is Incorrect, Check and Try again!";
-                TempData["notificationtype"] = NotificationType.Success.ToString();
-                return View(model);
-            }
-
+            userExist = response.Result.AppUser;
             var role = _databaseConnection.Roles.Find(userExist.RoleId);
             //convert object to json string and insert into session
             var userString = JsonConvert.SerializeObject(userExist);
@@ -437,7 +535,7 @@ namespace Image.Controllers
             HttpContext.Session.SetString("Notifications", notificationString);
 
             var userSubscription =
-                _databaseConnection.UserSubscriptions.Include(n=>n.Package).SingleOrDefault(
+                _databaseConnection.UserSubscriptions.Include(n => n.Package).SingleOrDefault(
                     n => n.AppUserId == userExist.AppUserId && n.Status == UserStatus.Active.ToString());
             if (userSubscription != null)
             {
@@ -446,7 +544,7 @@ namespace Image.Controllers
                 var packageString = JsonConvert.SerializeObject(package);
                 HttpContext.Session.SetString("Package", packageString);
             }
- 
+
 
             //convert object to json string and insert into session
             var roleString = JsonConvert.SerializeObject(role);
@@ -455,7 +553,8 @@ namespace Image.Controllers
             //set user id inti=o session string
             HttpContext.Session.SetInt32("userId", (int) userExist.AppUserId);
             var signedInUserId = HttpContext.Session.GetInt32("userId");
-            mapping = _databaseConnection.PhotographerCategoryMappings.Where(n => n.AppUserId == signedInUserId).ToList();
+            mapping = _databaseConnection.PhotographerCategoryMappings.Where(n => n.AppUserId == signedInUserId)
+                .ToList();
             if (mapping.Count <= 0 && role.UploadImage)
             {
                 //display notification
@@ -470,7 +569,7 @@ namespace Image.Controllers
         public ActionResult SubscriptionInvoice(IFormCollection collection)
         {
             var subscriptionString = HttpContext.Session.GetString("Subscription");
-             var userSubscription = JsonConvert.DeserializeObject<UserSubscription>(subscriptionString);
+            var userSubscription = JsonConvert.DeserializeObject<UserSubscription>(subscriptionString);
 
             var userString = HttpContext.Session.GetString("User");
             var appUser = JsonConvert.DeserializeObject<AppUser>(userString);
@@ -493,20 +592,20 @@ namespace Image.Controllers
             var userSubscription = JsonConvert.DeserializeObject<UserSubscription>(subscriptionString);
 
             var package = _databaseConnection.Packages.Find(userSubscription.PackageId);
-            Random generator = new Random();
-            String generatedValues = generator.Next(0, 1000000).ToString("D6");
+            var generator = new Random();
+            var generatedValues = generator.Next(0, 1000000).ToString("D6");
             var invoice = new Invoice
             {
-                InvoiceNumber = "INV"+ generatedValues,
+                InvoiceNumber = "INV" + generatedValues,
                 Amount = userSubscription.MonthLength * package.Amount,
                 DateCreated = DateTime.Now,
                 DateLastModified = DateTime.Now,
                 CreatedBy = appUser.AppUserId,
-                LastModifiedBy = appUser.AppUserId,
+                LastModifiedBy = appUser.AppUserId
             };
-   
 
-            _databaseConnection.AppUsers.Add(appUser);
+
+            //_databaseConnection.AppUsers.Add(appUser);
             _databaseConnection.SaveChanges();
 
             accessKey.AppUserId = appUser.AppUserId;
@@ -527,7 +626,8 @@ namespace Image.Controllers
             var mail = new Mailer();
             mail.SendNewUserEmail(link + "\\EmailTemplates\\NewUser.html", appUser, role, accessKey);
             //display notification
-            TempData["display"] = "You have successfully registered to SOS Photo Studio, Check your email to confirm your account!";
+            TempData["display"] =
+                "You have successfully registered to SOS Photo Studio, Check your email to confirm your account!";
             TempData["notificationtype"] = NotificationType.Success.ToString();
             return RedirectToAction("Login");
         }

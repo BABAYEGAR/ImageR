@@ -20,14 +20,44 @@ namespace Image.Migrations
                 .HasAnnotation("ProductVersion", "2.0.0-rtm-26452")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+            modelBuilder.Entity("Image.Models.Entities.ApiUrl", b =>
+                {
+                    b.Property<long>("ApiUrlId")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("ChangePasswordrl");
+
+                    b.Property<long?>("CreatedBy");
+
+                    b.Property<DateTime>("DateCreated");
+
+                    b.Property<DateTime>("DateLastModified");
+
+                    b.Property<string>("EditProfileUrl");
+
+                    b.Property<string>("FetchUsersUrl");
+
+                    b.Property<string>("ForgotPasswordLinkUrl");
+
+                    b.Property<long?>("LastModifiedBy");
+
+                    b.Property<string>("RegisterUsersUrl");
+
+                    b.Property<string>("ResetPasswordUrl");
+
+                    b.Property<long>("TenancyId");
+
+                    b.HasKey("ApiUrlId");
+
+                    b.ToTable("ApiUrls");
+                });
+
             modelBuilder.Entity("Image.Models.Entities.AppUser", b =>
                 {
                     b.Property<long>("AppUserId")
                         .ValueGeneratedOnAdd();
 
                     b.Property<string>("Address");
-
-                    b.Property<long?>("AveragePrice");
 
                     b.Property<string>("BackgroundPicture");
 
@@ -63,12 +93,12 @@ namespace Image.Migrations
 
                     b.Property<string>("ProfilePicture");
 
-                    b.Property<string>("Rank");
-
                     b.Property<long?>("RoleId")
                         .IsRequired();
 
                     b.Property<string>("Status");
+
+                    b.Property<long>("TenancyId");
 
                     b.Property<string>("Username")
                         .IsRequired();
@@ -79,7 +109,7 @@ namespace Image.Migrations
 
                     b.HasIndex("RoleId");
 
-                    b.ToTable("AppUsers");
+                    b.ToTable("AppUser");
                 });
 
             modelBuilder.Entity("Image.Models.Entities.AppUserAccessKey", b =>
@@ -108,38 +138,6 @@ namespace Image.Migrations
                     b.HasIndex("AppUserId");
 
                     b.ToTable("AccessKeys");
-                });
-
-            modelBuilder.Entity("Image.Models.Entities.BillingAddress", b =>
-                {
-                    b.Property<long>("BillingAddressId")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<long?>("AppUserId");
-
-                    b.Property<string>("City");
-
-                    b.Property<string>("Country");
-
-                    b.Property<long?>("CreatedBy");
-
-                    b.Property<DateTime>("DateCreated");
-
-                    b.Property<DateTime>("DateLastModified");
-
-                    b.Property<string>("LandMark");
-
-                    b.Property<long?>("LastModifiedBy");
-
-                    b.Property<string>("State");
-
-                    b.Property<string>("Street");
-
-                    b.HasKey("BillingAddressId");
-
-                    b.HasIndex("AppUserId");
-
-                    b.ToTable("BillingAddress");
                 });
 
             modelBuilder.Entity("Image.Models.Entities.Camera", b =>
@@ -184,8 +182,6 @@ namespace Image.Migrations
 
                     b.HasKey("CartId");
 
-                    b.HasIndex("AppUserId");
-
                     b.HasIndex("ImageId");
 
                     b.ToTable("Carts");
@@ -207,16 +203,14 @@ namespace Image.Migrations
                     b.Property<string>("Description")
                         .IsRequired();
 
-                    b.Property<DateTime?>("EndDate")
-                        .IsRequired();
+                    b.Property<DateTime>("EndDate");
 
                     b.Property<long?>("LastModifiedBy");
 
                     b.Property<string>("Name")
                         .IsRequired();
 
-                    b.Property<DateTime?>("StartDate")
-                        .IsRequired();
+                    b.Property<DateTime>("StartDate");
 
                     b.Property<string>("Status");
 
@@ -224,8 +218,6 @@ namespace Image.Migrations
                         .IsRequired();
 
                     b.HasKey("CompetitionId");
-
-                    b.HasIndex("AppUserId");
 
                     b.ToTable("Competition");
                 });
@@ -275,8 +267,6 @@ namespace Image.Migrations
 
                     b.Property<string>("Description");
 
-                    b.Property<long?>("DisLike");
-
                     b.Property<string>("FileName");
 
                     b.Property<string>("FilePath");
@@ -285,15 +275,13 @@ namespace Image.Migrations
 
                     b.Property<long?>("LastModifiedBy");
 
-                    b.Property<long?>("Like");
-
                     b.Property<long?>("LocationId");
 
                     b.Property<string>("Title");
 
-                    b.HasKey("CompetitionUploadId");
+                    b.Property<long>("Vote");
 
-                    b.HasIndex("AppUserId");
+                    b.HasKey("CompetitionUploadId");
 
                     b.HasIndex("CameraId");
 
@@ -324,8 +312,6 @@ namespace Image.Migrations
                     b.Property<long>("Votes");
 
                     b.HasKey("CompetitionVoteId");
-
-                    b.HasIndex("AppUserId");
 
                     b.HasIndex("CompetitionId");
 
@@ -386,8 +372,6 @@ namespace Image.Migrations
 
                     b.HasKey("ImageId");
 
-                    b.HasIndex("AppUserId");
-
                     b.HasIndex("CameraId");
 
                     b.HasIndex("ImageCategoryId");
@@ -441,8 +425,6 @@ namespace Image.Migrations
 
                     b.HasKey("ImageCommentId");
 
-                    b.HasIndex("AppUserId");
-
                     b.HasIndex("ImageId");
 
                     b.ToTable("ImageComments");
@@ -453,17 +435,29 @@ namespace Image.Migrations
                     b.Property<long>("ImageCompetitionRatingId")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<long?>("ClearityRating");
+                    b.Property<long>("AcceptanceRating");
+
+                    b.Property<long>("ClearityRating");
 
                     b.Property<long>("CompetitionUploadId");
 
-                    b.Property<long?>("ConceptRating");
+                    b.Property<long>("ConceptRating");
 
-                    b.Property<long?>("DescriptionRating");
+                    b.Property<long?>("CreatedBy");
 
-                    b.Property<long?>("QualityRating");
+                    b.Property<DateTime>("DateCreated");
 
-                    b.Property<long?>("TimeDeliveryRating");
+                    b.Property<DateTime>("DateLastModified");
+
+                    b.Property<long>("DescriptionRating");
+
+                    b.Property<long?>("LastModifiedBy");
+
+                    b.Property<long>("QualityRating");
+
+                    b.Property<long>("TimeDeliveryRating");
+
+                    b.Property<long>("TotalRating");
 
                     b.HasKey("ImageCompetitionRatingId");
 
@@ -585,8 +579,6 @@ namespace Image.Migrations
                     b.Property<string>("OrderNumber");
 
                     b.HasKey("OrderId");
-
-                    b.HasIndex("AppUserId");
 
                     b.HasIndex("ImageId");
 
@@ -718,8 +710,6 @@ namespace Image.Migrations
 
                     b.HasKey("PhotographerCategoryMappingId");
 
-                    b.HasIndex("AppUserId");
-
                     b.HasIndex("PhotographerCategoryId");
 
                     b.ToTable("PhotographerCategoryMappings");
@@ -774,38 +764,6 @@ namespace Image.Migrations
                     b.ToTable("Roles");
                 });
 
-            modelBuilder.Entity("Image.Models.Entities.ShippingAddress", b =>
-                {
-                    b.Property<long>("ShippingAddressId")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<long?>("AppUserId");
-
-                    b.Property<string>("City");
-
-                    b.Property<string>("Country");
-
-                    b.Property<long?>("CreatedBy");
-
-                    b.Property<DateTime>("DateCreated");
-
-                    b.Property<DateTime>("DateLastModified");
-
-                    b.Property<string>("LandMark");
-
-                    b.Property<long?>("LastModifiedBy");
-
-                    b.Property<string>("State");
-
-                    b.Property<string>("Street");
-
-                    b.HasKey("ShippingAddressId");
-
-                    b.HasIndex("AppUserId");
-
-                    b.ToTable("ShippingAddress");
-                });
-
             modelBuilder.Entity("Image.Models.Entities.SystemNotification", b =>
                 {
                     b.Property<long>("SystemNotificationId")
@@ -828,8 +786,6 @@ namespace Image.Migrations
                     b.Property<bool?>("Read");
 
                     b.HasKey("SystemNotificationId");
-
-                    b.HasIndex("AppUserId");
 
                     b.ToTable("SystemNotifications");
                 });
@@ -861,8 +817,6 @@ namespace Image.Migrations
 
                     b.HasKey("UserSubscriptionId");
 
-                    b.HasIndex("AppUserId");
-
                     b.HasIndex("PackageId");
 
                     b.ToTable("UserSubscriptions");
@@ -871,7 +825,7 @@ namespace Image.Migrations
             modelBuilder.Entity("Image.Models.Entities.AppUser", b =>
                 {
                     b.HasOne("Image.Models.Entities.Role", "Role")
-                        .WithMany("AppUsers")
+                        .WithMany()
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
@@ -884,29 +838,11 @@ namespace Image.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("Image.Models.Entities.BillingAddress", b =>
-                {
-                    b.HasOne("Image.Models.Entities.AppUser", "AppUser")
-                        .WithMany("BillingAddresses")
-                        .HasForeignKey("AppUserId");
-                });
-
             modelBuilder.Entity("Image.Models.Entities.Cart", b =>
                 {
-                    b.HasOne("Image.Models.Entities.AppUser", "AppUser")
-                        .WithMany("Carts")
-                        .HasForeignKey("AppUserId");
-
                     b.HasOne("Image.Models.Entities.Image", "Image")
                         .WithMany()
                         .HasForeignKey("ImageId");
-                });
-
-            modelBuilder.Entity("Image.Models.Entities.Competition", b =>
-                {
-                    b.HasOne("Image.Models.Entities.AppUser", "AppUser")
-                        .WithMany("Competitions")
-                        .HasForeignKey("AppUserId");
                 });
 
             modelBuilder.Entity("Image.Models.Entities.CompetitionCategory", b =>
@@ -924,10 +860,6 @@ namespace Image.Migrations
 
             modelBuilder.Entity("Image.Models.Entities.CompetitionUpload", b =>
                 {
-                    b.HasOne("Image.Models.Entities.AppUser", "AppUser")
-                        .WithMany("CompetitionUploads")
-                        .HasForeignKey("AppUserId");
-
                     b.HasOne("Image.Models.Entities.Camera", "Camera")
                         .WithMany("CompetitionUploads")
                         .HasForeignKey("CameraId");
@@ -944,10 +876,6 @@ namespace Image.Migrations
 
             modelBuilder.Entity("Image.Models.Entities.CompetitionVote", b =>
                 {
-                    b.HasOne("Image.Models.Entities.AppUser", "AppUser")
-                        .WithMany("CompetitionVotes")
-                        .HasForeignKey("AppUserId");
-
                     b.HasOne("Image.Models.Entities.Competition")
                         .WithMany("CompetitionVotes")
                         .HasForeignKey("CompetitionId");
@@ -955,10 +883,6 @@ namespace Image.Migrations
 
             modelBuilder.Entity("Image.Models.Entities.Image", b =>
                 {
-                    b.HasOne("Image.Models.Entities.AppUser", "AppUser")
-                        .WithMany("Images")
-                        .HasForeignKey("AppUserId");
-
                     b.HasOne("Image.Models.Entities.Camera", "Camera")
                         .WithMany("Images")
                         .HasForeignKey("CameraId");
@@ -979,10 +903,6 @@ namespace Image.Migrations
 
             modelBuilder.Entity("Image.Models.Entities.ImageComment", b =>
                 {
-                    b.HasOne("Image.Models.Entities.AppUser", "AppUser")
-                        .WithMany("ImageComments")
-                        .HasForeignKey("AppUserId");
-
                     b.HasOne("Image.Models.Entities.Image", "Image")
                         .WithMany("ImageComments")
                         .HasForeignKey("ImageId");
@@ -1013,10 +933,6 @@ namespace Image.Migrations
 
             modelBuilder.Entity("Image.Models.Entities.Order", b =>
                 {
-                    b.HasOne("Image.Models.Entities.AppUser", "AppUser")
-                        .WithMany("Orders")
-                        .HasForeignKey("AppUserId");
-
                     b.HasOne("Image.Models.Entities.Image", "Image")
                         .WithMany()
                         .HasForeignKey("ImageId");
@@ -1031,37 +947,14 @@ namespace Image.Migrations
 
             modelBuilder.Entity("Image.Models.Entities.PhotographerCategoryMapping", b =>
                 {
-                    b.HasOne("Image.Models.Entities.AppUser", "AppUser")
-                        .WithMany("PhotographerCategoryMappings")
-                        .HasForeignKey("AppUserId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
                     b.HasOne("Image.Models.Entities.PhotographerCategory", "PhotographerCategory")
                         .WithMany("PhotographerCategoryMappings")
                         .HasForeignKey("PhotographerCategoryId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("Image.Models.Entities.ShippingAddress", b =>
-                {
-                    b.HasOne("Image.Models.Entities.AppUser", "AppUser")
-                        .WithMany("ShippingAddresses")
-                        .HasForeignKey("AppUserId");
-                });
-
-            modelBuilder.Entity("Image.Models.Entities.SystemNotification", b =>
-                {
-                    b.HasOne("Image.Models.Entities.AppUser", "AppUser")
-                        .WithMany("SystemNotifications")
-                        .HasForeignKey("AppUserId");
-                });
-
             modelBuilder.Entity("Image.Models.Entities.UserSubscription", b =>
                 {
-                    b.HasOne("Image.Models.Entities.AppUser", "AppUser")
-                        .WithMany("UserSubscriptions")
-                        .HasForeignKey("AppUserId");
-
                     b.HasOne("Image.Models.Entities.Package", "Package")
                         .WithMany("UserSubscriptions")
                         .HasForeignKey("PackageId");

@@ -10,8 +10,6 @@ namespace Image.Models.Entities
     {
         public long PhotographerCategoryMappingId { get; set; }
         public long AppUserId { get;set; }
-        [ForeignKey("AppUserId")]
-        public AppUser AppUser { get; set; }
         public long PhotographerCategoryId { get; set; }
         [ForeignKey("PhotographerCategoryId")]
         public PhotographerCategory PhotographerCategory { get; set; }

@@ -17,7 +17,7 @@ namespace Image
 {
     public class Startup
     {
-        string _testSecret = null;
+        //string _testSecret = null;
         public Startup(IHostingEnvironment env)
         {
             var builder = new ConfigurationBuilder()
@@ -28,7 +28,7 @@ namespace Image
             if (env.IsDevelopment())
             {
                 // For more details on using the user secret store see https://go.microsoft.com/fwlink/?LinkID=532709
-                builder.AddUserSecrets<Startup>();
+                //builder.AddUserSecrets<Startup>();
             }
 
             builder.AddEnvironmentVariables();

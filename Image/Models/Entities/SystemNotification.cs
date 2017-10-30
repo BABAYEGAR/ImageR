@@ -13,9 +13,6 @@ namespace Image.Models.Entities
         public string Message { get; set; }
         public long? ControllerId { get; set; }
         public long? AppUserId { get; set; }
-        [ForeignKey("AppUserId")]
-        [JsonIgnore]
-        public AppUser AppUser { get; set; }
         public bool? Read { get; set; }
     }
 }

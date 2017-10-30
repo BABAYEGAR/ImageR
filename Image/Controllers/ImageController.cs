@@ -148,7 +148,6 @@ namespace Image.Controllers
                     image.FileName = DateTime.Now.ToFileTime().ToString();
                     image.Status = ImageStatus.Pending.ToString();
 
-              
 
                     //upload image via Cloudinary API Call
                     var account = new Account(
@@ -195,7 +194,6 @@ namespace Image.Controllers
                         _databaseConnection.SaveChanges();
                     }
 
-           
 
                     //display notification
                     TempData["display"] = "You have successfully uploaded a new image!";
@@ -301,7 +299,7 @@ namespace Image.Controllers
                     _databaseConnection.SaveChanges();
                 }
 
-          
+
                 //display notification
                 TempData["display"] = "You have successfully modified the image information!";
                 TempData["notificationtype"] = NotificationType.Success.ToString();
@@ -316,6 +314,41 @@ namespace Image.Controllers
             }
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult PostImageComment(ImageComment comment, IFormCollection collection)
+        {
+            long? imageId = Convert.ToInt64(collection["ImageId"]);
+            var comments = _databaseConnection.ImageComments.Where(n => n.ImageId == imageId).ToList();
+            string[] words = {"fuck", "Fuck", "4kin", "idiot", "pussy", "dick", "blowjob", "bastard", "stupid"};
+            var userComment = collection["Comment"].ToString().ToLower();
+            foreach (var item in words)
+                if (userComment.Contains(item))
+                {
+                    TempData["display"] =
+                        "This platform does not support the use of vulgar language,Please check your comment again!";
+                    TempData["notificationtype"] = NotificationType.Error.ToString();
+                    return PartialView("Partials/_ImageComment", comments);
+                }
+            var signedInUserId = HttpContext.Session.GetInt32("userId");
+            comment.DateCreated = DateTime.Now;
+            comment.AppUserId = signedInUserId;
+            comment.ImageId = imageId;
+            comment.Comment = collection["Comment"].ToString();
+            comment.CreatedBy = signedInUserId;
+            comment.LastModifiedBy = signedInUserId;
+            comment.DateLastModified = DateTime.Now;
+            _databaseConnection.ImageComments.Add(comment);
+            _databaseConnection.SaveChanges();
+            return PartialView("Partials/_ImageComment", comments);
+        }
+
+        [HttpGet]
+        public ActionResult ReloadImageComments(long id)
+        {
+            var imageComments = _databaseConnection.ImageComments.Where(n => n.ImageId == id).ToList();
+            return PartialView("Partials/_ImageComment",imageComments);
+        }
         // POST: Image/Delete/5
         [SessionExpireFilter]
         public ActionResult Delete(IFormCollection collection)

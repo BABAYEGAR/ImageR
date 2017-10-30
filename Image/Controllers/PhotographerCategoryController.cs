@@ -109,7 +109,7 @@ namespace Image.Controllers
 
                         TempData["display"] = "you have succesfully added the category(s) to the profile!";
                         TempData["notificationtype"] = NotificationType.Success.ToString();
-                        return RedirectToAction("SelectCategories", "PhotographerCategory");
+                      
                     }
                 }
             }

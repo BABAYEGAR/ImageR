@@ -37,6 +37,5 @@ namespace Image.Models.Entities
         public bool ManagePayments { get; set; }
         [DisplayName("Manage Locations")]
         public bool ManageLocations { get; set; }
-        public IEnumerable<AppUser> AppUsers { get; set; }
     }
 }

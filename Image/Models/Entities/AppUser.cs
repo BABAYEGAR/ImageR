@@ -42,7 +42,6 @@ namespace Image.Models.Entities
 
         [DisplayName("Profile Picture")]
         public string ProfilePicture { get; set; }
-        public string Rank { get; set; }
         public string BackgroundPicture { get; set; }
         public string Website { get; set; }
         [Display(Name = "Date Of Birth")]
@@ -50,19 +49,18 @@ namespace Image.Models.Entities
         public string Biography { get; set; }
         [Required]
         public string Username { get; set; }
-        [Display(Name = "Aevrage Charge Price")]
-        public long? AveragePrice { get; set; }
-        public IEnumerable<Image> Images { get; set; }
-        public IEnumerable<Cart> Carts { get; set; }
-        public IEnumerable<Order> Orders { get; set; }
-        public IEnumerable<BillingAddress>BillingAddresses { get; set; }
-        public IEnumerable<ShippingAddress> ShippingAddresses { get; set; }
-        public IEnumerable<UserSubscription> UserSubscriptions { get; set; }
-        public IEnumerable<Competition> Competitions { get; set; }
-        public IEnumerable<CompetitionVote> CompetitionVotes { get; set; }
-        public IEnumerable<ImageComment> ImageComments { get; set; }
-        public IEnumerable<SystemNotification> SystemNotifications { get; set; }
-        public IEnumerable<PhotographerCategoryMapping> PhotographerCategoryMappings { get; set; }
-        public IEnumerable<CompetitionUpload> CompetitionUploads { get; set; }
+        public long TenancyId { get; set; }
+        //public IEnumerable<Image> Images { get; set; }
+        //public IEnumerable<Cart> Carts { get; set; }
+        //public IEnumerable<Order> Orders { get; set; }
+        //public IEnumerable<BillingAddress>BillingAddresses { get; set; }
+        //public IEnumerable<ShippingAddress> ShippingAddresses { get; set; }
+        //public IEnumerable<UserSubscription> UserSubscriptions { get; set; }
+        //public IEnumerable<Competition> Competitions { get; set; }
+        //public IEnumerable<CompetitionVote> CompetitionVotes { get; set; }
+        //public IEnumerable<ImageComment> ImageComments { get; set; }
+        //public IEnumerable<SystemNotification> SystemNotifications { get; set; }
+        //public IEnumerable<PhotographerCategoryMapping> PhotographerCategoryMappings { get; set; }
+        //public IEnumerable<CompetitionUpload> CompetitionUploads { get; set; }
     }
 }

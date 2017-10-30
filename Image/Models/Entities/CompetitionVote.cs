@@ -8,7 +8,5 @@ namespace Image.Models.Entities
         public long Votes { get; set; }
         //user
         public long? AppUserId { get; set; }
-        [ForeignKey("AppUserId")]
-        public AppUser AppUser { get; set; }
     }
 }

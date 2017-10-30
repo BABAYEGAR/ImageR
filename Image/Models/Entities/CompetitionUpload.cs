@@ -12,8 +12,6 @@ namespace Image.Models.Entities
     {
         public long CompetitionUploadId { get; set; }
         public long? AppUserId { get; set; }
-        [ForeignKey("AppUserId")]
-        public AppUser AppUser { get; set; }
         public long CompetitionId { get; set; }
         [ForeignKey("CompetitionId")]
         public Competition Competition { get; set; }

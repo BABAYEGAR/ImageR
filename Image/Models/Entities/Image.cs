@@ -38,8 +38,6 @@ namespace Image.Models.Entities
         [ForeignKey("ImageCategoryId")]
         public ImageCategory ImageCategory { get; set; }
         public long? AppUserId { get; set; }
-        [ForeignKey("AppUserId")]
-        public AppUser AppUser { get; set; }
         public long? Like { get; set; }
         public long? DisLike { get; set; }
         public string Status { get; set; }

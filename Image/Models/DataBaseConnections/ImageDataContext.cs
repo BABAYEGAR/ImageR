@@ -19,7 +19,6 @@ namespace Image.Models.DataBaseConnections
 
         // Add a DbSet for each entity type that you want to include in your model. For more information 
         // on configuring and using a Code First model, see http://go.microsoft.com/fwlink/?LinkId=390109.
-        public virtual DbSet<AppUser> AppUsers { get; set; }
         public virtual DbSet<Role> Roles { get; set; }
         public virtual DbSet<Entities.Image> Images { get; set; }
         public virtual DbSet<ImageTag> ImageTags { get; set; }
@@ -44,6 +43,7 @@ namespace Image.Models.DataBaseConnections
         public virtual DbSet<AppUserAccessKey> AccessKeys { get; set; }
         public virtual DbSet<SystemNotification> SystemNotifications { get; set; }
         public virtual DbSet<Invoice> Invoices { get; set; }
+        public virtual DbSet<ApiUrl> ApiUrls { get; set; }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder.UseSqlServer(@"Server=.;Database=Image;Trusted_Connection=True;");

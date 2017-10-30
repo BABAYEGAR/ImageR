@@ -27,16 +27,12 @@
     <div class="user">
         <a href="@Url.Action("Profile", "Account")">
             <div id="esp-user-profile" data-percent="65" style="height: 104px; line-height: 80px; padding: 12px; width: 104px;" class="easy-pie-chart">
-                <img src="~/Dashboard/build/images/users/04.jpg" alt="" class="avatar img-circle"><span class="status bg-success"></span>
+                <img src="~/UploadedImage/ProfilePicture/@appUser.ProfilePicture" alt="" class="avatar img-circle"><span class="status bg-success"></span>
             </div>
         </a>
         @if (appUser != null)
         {
             <h4 class="fs-14 text-muted mt-15 mb-5 fw-300">@appUser.Name</h4>
-            @*if (appUser.PhotographerCategory != null)
-             {
-                 <p class="fs-13 mb-0 text-muted">@appUser.PhotographerCategory.Name</p>
-             }*@
         }
      
     </div>
