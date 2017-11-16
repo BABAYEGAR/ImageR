@@ -1,4 +1,15 @@
-﻿@using Image.Models.Enum
+﻿@using Image.Models.Entities
+@using Image.Models.Enum
+@using Microsoft.AspNetCore.Http
+@using Newtonsoft.Json
+@{
+    UserBank userBank = null;
+    if (Context.Session.GetString("UserBank") != null)
+    {
+        var userString = Context.Session.GetString("UserBank");
+        userBank = JsonConvert.DeserializeObject<UserBank>(userString);
+    }
+}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -48,7 +59,12 @@
         <div class="page-header clearfix">
             @RenderSection("Breadcrumbs", false)
         </div>
-
+        @if (userBank != null && (userBank.AccountName == null || userBank.AccountNumber == null || userBank.BankId == null))
+        {
+            <div class="alert alert-info alert-dismissable">
+                Your Bank Account Information is Incomplete, Please Update to Receive Payment from Images Purchases .. Click Here <strong><a href="@Url.Action("UserBank","Account")">Update Information</a></strong> 
+            </div>
+        }
         @if (TempData["display"] != null)
         {
             if (TempData["notificationtype"].Equals(NotificationType.Success.ToString()))

@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Linq;
 using Image.Models;
+using Image.Models.APIFactory;
 using Image.Models.DataBaseConnections;
 using Image.Models.Entities;
 using Microsoft.AspNetCore.Http;
@@ -15,13 +16,13 @@ namespace Image.Controllers
     {
         private readonly ImageDataContext _databaseConnection;
         Role _userRole;
-        List<Models.Entities.Image> _images = new List<Models.Entities.Image>();
-        List<Models.Entities.Location> _locations = new List<Models.Entities.Location>();
-        List<Models.Entities.Camera> _cameras = new List<Models.Entities.Camera>();
 
         public HomeController(ImageDataContext databaseConnection)
         {
             _databaseConnection = databaseConnection;
+            _databaseConnection.Database.EnsureCreated();
+
+
         }
         public IActionResult Index()
         {
@@ -58,6 +59,8 @@ namespace Image.Controllers
                     .Include(n => n.ImageCategory).Include(n => n.ImageSubCategory).ToList();
                 ViewBag.Cameras = _databaseConnection.Cameras.ToList();
                 ViewBag.Locations = _databaseConnection.Locations.ToList();
+                ViewBag.Orders = new OrderFactory().GetAllOrdersAsync(new AppConfig().FetchOrdersUrl).Result.ToList();
+                ViewBag.Payments = new OrderFactory().GetAllPaymentsAsync(new AppConfig().FetchPaymentsUrl).Result.ToList();
             }
             if (_userRole.UploadImage)
             {
@@ -69,15 +72,14 @@ namespace Image.Controllers
                     .Where(n => n.CreatedBy == signedInUserId).ToList();
                 ViewBag.Locations = _databaseConnection.Locations
                     .Where(n => n.CreatedBy == signedInUserId).ToList();
+                ViewBag.Orders = new OrderFactory().GetAllOrdersAsync(new AppConfig().FetchOrdersUrl).Result
+                    .Where(n => n.CreatedBy == signedInUserId).ToList();
+                ViewBag.Payments = new OrderFactory().GetAllPaymentsAsync(new AppConfig().FetchPaymentsUrl).Result
+                    .Where(n => n.CreatedBy == signedInUserId).ToList();
             }
-            //ViewBag.AppUsers = _databaseConnection.AppUsers.ToList();
+            ViewBag.AppUsers = new AppUserFactory().GetAllUsersAsync(new AppConfig().FetchUsersUrl).Result.ToList();
             ViewBag.Competition = _databaseConnection.Competition.ToList();
             return View();
-        }
-
-        public IActionResult Error()
-        {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
     }
 }

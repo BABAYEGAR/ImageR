@@ -1,22 +1,41 @@
-﻿@using Image.Models.Enum
+﻿@using Image.Models.Entities
 @using Microsoft.AspNetCore.Http
-@model List<Image.Models.Entities.SystemNotification>
+@using Newtonsoft.Json
+@model List<SystemNotification>
 @{
-
+    List<AppUser> users = new List<AppUser>();
+    if (Context.Session.GetString("Users") != null)
+    {
+        var notificationString = Context.Session.GetString("Users");
+        users = JsonConvert.DeserializeObject<List<AppUser>>(notificationString);
+    }
 }
-<h5 class="dropdown-header">You have 6 notifications</h5>
+<h5 class="dropdown-header">You have @(Model.Where(n=>n.Read == false).ToList().Count) notifications</h5>
 <ul data-mcs-theme="minimal-dark" class="media-list mCustomScrollbar">
-    <li class="media">
-        <a href="javascript:;">
-            <div class="media-left avatar"><img src="../build/images/users/17.jpg" alt="" class="media-object img-circle"><span class="status bg-warning"></span></div>
-            <div class="media-body">
-                <h6 class="media-heading">William Carlson</h6>
-                <p class="text-muted mb-0">Commented on your post</p>
-            </div>
-            <div class="media-right text-nowrap">
-                <time datetime="2015-12-10T20:27:48+07:00" class="fs-11">5 mins</time>
-            </div>
-        </a>
-    </li>
+    @foreach (var item in Model)
+    {
+        var user = users.SingleOrDefault(n => n.AppUserId == item.AppUserId);
+        <li class="media">
+            <a href="javascript:;">
+                <div class="media-left avatar">
+                    <img src="~/UploadedImage/ProfilePicture/@if (user != null)
+                                                             {
+                                                                 @user.ProfilePicture
+                                                             }" alt="" class="media-object img-circle"><span class="status bg-warning"></span>
+                </div>
+                <div class="media-body">
+                    <h6 class="media-heading">
+                        @if (user != null)
+                        {
+                            @user.ProfilePicture
+                        }</h6>
+                    <p class="text-muted mb-0">Commented on your post</p>
+                </div>
+                <div class="media-right text-nowrap">
+                    <time datetime="2015-12-10T20:27:48+07:00" class="fs-11">5 mins</time>
+                </div>
+            </a>
+        </li>
+    }
 
 </ul>

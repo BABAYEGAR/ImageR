@@ -11,7 +11,6 @@ namespace Image.Models.Entities
         public string Title { get; set; }
         [Required]
         public string Theme { get; set; }
-        public string Caption { get; set; }
         [Required]
         public string Description { get; set; }
         public string FilePath { get; set; }
@@ -27,6 +26,8 @@ namespace Image.Models.Entities
         [Display(Name = "Selling Price")]
         [Required]
         public long? SellingPrice { get; set; }
+        public long? Discount { get; set; }
+        public bool? Featured { get; set; }
         public string Inspiration { get; set; }
         [Display(Name = "Sub-Category/Sub-Genre")]
         public long? ImageSubCategoryId { get; set; }
@@ -38,11 +39,23 @@ namespace Image.Models.Entities
         [ForeignKey("ImageCategoryId")]
         public ImageCategory ImageCategory { get; set; }
         public long? AppUserId { get; set; }
-        public long? Like { get; set; }
-        public long? DisLike { get; set; }
         public string Status { get; set; }
+        public long? Rating { get; set; }
         public string Tags { get; set; }
+        [Display(Name = "A1")]
+        public bool A1 { get; set; }
+        [Display(Name = "A2")]
+        public bool A2 { get; set; }
+        [Display(Name = "A3")]
+        public bool A3 { get; set; }
+        [Display(Name = "A4")]
+        public bool A4 { get; set; }
+        [Display(Name = "A5")]
+        public bool A5 { get; set; }
+        [Display(Name = "A6")]
+        public bool A6 { get; set; }
         public IEnumerable<ImageTag> ImageTags { get; set; }
         public IEnumerable<ImageComment> ImageComments { get; set; }
+        public IEnumerable<ImageAction> ImageActions { get; set; }
     }
 }

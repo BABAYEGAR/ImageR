@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Image.Models.DataBaseConnections;
 using Image.Models.Entities;
+using Image.Models.Enum;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -26,8 +27,80 @@ namespace Image.Controllers
         /// <returns></returns>
         public JsonResult GetAllImages()
         {
-            return Json(_databaseConnection.Images.Include(n => n.Camera).Include(n => n.Location)
-                .Include(n => n.ImageCategory).Include(n => n.ImageSubCategory).ToList());
+            return Json(_databaseConnection.Images.Include(n => n.Camera).Include(n => n.Location).Include(n => n.ImageCategory)
+                .Include(n=>n.ImageActions).Where(n=>n.Status == ImageStatus.Accepted.ToString()).ToList());
+        }
+        /// <summary>
+        /// The method returns all images from photo studio via json object
+        /// </summary>
+        /// <returns></returns>
+        public JsonResult GetAllImageCategories()
+        {
+            return Json(_databaseConnection.ImageCategories.ToList());
+        }
+        /// <summary>
+        /// The method returns all images from photo studio via json object
+        /// </summary>
+        /// <returns></returns>
+        public JsonResult GetAllImageComments()
+        {
+            return Json(_databaseConnection.ImageComments.ToList());
+        }
+        /// <summary>
+        /// The method returns all images from photo studio via json object
+        /// </summary>
+        /// <returns></returns>
+        public JsonResult GetAllPhotographyCategories()
+        {
+            return Json(_databaseConnection.PhotographerCategories.ToList());
+        }
+        /// <summary>
+        /// The method returns all images from photo studio via json object
+        /// </summary>
+        /// <returns></returns>
+        public JsonResult GetAllPhotographyCategoryMapping()
+        {
+            return Json(_databaseConnection.PhotographerCategoryMappings.ToList());
+        }
+        /// <summary>
+        /// The method returns all images from photo studio via json object
+        /// </summary>
+        /// <returns></returns>
+        public JsonResult GetAllImageActions()
+        {
+            return Json(_databaseConnection.ImageActions.ToList());
+        }
+        /// <summary>
+        /// The method returns all images from photo studio via json object
+        /// </summary>
+        /// <returns></returns>
+        public JsonResult GetAllImageLocations()
+        {
+            return Json(_databaseConnection.Locations.ToList());
+        }
+        /// <summary>
+        /// The method returns all images from photo studio via json object
+        /// </summary>
+        /// <returns></returns>
+        public JsonResult GetAllCompetitions()
+        {
+            return Json(_databaseConnection.Competition.ToList());
+        }
+        /// <summary>
+        /// The method returns all images from photo studio via json object
+        /// </summary>
+        /// <returns></returns>
+        public JsonResult GetAllCpmpetitionUploads()
+        {
+            return Json(_databaseConnection.CompetitionUploads.ToList());
+        }
+        /// <summary>
+        /// The method returns all images from photo studio via json object
+        /// </summary>
+        /// <returns></returns>
+        public JsonResult GetAllImageCameras()
+        {
+            return Json(_databaseConnection.Cameras.ToList());
         }
         /// <summary>
         /// The method returns a single images via a json object
@@ -40,19 +113,20 @@ namespace Image.Controllers
                 .Include(n => n.ImageCategory).Include(n => n.ImageSubCategory).SingleOrDefault(n=>n.ImageId == imageId);
             return Json(image);
         }
-        /// <summary>
-        /// The method returns list of images based on a search criterion from the user
-        /// </summary>
-        /// <param name="criteria"></param>
-        /// <returns></returns>
-        public JsonResult SearchImages([FromBody] SearchCriteria criteria)
+        [HttpPost]
+        public JsonResult SaveImageAction([FromBody] ImageAction action)
         {
-            var images = _databaseConnection.Images.Include(n => n.Camera).Include(n => n.Location)
-                .Include(n => n.ImageCategory).Include(n => n.ImageSubCategory).Where(
-                    n => n.LocationId == criteria.LocationId
-                         && n.CameraId == criteria.CameraId && n.ImageCategoryId == criteria.ImageCategoryId &&
-                         n.ImageSubCategoryId == criteria.ImageSubCategoryId).ToList();
-           return Json(images);
+            _databaseConnection.Add(action);
+            _databaseConnection.SaveChanges();
+            return Json(action);
+
+        }
+        [HttpPost]
+        public JsonResult SaveComment([FromBody] ImageComment comment)
+        {
+            _databaseConnection.Add(comment);
+            _databaseConnection.SaveChanges();
+            return Json(comment);
 
         }
     }

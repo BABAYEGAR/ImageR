@@ -19,8 +19,6 @@ namespace Image.Models.Entities
         [MaxLength(100, ErrorMessage = "This field is does not support more than 100 characters")]
         [EmailAddress]
         public string Email { get; set; }
-
-        [Required]
         [MaxLength(100, ErrorMessage = "This field is does not support more than 100 characters")]
         [RegularExpression("^[0-9]*$")]
         public string Mobile { get; set; }
@@ -33,11 +31,6 @@ namespace Image.Models.Entities
         public string ConfirmPassword { get; set; }
         [Required]
         public long? RoleId { get; set; }
-
-        [ForeignKey("RoleId")]
-        [JsonIgnore]
-        public virtual Role Role { get; set; }
-
         public string Status { get; set; }
 
         [DisplayName("Profile Picture")]
@@ -50,17 +43,5 @@ namespace Image.Models.Entities
         [Required]
         public string Username { get; set; }
         public long TenancyId { get; set; }
-        //public IEnumerable<Image> Images { get; set; }
-        //public IEnumerable<Cart> Carts { get; set; }
-        //public IEnumerable<Order> Orders { get; set; }
-        //public IEnumerable<BillingAddress>BillingAddresses { get; set; }
-        //public IEnumerable<ShippingAddress> ShippingAddresses { get; set; }
-        //public IEnumerable<UserSubscription> UserSubscriptions { get; set; }
-        //public IEnumerable<Competition> Competitions { get; set; }
-        //public IEnumerable<CompetitionVote> CompetitionVotes { get; set; }
-        //public IEnumerable<ImageComment> ImageComments { get; set; }
-        //public IEnumerable<SystemNotification> SystemNotifications { get; set; }
-        //public IEnumerable<PhotographerCategoryMapping> PhotographerCategoryMappings { get; set; }
-        //public IEnumerable<CompetitionUpload> CompetitionUploads { get; set; }
     }
 }

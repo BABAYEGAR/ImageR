@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations.Schema;
+using Newtonsoft.Json;
 
 namespace Image.Models.Entities
 {
@@ -10,6 +11,7 @@ namespace Image.Models.Entities
         public long? AppUserId { get; set; }
         public long? PackageId { get; set; }
         [ForeignKey("PackageId")]
+        [JsonIgnore]
         public Package Package { get; set; }
         public DateTime? ExpiryDate { get; set; }
         public long? MonthLength { get; set; }

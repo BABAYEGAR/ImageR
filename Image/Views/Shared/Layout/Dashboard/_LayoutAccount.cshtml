@@ -22,7 +22,7 @@
         <script type="text/javascript" src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
 </head>
-<body style="background-image: url(~/Dashboard/build/images/backgrounds/16.jpg)" class="body-bg-full">
+<body style="background-image: url(../LandingPage/assets/img/back2.jpg)" class="body-bg-full">
 <div class="container page-container">
 
     <div class="page-content">
@@ -47,19 +47,24 @@
                 </div>
             }
         }
-        <div class="logo"><i class="ti-underline"></i>
-        </div>
+        <a href="@Url.Action("Index","Home")">
+            <div class="logo">
+                <img src="~/LandingPage/assets/img/icon-camerack-studio.png" alt="logo">
+            </div>
+        </a>
         @RenderBody()
     </div>
 </div>
 <!-- Demo Settings end-->
 <!-- jQuery-->
 <script type="text/javascript" src="~/Dashboard/plugins/jquery/dist/jquery.min.js"></script>
-<script src="~/lib/jquery-validation/dist/jquery.validate.js"></script>
-<script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.js"></script>
+
 <!-- Bootstrap JavaScript-->
 <script type="text/javascript" src="~/Dashboard/plugins/bootstrap/dist/js/bootstrap.min.js"></script>
 <!-- Custom JS-->
 <script type="text/javascript" src="~/Dashboard/build/js/second-layout/extra-demo.js"></script>
+<script src="~/lib/jquery-validation/dist/jquery.validate.js"></script>
+<script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.js"></script>
+    <script src="~/lib/jquery.unobtrusive-ajax.js"></script>
 </body>
 </html>

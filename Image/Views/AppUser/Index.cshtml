@@ -1,9 +1,12 @@
-﻿@model List<Image.Models.Entities.AppUser>
+﻿@using Image.Models.Entities
+@using Image.Models.Enum
+@model List<AppUser>
 @{
     Layout = "Layout/Dashboard/_LayoutTable";
     ViewBag.PageTitle = "List of Users";
     ViewBag.PageHeader = "Manage Application Users";
     ViewBag.FormHeader = "List of Users";
+    List<Role> roles = ViewBag.Role;
 }
 @section Breadcrumbs
 {
@@ -22,20 +25,20 @@
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
-                <h4 class="modal-title" id="myModalLabel1">Delete User</h4>
+                <h4 class="modal-title" id="myModalLabel1">Deactivate User</h4>
             </div>@using (Html.BeginForm("Delete", "AppUser"))
                   {
-                      <input type="hidden" id="id" name="AppuserId" />
+                      <input type="hidden" id="id" name="UserId" />
                       <div class="modal-body">
 
                           @Html.AntiForgeryToken()
                           <p>
-                              Are you sure you want to delete the User?
+                              Are you sure you want to Deactivate the User?
                           </p>
 
                       </div>
                       <div class="modal-footer">
-                          <input type="submit" value="Delete" class="btn btn-danger pull-right fa fa-trash" />
+                          <input type="submit" value="Deactivate" class="btn btn-danger pull-right fa fa-trash" />
                           <input type="button" data-dismiss="modal" value="Cancel" class="btn btn-default pull-left" />
                       </div>
                   }
@@ -68,12 +71,17 @@
     <tbody>
     @foreach (var item in Model)
     {
+        var userRole = roles.SingleOrDefault(n => n.RoleId == item.RoleId);
         <tr>
             <td>@item.Name</td>
             <td>@item.Username</td>
             <td>@item.Email</td>
             <td>@item.Mobile</td>
-            <td>@item.Role.Name</td>
+            @if (userRole != null)
+            {
+                <td>@userRole.Name</td> 
+            }
+           
             <td>
                 <div class="btn-group">
                     <button class="btn btn-xs btn-primary dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false">
@@ -86,11 +94,23 @@
                                 <i class="icon-pencil"></i> Edit
                             </a>
                         </li>
-                        <li>
-                            <a href="#" data-toggle="tooltip" title="Delete the User" data-id="@item.AppUserId" data-toggle="modal" class="loadModal3">
-                                <i class="icon-trash"></i> Delete
-                            </a>
-                        </li>
+                        @if (item.Status == UserStatus.Active.ToString())
+                        {
+                            <li>
+                                <a href="#" data-toggle="tooltip" title="Deactivate the User" data-id="@item.AppUserId" data-toggle="modal" class="loadModal3">
+                                    <i class="icon-trash"></i> Deactivate
+                                </a>
+                            </li>
+                        }
+                        else
+                        {
+                            <li>
+                                <a href="@Url.Action("ActivateUser", "AppUser", new {id = item.AppUserId})" data-toggle="tooltip" title="Activate the User">
+                                    <i class="icon-pencil"></i> Activate
+                                </a>
+                            </li>
+                        }
+
                     </ul>
                 </div>
             </td>

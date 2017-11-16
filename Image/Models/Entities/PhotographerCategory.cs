@@ -9,6 +9,7 @@ namespace Image.Models.Entities
         [Required]
         public string Name { get; set; }
         public string Description { get; set; }
+        public string FileName { get; set; }
         public IEnumerable<PhotographerCategoryMapping> PhotographerCategoryMappings { get; set; }
     }
 }

@@ -1,16 +1,29 @@
-﻿@model List<Image.Models.Entities.ImageComment>
+﻿@using Image.Models.Entities
+@model List<ImageComment>
+@{
+    List<AppUser> users = ViewBag.Users;
+}
 @foreach (var items in Model.Take(6))
 {
+    var singleOrDefault = users.SingleOrDefault(n => n.AppUserId == items.AppUserId);
     <li class="media">
         <div class="media-left avatar">
-            <img alt="" src="~/UploadedImage/ProfilePicture/@items.AppUser.ProfilePicture" class="media-object img-circle"><span class="status bg-success"></span>
+            @if (singleOrDefault != null)
+            {
+                <img alt="" src="~/UploadedImage/ProfilePicture/@singleOrDefault.ProfilePicture"
+                     class="media-object img-circle"><span class="status bg-success"></span>
+            }
+    
         </div>
         <div class="media-body">
-            <h5 class="media-heading inline-block">@items.AppUser.Name</h5>
+        @if (singleOrDefault != null)
+        {
+            <h5 class="media-heading inline-block">@singleOrDefault.Name</h5>
+        }
             <time datetime="2015-12-10T20:50:48+07:00" class="text-muted fs-12">
                 @items.DateCreated.ToString("D") <i class="ti-time"></i> @items.DateCreated.ToString("h:mm:ss tt")</time>
             <p>@items.Comment</p>
-
+            <a href="" class="pull-right"><i class="fa fa-trash" style="color: red"></i></a>
         </div>
      
     </li>

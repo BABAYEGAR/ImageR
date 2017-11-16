@@ -25,7 +25,7 @@ namespace Image.Models.Services
             //Smtp Server
             var SmtpServer = "smtp.gmail.com";
             //Smtp Port Number
-            var SmtpPortNumber = 587;
+            var SmtpPortNumber = 465;
 
             var mimeMessageVendor = new MimeMessage();
             mimeMessageVendor.From.Add(new MailboxAddress(FromAdressTitle, FromAddress));
@@ -43,7 +43,7 @@ namespace Image.Models.Services
                     var body = bodyBuilder.HtmlBody;
 
                     var replace = body.Replace("NAME", appUser.Name);
-                    replace = replace.Replace("CODE", accessKey.AccountActivationAccessCode);
+                    replace = replace.Replace("URL", "http://www.studio.camerack.com/Account/AccountActivationLink?accessCode=" + accessKey.AccountActivationAccessCode);
                     replace = replace.Replace("ROLE", role.Name);
                     replace = replace.Replace("DATE", DateTime.Now.ToString(CultureInfo.InvariantCulture));
                     bodyBuilder.HtmlBody = replace;
@@ -52,7 +52,7 @@ namespace Image.Models.Services
             }
             using (var client = new MailKit.Net.Smtp.SmtpClient())
             {
-                client.Connect(SmtpServer, SmtpPortNumber, false);
+                client.Connect(SmtpServer, SmtpPortNumber, true);
                 // Note: only needed if the SMTP server requires authentication
                 // Error 5.5.1 Authentication 
                 client.Authenticate("salxsaa@gmail.com", "Brigada95");
@@ -75,7 +75,7 @@ namespace Image.Models.Services
             //Smtp Server
             var SmtpServer = "smtp.gmail.com";
             //Smtp Port Number
-            var SmtpPortNumber = 587;
+            var SmtpPortNumber = 465;
 
             var mimeMessageVendor = new MimeMessage();
             mimeMessageVendor.From.Add(new MailboxAddress(FromAdressTitle, FromAddress));
@@ -93,15 +93,15 @@ namespace Image.Models.Services
                     var body = bodyBuilder.HtmlBody;
 
                     var replace = body.Replace("NAME", appUser.Name);
-                    replace = replace.Replace("CODE", accessKey.AccountActivationAccessCode);
                     replace = replace.Replace("DATE", DateTime.Now.ToString(CultureInfo.InvariantCulture));
+                    replace = replace.Replace("URL", "http://www.pstudio.camerack.com/Account/ForgotPassword?accessCode="+ accessKey.PasswordAccessCode);
                     bodyBuilder.HtmlBody = replace;
                     mimeMessageVendor.Body = bodyBuilder.ToMessageBody();
                 }
             }
             using (var client = new MailKit.Net.Smtp.SmtpClient())
             {
-                client.Connect(SmtpServer, SmtpPortNumber, false);
+                client.Connect(SmtpServer, SmtpPortNumber, true);
                 // Note: only needed if the SMTP server requires authentication
                 // Error 5.5.1 Authentication 
                 client.Authenticate("salxsaa@gmail.com", "Brigada95");

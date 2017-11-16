@@ -6,5 +6,7 @@
         public string Description { get; set; }
         public long? Amount { get; set; }
         public string PaymentMethod { get; set; }
+        public long? AppUserId { get; set; }
+        public string Reference { get; set; }
     }
 }

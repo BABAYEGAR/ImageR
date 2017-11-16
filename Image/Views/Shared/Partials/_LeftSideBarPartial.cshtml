@@ -27,7 +27,11 @@
     <div class="user">
         <a href="@Url.Action("Profile", "Account")">
             <div id="esp-user-profile" data-percent="65" style="height: 104px; line-height: 80px; padding: 12px; width: 104px;" class="easy-pie-chart">
-                <img src="~/UploadedImage/ProfilePicture/@appUser.ProfilePicture" alt="" class="avatar img-circle"><span class="status bg-success"></span>
+                @if (appUser != null)
+                {
+                    <img src="~/UploadedImage/ProfilePicture/@appUser.ProfilePicture" alt="" class="avatar img-circle"><span class="status bg-success"></span>
+                }
+            
             </div>
         </a>
         @if (appUser != null)
@@ -138,11 +142,14 @@
         @if (userRole != null && userRole.ManageOrders)
         {
             <li class="panel">
-                <a role="button" data-toggle="collapse" data-parent=".navigation" href="#collapse7" aria-expanded="false" aria-controls="collapse7" class="collapsed"><i class="ti-shopping-cart"></i> Orders @*<span class="label label-outline label-success">New</span>*@</a>
+                <a role="button" data-toggle="collapse" data-parent=".navigation" href="#collapse7" aria-expanded="false" aria-controls="collapse7" class="collapsed"><i class="ti-shopping-cart"></i> My Store @*<span class="label label-outline label-success">New</span>*@</a>
                 <ul id="collapse7" class="list-unstyled collapse">
-                    <li>
-                        <a href="product-list.html">Product list</a>
-                    </li>
+                <li>
+                    <a href="@Url.Action("Index", "Order")">Orders </a>
+                </li>
+                <li>
+                    <a href="@Url.Action("Index", "Payment")">Payment </a>
+                </li>
                 </ul>
             </li>
         }

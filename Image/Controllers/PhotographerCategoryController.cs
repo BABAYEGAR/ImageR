@@ -1,9 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using Image.Models.DataBaseConnections;
 using Image.Models.Encryption;
 using Image.Models.Entities;
 using Image.Models.Enum;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -13,10 +16,14 @@ namespace Image.Controllers
     public class PhotographerCategoryController : Controller
     {
         private readonly ImageDataContext _databaseConnection;
+        Role _userRole;
+        List<Models.Entities.Image> _images = new List<Models.Entities.Image>();
+        private readonly IHostingEnvironment _hostingEnv;
 
-        public PhotographerCategoryController(ImageDataContext databaseConnection)
+        public PhotographerCategoryController(IHostingEnvironment env, ImageDataContext databaseConnection)
         {
             _databaseConnection = databaseConnection;
+            _hostingEnv = env;
         }
 
         // GET: ImageCategory
@@ -44,7 +51,7 @@ namespace Image.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [SessionExpireFilter]
-        public ActionResult Create(PhotographerCategory photographerCategory, IFormCollection collection)
+        public ActionResult Create(PhotographerCategory photographerCategory, IList<IFormFile> image, IFormCollection collection)
         {
             try
             {
@@ -53,7 +60,26 @@ namespace Image.Controllers
                 photographerCategory.DateLastModified = DateTime.Now;
                 photographerCategory.CreatedBy = signedInUserId;
                 photographerCategory.LastModifiedBy = signedInUserId;
+                if (image.Count > 0)
+                    foreach (var file in image)
+                    {
+                        var fileInfo = new FileInfo(file.FileName);
+                        var ext = fileInfo.Extension.ToLower();
+                        var name = DateTime.Now.ToFileTime().ToString();
+                        var fileName = name + ext;
+                        var uploadedImage = _hostingEnv.WebRootPath + $@"\UploadedImage\PhotoCategory\{fileName}";
 
+                        using (var fs = System.IO.File.Create(uploadedImage))
+                        {
+                            if (fs != null)
+                            {
+                                file.CopyTo(fs);
+                                fs.Flush();
+                                photographerCategory.FileName = fileName;
+
+                            }
+                        }
+                    }
                 _databaseConnection.PhotographerCategories.Add(photographerCategory);
                 _databaseConnection.SaveChanges();
 
@@ -106,12 +132,11 @@ namespace Image.Controllers
                         _databaseConnection.PhotographerCategoryMappings.Add(categoryMapping);
                         _databaseConnection.SaveChanges();
 
-
-                        TempData["display"] = "you have succesfully added the category(s) to the profile!";
-                        TempData["notificationtype"] = NotificationType.Success.ToString();
-                      
+                       
                     }
                 }
+                TempData["display"] = "you have succesfully added the category(s) to the profile!";
+                TempData["notificationtype"] = NotificationType.Success.ToString();
             }
             else
             {
@@ -133,7 +158,7 @@ namespace Image.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [SessionExpireFilter]
-        public ActionResult Edit(PhotographerCategory photographerCategory, IFormCollection collection)
+        public ActionResult Edit(PhotographerCategory photographerCategory, IList<IFormFile> image, IFormCollection collection)
         {
             try
             {
@@ -141,7 +166,26 @@ namespace Image.Controllers
                 var signedInUserId = HttpContext.Session.GetInt32("userId");
                 photographerCategory.DateLastModified = DateTime.Now;
                 photographerCategory.LastModifiedBy = signedInUserId;
+                if (image.Count > 0)
+                    foreach (var file in image)
+                    {
+                        var fileInfo = new FileInfo(file.FileName);
+                        var ext = fileInfo.Extension.ToLower();
+                        var name = DateTime.Now.ToFileTime().ToString();
+                        var fileName = name + ext;
+                        var uploadedImage = _hostingEnv.WebRootPath + $@"\UploadedImage\PhotoCategory\{fileName}";
 
+                        using (var fs = System.IO.File.Create(uploadedImage))
+                        {
+                            if (fs != null)
+                            {
+                                file.CopyTo(fs);
+                                fs.Flush();
+                                photographerCategory.FileName = fileName;
+
+                            }
+                        }
+                    }
                 _databaseConnection.Entry(photographerCategory).State = EntityState.Modified;
                 ;
                 _databaseConnection.SaveChanges();

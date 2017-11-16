@@ -41,10 +41,9 @@ namespace Image
         public void ConfigureServices(IServiceCollection services)
         {
             // Add framework services.
-            //vendor management System
             services.AddDbContext<ImageDataContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("Image")));
-            //_testSecret = Configuration["MySecret"];
+
             services.AddMvc(options => options.MaxModelValidationErrors = 50).AddJsonOptions(options => {
                 options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
                 options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
@@ -58,10 +57,6 @@ namespace Image
                 // Set a short timeout for easy testing.
                 options.IdleTimeout = TimeSpan.FromMinutes(30);
             });
-            //services.Configure<MvcOptions>(options =>
-            //{
-            //    options.Filters.Add(new RequireHttpsAttribute());
-            //});
             services.AddSingleton<ITempDataProvider, CookieTempDataProvider>();
         }
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

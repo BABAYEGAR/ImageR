@@ -92,6 +92,11 @@ namespace Image.Controllers
                 //display notification
                 TempData["display"] = "You have successfully added a new Location!";
                 TempData["notificationtype"] = NotificationType.Success.ToString();
+
+                if (collection != null && collection["Image"] != "" && collection["Image"] == "Redirect")
+                {
+                    return RedirectToAction("Create", "Image");
+                }
                 return RedirectToAction("Index");
             }
             catch(Exception ex)

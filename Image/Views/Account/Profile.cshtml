@@ -14,6 +14,12 @@
     List<Image> images = ViewBag.Images;
     List<ImageComment> comments = ViewBag.ImageComments;
     List<AppUser> users = ViewBag.Users;
+
+    List<ImageAction> ratings = ViewBag.Ratings;
+}
+@section Css
+{
+    <link href="~/Rating/css/star-rating.css" rel="stylesheet"/>
 }
 @section Breadcrumbs
 {
@@ -45,15 +51,15 @@
             <div class="pull-right text-center">
                 <ul class="list-inline">
                     <li>
-                        <div class="fs-24 fw-500">@images.Count</div>
+                        <div class="fs-24 fw-500">@comments.Count</div>
                         <p>Likes</p>
                     </li>
                     <li>
-                        <div class="fs-24 fw-500">@comments.Count</div>
+                        <div class="fs-24 fw-500">@images.Count</div>
                         <p>Photos</p>
                     </li>
                 </ul>
-                <button type="button" class="btn btn-raised btn-block btn-primary">Follow</button>
+                @*<button type="button" class="btn btn-raised btn-block btn-primary">Follow</button>*@
             </div>
         </div>
     </div>
@@ -66,6 +72,8 @@
                 <a href="@Url.Action("EditProfile")">Edit Information<i style="font-size: 20px; font-weight: bolder;" class="ti-pencil"></i></a>
                 <a href="@Url.Action("ChangePassword")">Change Password<i style="font-size: 20px; font-weight: bolder;" class="ti-lock"></i></a><br/>
                 <a href="@Url.Action("ChangeProfileImage")">Change Profile Images<i style="font-size: 20px; font-weight: bolder;" class="ti-image"></i></a>
+                <br />
+                <a href="@Url.Action("UserBank")">Bank Information<i style="font-size: 20px; font-weight: bolder;" class="ti-money"></i></a>
             </div>
             <div class="widget-body">
                 <ul class="media-list mb-0">
@@ -127,140 +135,129 @@
     </div>
     <div class="col-md-6">
 
-            @foreach (var item in images)
-            {
-                var singleOrDefault = users.SingleOrDefault(n => n.AppUserId == item.AppUserId);
-                var pic = "https://res.cloudinary.com/" + item.FilePath;
-                <div class="widget clear">
-                    <div class="widget-heading">
-                        <div class="media">
-                            <div class="media-left">
-                                <img src="~/UploadedImage/ProfilePicture/@{
-                                   
-                                                                         }@if (singleOrDefault != null)
-                                                                          {
-                                                                              @singleOrDefault.ProfilePicture
-                                                                          }" alt="" class="media-object mo-lg img-circle">
-                            </div>
-                            <div class="media-body media-middle">
-                                <p class="mb-0">
-                                    <span class="fw-500">
-                                        @if (singleOrDefault != null)
-                                        {
-                                            @singleOrDefault.Username
-                                        }</span> uploaded a new photo
-                                </p>
-                                <time datetime="2015-12-10T20:50:48+07:00" class="text-muted fs-12">
-                                    @item.DateCreated.ToString("D") <i class="ti-time"></i>@item.DateCreated.ToString("h:mm:ss tt")
-                                </time>
-                            </div>
+        @foreach (var item in images)
+        {
+            var singleOrDefault = users.SingleOrDefault(n => n.AppUserId == item.AppUserId);
+            var pic = "https://res.cloudinary.com/" + item.FilePath;
+            <div class="widget clear">
+                <div class="widget-heading">
+                    <div class="media">
+                        <div class="media-left">
+                            <img src="~/UploadedImage/ProfilePicture/@{
+                                                                     }@if (singleOrDefault != null)
+                                                                      {
+                                                                          @singleOrDefault.ProfilePicture
+                                                                      }" alt="" class="media-object mo-lg img-circle">
                         </div>
-                    </div>
-                    <div class="widget-body">
-                        <p>
-                            @item.Description
-                        </p>
-                        <div class="thumbnail">
-                            <a href="#">
-                                <img src="@pic" alt="">
-                                <div class="text-left caption">
-                                    <ul class="list-inline mb-0">
-                                        <li><i class="ti-comment text-info"></i> 43</li>
-                                        <li><i class="ti-heart text-danger"></i> 437</li>
-                                        @*<li>
-
-                                            <a href="#">
-                                                <i class="fa fa-comment-o fa-2x text-info"></i>@item.ImageComments.ToList().Count
-                                            </a>
-                                            <a href="#">
-                                                <li><i class="fa fa-heart-o fa-2x text-danger"></i>0</li>
-                                            </a>
-                                        </li>*@
-                                    </ul>
-                                </div>
-                                <div class="text-right caption">
-                                    <ul class="list-inline mb-0">
-                                        <li><i class="ti-comment text-info"></i> 43</li>
-                                        <li><i class="ti-heart text-danger"></i> 437</li>
-                                        @*<li>
-
-                                            <a href="#">
-                                                <i class="fa fa-comment-o fa-2x text-info"></i>@item.ImageComments.ToList().Count
-                                            </a>
-                                            <a href="#">
-                                                <li><i class="fa fa-heart-o fa-2x text-danger"></i>0</li>
-                                            </a>
-                                        </li>*@
-                                    </ul>
-                                </div>
-                            </a>
-
+                        <div class="media-body media-middle">
+                            <p class="mb-0">
+                                <span class="fw-500">
+                                    @if (singleOrDefault != null)
+                                    {
+                                        @singleOrDefault.Username
+                                    }</span> uploaded a new photo
+                            </p>
+                            <time datetime="2015-12-10T20:50:48+07:00" class="text-muted fs-12">
+                                @item.DateCreated.ToString("D") <i class="ti-time"></i>@item.DateCreated.ToString("h:mm:ss tt")
+                            </time>
                         </div>
-                        <ul class="media-list" id="content">
-                            @{
-
-                                @Html.Partial("Partials/_ImageComment", item.ImageComments.ToList())
-                            }
-                            @if (TempData["display"] != null)
-                            {
-                                if (TempData["notificationtype"].Equals(NotificationType.Success.ToString()))
-                                {
-                                    <div class="alert alert-success alert-dismissable">
-                                        @TempData["display"] <button type="button" class="close" data-dismiss="alert">×</button>
-                                    </div>
-                                }
-                                else if (TempData["notificationtype"].Equals(NotificationType.Error.ToString()))
-                                {
-                                    <div class="alert alert-danger alert-dismissable">
-                                        @TempData["display"] <button type="button" class="close" data-dismiss="alert">×</button>
-                                    </div>
-                                }
-                                else if (TempData["notificationtype"].Equals(NotificationType.Info.ToString()))
-                                {
-                                    <div class="alert alert-info alert-dismissable">
-                                        @TempData["display"] <button type="button" class="close" data-dismiss="alert">×</button>
-                                    </div>
-                                }
-                            }
-
-                        </ul>
-                        <form asp-controller="Image" asp-action="PostImageComment" data-ajax="true" data-ajax-method="POST" data-ajax-begin="onBegin" data-ajax-update="#content">
-                            <input type="hidden" value="@item.ImageId" name="ImageId"/>
-                            <label>Post a Comment</label>
-                            <textarea name="Comment" class="form-control" rows="3" aria-expanded="False" required="required"></textarea>
-                            <br/>
-                            <button type="submit" class="btn btn-primary btn-sm pull-right" id="postComment">
-                                <i class="glyphicon glyphicon-upload"></i>
-                                Post
-                            </button>
-                        </form>
                     </div>
                 </div>
-            }
+                <div class="widget-body">
+                    <p>
+                        @item.Description
+                    </p>
+                    <div class="thumbnail">
+                        <a href="#">
+                            <img src="@pic" alt="">
+                            <div class="text-left caption">
+                                @{
+                                    Html.RenderPartial("Partials/_PartialRating", item);
+                                }
+                            </div>
+                            <div class="text-right caption">
+                                <ul class="list-inline mb-0">
+                                    @if (ratings != null && ratings.Any(n => n.AppUserId == appUser.AppUserId && n.ImageId == item.ImageId && n.TenancyId == new AppConfig().TenancyId) == false)
+                                    {
+                                        <form asp-controller="Image" asp-action="RateImage" data-ajax-complete="onComplete"
+                                              data-ajax="true" data-ajax-method="POST" data-ajax-update="#" id="hideRating">
+                                            @Html.AntiForgeryToken()
+                                            @Html.ValidationSummary(true, "", new {@class = "text-danger"})
+                                            @Html.Hidden("ImageId", item.ImageId)
+                                            @Html.AntiForgeryToken()
+                                            @Html.ValidationSummary(true, "", new {@class = "text-danger"})
+                                            <input id="input-21d" name="rating" type="text" class="rating" data-min=0 data-max=5 data-step=1 data-size="sm">
+                                            <input type="submit" class="btn btn-primary" value="Rate" id="rateButton">
+                                        </form>
+                                    }
+                                    else
+                                    {
+                                        if (appUser.AppUserId != null)
+                                        {
+                                            <span id="showRatings" class="skill-instock"><i class="fa fa-star"></i>Already Rated</span>
+                                        }
+                                    }
+                                </ul>
+                            </div>
+                        </a>
 
+                    </div>
+                    <ul class="media-list content" id="content-@item.ImageId">
+                        @{
 
+                            @Html.Partial("Partials/_ImageComment", item.ImageComments.ToList())
+                        }
+                        @if (TempData["display"] != null)
+                        {
+                            if (TempData["notificationtype"].Equals(NotificationType.Success.ToString()))
+                            {
+                                <div class="alert alert-success alert-dismissable">
+                                    @TempData["display"] <button type="button" class="close" data-dismiss="alert">×</button>
+                                </div>
+                            }
+                            else if (TempData["notificationtype"].Equals(NotificationType.Error.ToString()))
+                            {
+                                <div class="alert alert-danger alert-dismissable">
+                                    @TempData["display"] <button type="button" class="close" data-dismiss="alert">×</button>
+                                </div>
+                            }
+                            else if (TempData["notificationtype"].Equals(NotificationType.Info.ToString()))
+                            {
+                                <div class="alert alert-info alert-dismissable">
+                                    @TempData["display"] <button type="button" class="close" data-dismiss="alert">×</button>
+                                </div>
+                            }
+                        }
+
+                    </ul>
+
+                    <form asp-controller="Image" asp-action="PostImageComment" data-ajax="true" data-ajax-method="POST" data-ajax-update="#content-@item.ImageId" data-ajax-complete="onFormComplete">
+                        <input type="hidden" value="@item.ImageId" name="ImageId"/>
+                        <label>Post a Comment</label>
+                        <textarea name="Comment" id="comment-@item.ImageId" class="form-control comment" aria-expanded="False" required="required"></textarea>
+                        <br/>
+                        <button type="submit" class="btn btn-primary btn-sm pull-right" id="postComment" data-id="@item.ImageId">
+                            <i class="glyphicon glyphicon-upload"></i>
+                            Post
+                        </button>
+
+                    </form>
+                </div>
+            </div>
+        }
     </div>
-
 </div>
+
 @section Functions
 {
-    <script type="text/javascript">
-        $(document)
-            .ready(function() {
-                $('#postComment')
-                    .click(function() {
-                        $('#Comment').val('');
-                        $(function() {
-
-                            setInterval(function() {
-                                    $('#content')
-                                        .load('@Url.Action("ReloadImageComments", "Image")');
-                                },
-                                10000);
-
-
-                        });
-                    });
-            });
+    <script src="~/Rating/js/star-rating.min.js"></script>
+    <script>
+        var onComplete = function() {
+            $('#hideRating').hide('fade');
+            $('#showRatings').fadeIn();
+        };
+        var onFormComplete = function() {
+            $('.comment').val('');
+        };
     </script>
 }

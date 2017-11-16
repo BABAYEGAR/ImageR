@@ -7,8 +7,6 @@ namespace Image.Models.Entities
         public long OrderId { get; set; }
         public string OrderNumber { get; set; }
         public long? ImageId { get; set; }
-        [ForeignKey("ImageId")]
-        public Image Image { get; set; }
         public long? AppUserId { get; set; }
     }
 }

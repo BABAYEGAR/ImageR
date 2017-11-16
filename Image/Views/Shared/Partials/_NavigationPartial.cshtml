@@ -21,21 +21,16 @@
     </div><a href="@Url.Action("Index","Home")" class="brand pull-left">
         <h2>Photo-Studio</h2>
     </a><a href="javascript:;" role="button" class="hamburger-menu pull-left visible-xs"><span></span></a>
-    @*<form class="search-form pull-left hidden-xs">
-        <div class="form-group has-feedback mb-0">
-            <input type="text" aria-describedby="inputSearchFor" placeholder="Search for..." style="width: 200px" class="form-control rounded"><span aria-hidden="true" class="ti-search form-control-feedback"></span><span id="inputSearchFor" class="sr-only">(default)</span>
-        </div>
-    </form>*@
     <ul class="notification-bar list-inline pull-right">
         <li class="visible-xs"><a href="javascript:;" role="button" class="header-icon search-bar-toggle"><i class="ti-search"></i></a></li>
         <li class="visible-lg"><a href="javascript:;" role="button" class="header-icon fullscreen-toggle"><i class="ti-fullscreen"></i></a></li>
         <li class="dropdown">
-            <a id="dropdownMenu1" href="#" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false" class="dropdown-toggle bubble header-icon"><i class="ti-world"></i><span class="badge bg-danger">6</span></a>
+            <a id="dropdownMenu1" href="#" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false" class="dropdown-toggle bubble header-icon"><i class="ti-world"></i><span class="badge bg-danger">@notifications.Where(n=>n.Read == false).ToList().Count</span></a>
             <div aria-labelledby="dropdownMenu1" class="dropdown-menu dropdown-menu-right dm-medium fs-12 animated fadeInDown">
                 @{
                     @Html.Partial("Partials/_NotificationPartial",notifications)
                 }
-                <div class="dropdown-footer text-center p-10"><a href="javascript:;" class="fw-500 text-muted">See all notifications</a></div>
+                <div class="dropdown-footer text-center p-10"><a href="@Url.Action("Notification","Account")" class="fw-500 text-muted">See all notifications</a></div>
             </div>
         </li>
         @*<li><a href="javascript:;" role="button" class="right-sidebar-toggle bubble header-icon"><i class="ti-layout-sidebar-right"></i><span class="dot bg-danger"></span></a></li>*@

@@ -36,13 +36,78 @@
         </ol>
     </div>
 }
+<div class="modal fade" id="myModal1" tabindex="-1" role="dialog" aria-labelledby="myModalLabel1">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title" id="myModalLabel1">Add Camera</h4>
+            </div>@using (Html.BeginForm("Create", "Camera"))
+                  {
+                      <input type="hidden" name="Image" value="Redirect" />
+                      <div class="modal-body">
+
+                          @Html.AntiForgeryToken()
+                          <div class="form-body">
+                              <div class="form-group">
+                                  @Html.Label("Name","Name", new {@class = "control-label"})<span class="required">*</span>
+                                  @Html.Editor("Name", new {htmlAttributes = new {@class = "form-control", placeholder = "Please enter a camera used", required = "required" } })
+                                  @Html.ValidationMessage("Name", "", new {@class = "text-danger"})
+                              </div>
+                          </div>
+                      </div>
+                      <div class="modal-footer">
+                          <input type="submit" value="Submit" class="btn btn-success pull-right fa fa-check" />
+                          <input type="button" data-dismiss="modal" value="Cancel" class="btn btn-default pull-left" />
+                      </div>
+                  }
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="myModal2" tabindex="-1" role="dialog" aria-labelledby="myModalLabel2">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title" id="myModalLabel2">Add Location</h4>
+            </div>@using (Html.BeginForm("Create", "Location"))
+                  {
+                      <input type="hidden" name="Image" value="Redirect" />
+                      <div class="modal-body">
+
+                          @Html.AntiForgeryToken()
+                          <div class="form-body">
+                              <div class="form-group">
+                                  @Html.Label("Name","Name", new {@class = "control-label"})<span class="required">*</span>
+                                  @Html.Editor("Name", new {htmlAttributes = new {@class = "form-control", placeholder = "Please enter a location",required = "required"}})
+                                  @Html.ValidationMessage("Name", "", new {@class = "text-danger"})
+                              </div>
+                          </div>
+                      </div>
+                      <div class="modal-footer">
+                          <input type="submit" value="Submit" class="btn btn-success pull-right fa fa-check" />
+                          <input type="button" data-dismiss="modal" value="Cancel" class="btn btn-default pull-left" />
+                      </div>
+                  }
+        </div>
+    </div>
+</div>
+
+
 <div class="widget-body">
-<h3>
+<h4>
    <span class="required">*</span> Make sure to <strong class="annouce">upload an Image</strong>  in the <strong class="required">next tab</strong> ..
-</h3>
-    <h3>
-    <span class="required">*</span> Note That the <strong class="annouce">Maximum Size</strong> for Image Uploads is <strong class="required">15MB</strong>..
-    </h3>
+</h4>
+    <h4>
+        <span class="required">*</span> Note That the <strong class="annouce">Maximum Size</strong> for Image Uploads is <strong class="required">15MB</strong>..
+    </h4>
+    <h4>
+        <span class="required">*</span> Note That the <strong class="annouce">Supported Formats</strong> for Image Uploads are <strong class="required">JPG,JPEG,TIFF,PNG</strong>..
+    </h4>
 <div role="tabpanel">
 <ul role="tablist" class="nav nav-tabs nav-justified mb-15">
     <li role="presentation" class="active">
@@ -57,91 +122,137 @@
 {
     <div class="tab-content">
 
-    <div id="home5" role="tabpanel" aria-labelledby="home-tab5" class="tab-pane fade active in">
-        @Html.AntiForgeryToken()
-        @Html.ValidationSummary(true, "", new {@class = "text-danger"})
+        <div id="home5" role="tabpanel" aria-labelledby="home-tab5" class="tab-pane fade active in">
+            @Html.AntiForgeryToken()
+            @Html.ValidationSummary(true, "", new {@class = "text-danger"})
 
-        <div class="form-body">
-            <div class="row">
-            <div class="form-group col-md-6">
-                @Html.LabelFor(model => model.Title, new {@class = "control-label"})<span class="required">*</span>
-                @Html.EditorFor(model => model.Title, new {htmlAttributes = new {@class = "form-control", placeholder = "Please enter the category name"}})
-                @Html.ValidationMessageFor(model => model.Title, "", new {@class = "text-danger"})
-            </div>
-            <div class="form-group col-md-6">
-                @Html.LabelFor(model => model.Theme, new {@class = "control-label"})<span class="required">*</span>
-                @Html.EditorFor(model => model.Theme, new {htmlAttributes = new {@class = "form-control", placeholder = "Please enter the category name"}})
-                @Html.ValidationMessageFor(model => model.Theme, "", new {@class = "text-danger"})
-            </div>
-            <div class="form-group col-md-6">
-                @Html.LabelFor(model => model.ImageCategoryId, new {@class = "control-label"})<span class="required">*</span>
-                @Html.DropDownListFor(model => model.ImageCategoryId, null, "Select an Image Category/Genre", new {@class = "form-control", placeholder = "", id = "category"})
-                @Html.ValidationMessageFor(model => model.ImageCategoryId, "", new {@class = "text-danger"})
-            </div>
-            <div class="form-group col-md-6">
-                @Html.LabelFor(model => model.ImageSubCategoryId, new {@class = "control-label"})
-                @Html.DropDownListFor(m => m.ImageSubCategoryId, new SelectList(string.Empty, "Value", "Text"), "--Please select a Sub-Category/ Sub-Genre--", new {@class = "form-control", id = "sub"})
-                @Html.ValidationMessageFor(model => model.ImageSubCategoryId, "", new {@class = "text-danger"})
-            </div>
-                <div class="form-group col-md-6">
-                    @Html.LabelFor(model => model.LocationId, new {@class = "control-label"})<span class="required">*</span>
-                    @Html.DropDownListFor(model => model.LocationId, null, "Select an Image Location", new {@class = "form-control", placeholder = ""})
-                    @Html.ValidationMessageFor(model => model.LocationId, "", new {@class = "text-danger"})
+            <div class="form-body">
+                <div class="row">
+                    <div class="form-group col-md-6">
+                        @Html.LabelFor(model => model.Title, new {@class = "control-label"})<span class="required">*</span>
+                        @Html.EditorFor(model => model.Title, new {htmlAttributes = new {@class = "form-control", placeholder = "Please enter the image title"}})
+                        @Html.ValidationMessageFor(model => model.Title, "", new {@class = "text-danger"})
+                    </div>
+                    <div class="form-group col-md-6">
+                        @Html.LabelFor(model => model.Theme, new {@class = "control-label"})<span class="required">*</span>
+                        @Html.EditorFor(model => model.Theme, new {htmlAttributes = new {@class = "form-control", placeholder = "Please enter the image theme"}})
+                        @Html.ValidationMessageFor(model => model.Theme, "", new {@class = "text-danger"})
+                    </div>
+                    <div class="form-group col-md-6">
+                        @Html.LabelFor(model => model.ImageCategoryId, new {@class = "control-label"})<span class="required">*</span>
+                        @Html.DropDownListFor(model => model.ImageCategoryId, null, "Select an Image Category/Genre", new {@class = "form-control", placeholder = "", id = "category"})
+                        @Html.ValidationMessageFor(model => model.ImageCategoryId, "", new {@class = "text-danger"})
+                    </div>
+                    <div class="form-group col-md-6">
+                        @Html.LabelFor(model => model.ImageSubCategoryId, new {@class = "control-label"})
+                        @Html.DropDownListFor(m => m.ImageSubCategoryId, new SelectList(string.Empty, "Value", "Text"), "--Please select a Sub-Category/ Sub-Genre--", new {@class = "form-control", id = "sub"})
+                        @Html.ValidationMessageFor(model => model.ImageSubCategoryId, "", new {@class = "text-danger"})
+                    </div>
+                    <div class="form-group col-md-6">
+                        @Html.LabelFor(model => model.LocationId, new { @class = "control-label" }) <a data-toggle="tooltip" title="Add a new Location" data-toggle="modal" class="loadModal4" style="font-weight: bolder" href="#">Add New</a>
+                        @Html.DropDownListFor(model => model.LocationId, null, "Select an Image Location", new {@class = "form-control", placeholder = ""})
+                        @Html.ValidationMessageFor(model => model.LocationId, "", new {@class = "text-danger"})
+                    </div>
+                    <div class="form-group col-md-6">
+                        @Html.LabelFor(model => model.Inspiration, new {@class = "control-label"})<span class="required">*</span>
+                        @Html.EditorFor(model => model.Inspiration, new {htmlAttributes = new {@class = "form-control", placeholder = "Please enter the your inspiration for taking the image"}})
+                        @Html.ValidationMessageFor(model => model.Inspiration, "", new {@class = "text-danger"})
+                    </div>
+                    <div class="form-group col-md-6">
+                        @Html.LabelFor(model => model.CameraId, new { @class = "control-label" })  <a data-toggle="tooltip" title="Add a new Camera" data-toggle="modal" class="loadModal3" style="font-weight: bolder" href="#">Add New</a>
+                        @Html.DropDownListFor(model => model.CameraId, null, "Select the Camera Used", new {@class = "form-control", placeholder = ""})
+                        @Html.ValidationMessageFor(model => model.CameraId, "", new {@class = "text-danger"})
+                    </div>
+                    <div class="form-group col-md-6">
+                        @Html.LabelFor(model => model.SellingPrice, new {@class = "control-label"})<span class="required">*</span>
+                        @Html.EditorFor(model => model.SellingPrice, new {htmlAttributes = new {@class = "form-control", placeholder = "Please enter the selling price for the image"}})
+                        @Html.ValidationMessageFor(model => model.SellingPrice, "", new {@class = "text-danger"})
+                    </div>
+                    <div class="form-group col-md-6">
+                        @Html.LabelFor(model => model.Discount, new {@class = "control-label"})
+                        @Html.EditorFor(model => model.Discount, new {htmlAttributes = new {@class = "form-control", placeholder = "Please enter the discount % for the image"}})
+                        @Html.ValidationMessageFor(model => model.Discount, "", new {@class = "text-danger"})
+                    </div>
+                    <div class="form-group col-md-12">
+                        @Html.LabelFor(model => model.Tags, new {@class = "control-label"})
+                        @Html.EditorFor(model => model.Tags, new {htmlAttributes = new {@class = "form-control", placeholder = "Please enter the tags for the image", id = "input-tags" } })
+                        @Html.ValidationMessageFor(model => model.Tags, "", new {@class = "text-danger"})
+                    </div>
                 </div>
-            <div class="form-group col-md-6">
-                @Html.LabelFor(model => model.Inspiration, new {@class = "control-label"})<span class="required">*</span>
-                @Html.EditorFor(model => model.Inspiration, new {htmlAttributes = new {@class = "form-control", placeholder = "Please enter the your inspiration for taking the image"}})
-                @Html.ValidationMessageFor(model => model.Inspiration, "", new {@class = "text-danger"})
-            </div>
-                <div class="form-group col-md-6">
-                    @Html.LabelFor(model => model.CameraId, new {@class = "control-label"})
-                    @Html.DropDownListFor(model => model.CameraId, null, "Select the Camera Used", new {@class = "form-control", placeholder = ""})
-                    @Html.ValidationMessageFor(model => model.CameraId, "", new {@class = "text-danger"})
+                <div class="row">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Description, new {@class = "control-label"})<span class="required">*</span>
+                        <textarea name="Description" data-provide="markdown" rows="10"></textarea>
+                        @Html.ValidationMessageFor(model => model.Description, "", new {@class = "text-danger"})
+                    </div>
                 </div>
-                <div class="form-group col-md-6">
-                    @Html.LabelFor(model => model.SellingPrice, new {@class = "control-label"})<span class="required">*</span>
-                    @Html.EditorFor(model => model.SellingPrice, new {htmlAttributes = new {@class = "form-control", placeholder = "Please enter the selling price for the image"}})
-                    @Html.ValidationMessageFor(model => model.SellingPrice, "", new {@class = "text-danger"})
-                </div>
-                <div class="form-group col-md-12">
-                    @Html.LabelFor(model => model.Tags, new {@class = "control-label"})
-                    @Html.EditorFor(model => model.Tags, new {htmlAttributes = new {@class = "form-control", placeholder = "Please enter the tags for the image", id = "input-tags" } })
-                    @Html.ValidationMessageFor(model => model.Tags, "", new {@class = "text-danger"})
-                </div>
-            </div>
-            <div class="row">
-                <div class="form-group">
-                    @Html.LabelFor(model => model.Description, new {@class = "control-label"})<span class="required">*</span>
-                    <textarea name="Description" data-provide="markdown" rows="10"></textarea>
-                    @Html.ValidationMessageFor(model => model.Description, "", new {@class = "text-danger"})
-                </div>
+
             </div>
 
         </div>
+        <div id="profile5" role="tabpanel" aria-labelledby="profile-tab5" class="tab-pane fade">
+            <div class="form-group">
+                <br/>
+                <br/>
 
-    </div>
-    <div id="profile5" role="tabpanel" aria-labelledby="profile-tab5" class="tab-pane fade">
-        <div class="form-group">
-            <br/>
-            <br/>
-            <label class="col-sm-2 control-label">Image Upload</label>
-            <div class="col-sm-10">
+                <label class="col-sm-2 control-label">Image Upload</label>
+                <div class="col-sm-10">
                 
-                <input id="input-5" name="file" type="file" multiple="" class="file-loading" required="required">
-                <p class="help-block">Initialize file input widget via javascript. Hide the caption and display widget with only buttons. You can add the <code>file-loading</code> class to show a spinning indicator, while the plugin loads.
-                </p>
+                    <input id="input-5" name="file" type="file" multiple="" class="file-loading" required="required">
+                    <p class="help-block">Note that uploading large image sizes might take some more time to upload to the server at such please be patient, but a quick fix is to have a speedy internet connection.
+                    </p>
+                </div>
             </div>
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            <h4><strong>Image Print Support -Up to 96 PPI/DPI</strong></h4>
+            <h5>Please make sure your image supports printing before selecting the appropriate Options</h5>
+            <div class="form-group">
+                <div class="form-group col-md-2">
+                    @Html.LabelFor(model => model.A1, new {@class = "control-label"})
+                    @Html.CheckBoxFor(model => model.A1, new {htmlAttributes = new {@class = "form-control", placeholder = "Please enter the tags for the image", id = "input-tags" } })
+                    @Html.ValidationMessageFor(model => model.A1, "", new {@class = "text-danger"})
+                </div>
+                <div class="form-group col-md-2">
+                    @Html.LabelFor(model => model.A2, new {@class = "control-label"})
+                    @Html.CheckBoxFor(model => model.A2, new {htmlAttributes = new {@class = "form-control", placeholder = "Please enter the tags for the image", id = "input-tags" } })
+                    @Html.ValidationMessageFor(model => model.A2, "", new {@class = "text-danger"})
+                </div>
+                <div class="form-group col-md-2">
+                    @Html.LabelFor(model => model.A3, new {@class = "control-label"})
+                    @Html.CheckBoxFor(model => model.A3, new {htmlAttributes = new {@class = "form-control", placeholder = "Please enter the tags for the image", id = "input-tags" } })
+                    @Html.ValidationMessageFor(model => model.A3, "", new {@class = "text-danger"})
+                </div>
+                <div class="form-group col-md-2">
+                    @Html.LabelFor(model => model.A4, new {@class = "control-label"})
+                    @Html.CheckBoxFor(model => model.A4, new {htmlAttributes = new {@class = "form-control", placeholder = "Please enter the tags for the image", id = "input-tags" } })
+                    @Html.ValidationMessageFor(model => model.A4, "", new {@class = "text-danger"})
+                </div>
+                <div class="form-group col-md-2">
+                    @Html.LabelFor(model => model.A5, new { @class = "control-label" })
+                    @Html.CheckBoxFor(model => model.A5, new { htmlAttributes = new { @class = "form-control", placeholder = "Please enter the tags for the image", id = "input-tags" } })
+                    @Html.ValidationMessageFor(model => model.A5, "", new { @class = "text-danger" })
+                </div>
+                <div class="form-group col-md-2">
+                    @Html.LabelFor(model => model.A6, new { @class = "control-label" })
+                    @Html.CheckBoxFor(model => model.A6, new { htmlAttributes = new { @class = "form-control", placeholder = "Please enter the tags for the image", id = "input-tags" } })
+                    @Html.ValidationMessageFor(model => model.A5, "", new { @class = "text-danger" })
+                </div>
+            </div>    
         </div>
+
+
+
     </div>
-    <div class="form-group">
+    <br/>
+    <div class="row">
         <button type="submit" class="btn btn-primary">
             <i class="glyphicon glyphicon-upload"></i>
             Submit
         </button>
         <a href="@Url.Action("Index", "Image")" class="btn btn-default">Cancel</a>
-    </div>
-
-
     </div>
 }
     </div >
@@ -182,11 +293,12 @@
                         success: function(sub) {
 
                             $.each(sub,
-                                function(i, sub) {
+                                function (i, sub) {
+                                    console.log(sub);
                                     $("#sub").append('<option value="' +
-                                        sub.ImageSubCategoryId +
+                                        sub.imageSubCategoryId +
                                         '">' +
-                                        sub.Name +
+                                        sub.name +
                                         '</option>');
                                 });
                         },
@@ -209,6 +321,20 @@
                     text: input
                 };
             }
+        });
+    </script>
+    <script>
+        $(document).ready(function() {
+            $(".loadModal3").click(function() { // Click to only happen on announce links
+                $('#myModal1').modal('show');
+            });
+        });
+    </script>
+    <script>
+        $(document).ready(function() {
+            $(".loadModal4").click(function() { // Click to only happen on announce links
+                $('#myModal2').modal('show');
+            });
         });
     </script>
 }

@@ -1,0 +1,60 @@
+﻿@using Image.Models.Entities
+@using Image.Models.Enum
+@model List<SystemNotification>
+@{
+    Layout = "Layout/Dashboard/_LayoutTable";
+    ViewBag.PageTitle = "List of Push Notifications";
+    ViewBag.PageHeader = "Manage Push Notifications";
+    ViewBag.FormHeader = "List of Push Notifications";
+    List<Role> roles = ViewBag.Role;
+}
+@section Breadcrumbs
+{
+    <div class="pull-left">
+        <h4 class="mt-0 mb-5">@ViewBag.PageHeader</h4>
+        <ol class="breadcrumb mb-0">
+            <li><a href="@Url.Action("Dashboard","Home")">Dashboard</a></li>
+            <li class="active">@ViewBag.PageHeader</li>
+        </ol>
+    </div>
+}
+<br />
+<table id="example-2" cellspacing="0" width="100%" class="table table-striped table-bordered">
+    <thead>
+    <tr>
+        <th>Date-Time</th>
+        <th>Message</th>
+        <th>Read(True/False)</th>
+        <th>Action</th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>@item.DateCreated</td>
+            <td>@item.Message</td>
+            <td>@item.Read</td>
+            <td>
+                <div class="btn-group">
+                    <button class="btn btn-xs btn-primary dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false">
+                        Actions
+                        <i class="fa fa-angle-down"></i>
+                    </button>
+                    <ul class="dropdown-menu pull-right" role="menu">
+                        <li>
+                            <a href="@Url.Action("MarkNotificationAsRead", "Account", new {id = item.SystemNotificationId})" data-toggle="tooltip" title="Mark as Read">
+                                <i class="icon-pencil"></i> Mark as Read
+                            </a>
+                        </li>
+
+                    </ul>
+                </div>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>
+@section Functions {
+
+}

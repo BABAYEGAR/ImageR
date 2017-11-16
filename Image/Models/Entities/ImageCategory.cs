@@ -9,6 +9,7 @@ namespace Image.Models.Entities
         [Required]
         public string Name { get; set; }
         public IEnumerable<Image> Images { get; set; }
+        public string FileName { get; set; }
         public IEnumerable<ImageSubCategory> ImageSubCategories { get; set; }
     }
 }

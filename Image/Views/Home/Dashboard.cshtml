@@ -13,6 +13,8 @@
         var roleString = Context.Session.GetString("Role");
         userRole = JsonConvert.DeserializeObject<Role>(roleString);
     }
+    List<Order> orders = ViewBag.Orders;
+    List<Payment> payments = ViewBag.Payments;
     List<Image> images = ViewBag.Images;
     List<AppUser> appUsers = ViewBag.AppUsers;
     List<Competition> competitions = ViewBag.Competition;
@@ -24,7 +26,11 @@
             <div class="widget text-center">
                 <div class="widget-body">
                     <h5 class="mb-5">All Users</h5>
-                    <div class="fs-36 fw-600 mb-20 counter">@appUsers.Count</div>
+                    <div class="fs-36 fw-600 mb-20 counter">
+                        @if (appUsers != null)
+                        {
+                            @appUsers.Count
+                        }</div>
                     <div id="esp-user" data-percent="30" style="height: 10px; line-height: 20px; padding: 5px; width: 140px;" class="easy-pie-chart fs-36">
                         <i class="ti-user text-muted"></i>
                     </div>
@@ -67,7 +73,7 @@
                 </div>
             </div>
         </div>
-    </a><a class="col-md-3 col-sm-6" href="@Url.Action("Index", "Image", new {status = ImageStatus.Pending.ToString()})">
+    </a><a class="col-md-3 col-sm-6" href="@Url.Action("Index", "Image", new {status = ImageStatus.Rejected.ToString()})">
         <div class="widget text-center">
             <div class="widget-body">
                 <h5 class="mb-5">Rejected Images</h5>
@@ -78,26 +84,11 @@
             </div>
         </div>
     </a>
-    @if (userRole != null && userRole.ManageCompetition)
-    {
-        <a class="col-md-3 col-sm-6" href="@Url.Action("Index", "Competition")">
-            <div class="widget text-center">
-                <div class="widget-body">
-                    <h5 class="mb-5">Competitions</h5>
-                    <div class="fs-36 fw-600 mb-20 counter">@competitions.Count</div>
-                    <div id="esp-feedback" data-percent="20" style="height: 10px; line-height: 20px; padding: 5px; width: 140px;" class="easy-pie-chart fs-36">
-                        <i class="ti-crown text-muted"></i>
-                    </div>
-                </div>
-            </div>
-        </a>
-    }
-
-    <a class="col-md-3 col-sm-6" href="#">
+    <a class="col-md-3 col-sm-6" href="@Url.Action("Index", "Order")">
         <div class="widget text-center">
             <div class="widget-body">
                 <h5 class="mb-5">Orders</h5>
-                <div class="fs-36 fw-600 mb-20 counter">1,609</div>
+                <div class="fs-36 fw-600 mb-20 counter">@orders.Count</div>
                 <div id="esp-feedback" data-percent="20" style="height: 10px; line-height: 20px; padding: 5px; width: 140px;" class="easy-pie-chart fs-36">
                     <i class="ti-shopping-cart text-muted"></i>
                 </div>
@@ -108,7 +99,7 @@
         <div class="widget text-center">
             <div class="widget-body">
                 <h5 class="mb-5">Pending Payments</h5>
-                <div class="fs-36 fw-600 mb-20 counter">@images.Where(n => n.Status == ImageStatus.Rejected.ToString()).ToList().Count</div>
+                <div class="fs-36 fw-600 mb-20 counter">@payments.ToList().Count</div>
                 <div id="esp-feedback" data-percent="20" style="height: 10px; line-height: 20px; padding: 5px; width: 140px;" class="easy-pie-chart fs-36">
                     <i class="ti-money text-muted"></i>
                 </div>
@@ -119,7 +110,7 @@
         <div class="widget text-center">
             <div class="widget-body">
                 <h5 class="mb-5">Approved Payments</h5>
-                <div class="fs-36 fw-600 mb-20 counter">@images.Where(n => n.Status == ImageStatus.Rejected.ToString()).ToList().Count</div>
+                <div class="fs-36 fw-600 mb-20 counter">@payments.ToList().Count</div>
                 <div id="esp-feedback" data-percent="20" style="height: 10px; line-height: 20px; padding: 5px; width: 140px;" class="easy-pie-chart fs-36">
                     <i class="ti-money text-muted"></i>
                 </div>
@@ -139,25 +130,48 @@
                 </tr>
                 </thead>
                 <tbody>
-                <tr>
-                    <td>#6546</td>
-                    <td>
-                        <div class="media">
-                            <div class="media-left avatar">
-                                <img src="../build/images/users/10.jpg" alt="" class="media-object img-circle"><span class="status bg-success"></span>
+                @foreach (var item in orders)
+                {
+                    <tr>
+                        <td>@item.OrderNumber</td>
+                        <td>
+                            <div class="media">
+                                <div class="media-left avatar">
+                                    <img src="~/UploadedImage/ProfilePicture/Avatar.jpg" alt="" class="media-object img-circle"><span class="status bg-success"></span>
+                                </div>
+                                <div class="media-body">
+                                    <h5 class="media-heading">
+
+
+                                        @if (appUsers != null)
+                                        {
+                                            var singleOrDefault = appUsers.SingleOrDefault(n => n.AppUserId == item.AppUserId);
+
+                                            if (singleOrDefault != null)
+                                            {
+                                                @singleOrDefault.Name
+                                            }
+                                        }
+                                    </h5>
+                                </div>
                             </div>
-                            <div class="media-body">
-                                <h5 class="media-heading">Philip Fernandez</h5>
-                                <p class="text-muted mb-0">489 Rhapsody Street</p>
-                            </div>
-                        </div>
-                    </td>
-                    <td>20 Feb 2016</td>
-                    <td>$140.00</td>
-                    <td class="text-center text-success">
-                        <i class="ti-check"></i>
-                    </td>
-                </tr>
+                        </td>
+                        <td>@item.DateCreated.ToString("f")</td>
+                        <td>
+
+                            @{
+                                var orDefault = images.SingleOrDefault(n => n.ImageId == item.ImageId);
+                            }
+                            @if (orDefault != null)
+                            {
+                                @orDefault.SellingPrice
+                            }</td>
+                        <td class="text-center text-success">
+                            <i class="ti-check"></i>
+                        </td>
+                    </tr>
+                }
+
                 </tbody>
             </table>
         </div>

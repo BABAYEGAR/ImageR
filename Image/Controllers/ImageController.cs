@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using CloudinaryDotNet;
 using CloudinaryDotNet.Actions;
 using Image.Data;
+using Image.Models;
+using Image.Models.APIFactory;
 using Image.Models.DataBaseConnections;
 using Image.Models.Encryption;
 using Image.Models.Entities;
@@ -21,10 +24,12 @@ namespace Image.Controllers
         private readonly ImageDataContext _databaseConnection;
         private List<Models.Entities.Image> _images = new List<Models.Entities.Image>();
         private Role _userRole;
+        private List<AppUser> users;
 
         public ImageController(ImageDataContext databaseConnection)
         {
             _databaseConnection = databaseConnection;
+            users = new AppUserFactory().GetAllUsersAsync(new AppConfig().FetchUsersUrl).Result;
         }
 
         // GET: Image
@@ -69,15 +74,27 @@ namespace Image.Controllers
         {
             return Json(_databaseConnection.ImageSubCategories.Where(n => n.ImageCategoryId == id).ToList());
         }
-
-        // GET: Image/Details/5
-        public ActionResult Details(int id)
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<PartialViewResult> RateImage(IFormCollection collection, ImageAction action)
         {
-            return View();
+            var signedInUserId = HttpContext.Session.GetInt32("userId");
+            var result = _images;
+            action.Action = "Rate";
+            action.ActionDate = DateTime.Now;
+            action.AppUserId = signedInUserId;
+            action.OwnerId = signedInUserId;
+            action.ImageId = Convert.ToInt64(collection["ImageId"]);
+            action.Rating = Convert.ToInt64(collection["rating"]);
+            action.TenancyId = 1;
+            _databaseConnection.Add(action);
+            _databaseConnection.SaveChanges();
+            var image = _images.SingleOrDefault(n => n.ImageId == action.ImageId);
+            return PartialView("Partials/_PartialRating", image);
         }
 
         // GET: Image/Details/5
-        public ActionResult ApproveOrRejectImage(long id, string status)
+        public async Task<ActionResult> ApproveOrRejectImage(long id, string status)
         {
             var signedInUserId = HttpContext.Session.GetInt32("userId");
             var image = _databaseConnection.Images.Find(id);
@@ -86,20 +103,20 @@ namespace Image.Controllers
             if (status == ImageStatus.Rejected.ToString())
             {
                 image.Status = ImageStatus.Rejected.ToString();
-                var imageFile = "" + image.FileName;
+                string imageFile = "" + image.FileName;
                 //upload image via Cloudinary API Call
                 var account = new Account(
                     new Config().CloudinaryAccoutnName,
                     new Config().CloudinaryApiKey,
                     new Config().CloudinaryApiSecret);
-
+                var imageList = new List<string> {imageFile};
                 var cloudinary = new Cloudinary(account);
                 var delParams = new DelResParams
                 {
-                    PublicIds = new List<string> {imageFile},
+                    PublicIds = imageList,
                     Invalidate = true
                 };
-                cloudinary.DeleteResources(delParams);
+                await cloudinary.DeleteResourcesAsync(delParams);
             }
             image.DateLastModified = DateTime.Now;
             image.LastModifiedBy = signedInUserId;
@@ -131,7 +148,7 @@ namespace Image.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [SessionExpireFilter]
-        public ActionResult Create(Models.Entities.Image image, IFormCollection collection, IFormFile file)
+        public async Task<ActionResult> Create(Models.Entities.Image image, IFormCollection collection, IFormFile file)
         {
             try
             {
@@ -158,9 +175,10 @@ namespace Image.Controllers
                     var cloudinary = new Cloudinary(account);
                     var uploadParams = new ImageUploadParams
                     {
-                        File = new FileDescription(image.FileName, file.OpenReadStream())
+                        File = new FileDescription(image.FileName, file.OpenReadStream()),
+                        Invalidate = true
                     };
-                    var uploadResult = cloudinary.Upload(uploadParams);
+                    var uploadResult = await cloudinary.UploadAsync(uploadParams);
 
                     if (uploadResult.Format != null)
                     {
@@ -200,7 +218,6 @@ namespace Image.Controllers
                     TempData["notificationtype"] = NotificationType.Success.ToString();
                     return RedirectToAction("Index");
                 }
-                {
                     //display notification
                     TempData["display"] =
                         "No Image was Selected or selected image violate the Upload Size Rule of 15MB!";
@@ -213,7 +230,6 @@ namespace Image.Controllers
                     ViewBag.LocationId = new SelectList(_databaseConnection.Locations.ToList(), "LocationId",
                         "Name", image.LocationId);
                     return View(image);
-                }
             }
             catch (Exception ex)
             {
@@ -316,7 +332,7 @@ namespace Image.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult PostImageComment(ImageComment comment, IFormCollection collection)
+        public PartialViewResult PostImageComment(ImageComment comment, IFormCollection collection)
         {
             long? imageId = Convert.ToInt64(collection["ImageId"]);
             var comments = _databaseConnection.ImageComments.Where(n => n.ImageId == imageId).ToList();
@@ -340,18 +356,21 @@ namespace Image.Controllers
             comment.DateLastModified = DateTime.Now;
             _databaseConnection.ImageComments.Add(comment);
             _databaseConnection.SaveChanges();
-            return PartialView("Partials/_ImageComment", comments);
+            var newComments = _databaseConnection.ImageComments.Where(n => n.ImageId == imageId).ToList();
+            ViewBag.Users = users;
+            return PartialView("Partials/_ImageComment", newComments);
         }
-
+      
         [HttpGet]
-        public ActionResult ReloadImageComments(long id)
+        public PartialViewResult ReloadImageComments(long? id)
         {
+            ViewBag.Users = users;
             var imageComments = _databaseConnection.ImageComments.Where(n => n.ImageId == id).ToList();
             return PartialView("Partials/_ImageComment",imageComments);
         }
         // POST: Image/Delete/5
         [SessionExpireFilter]
-        public ActionResult Delete(IFormCollection collection)
+        public async Task<ActionResult> Delete(IFormCollection collection)
         {
             var id = Convert.ToInt64(collection["ImageId"]);
             var image = _databaseConnection.Images.Find(id);
@@ -372,7 +391,7 @@ namespace Image.Controllers
                 PublicIds = new List<string> {imageFile},
                 Invalidate = true
             };
-            cloudinary.DeleteResources(delParams);
+           await cloudinary.DeleteResourcesAsync(delParams);
 
             //display notification
             TempData["display"] = "You have successfully deleted the Image from your Library!";

@@ -7,6 +7,14 @@ namespace Image.Models.Services
 {
     public class CompetitionCalculator
     {
+        public long? CalculateDiscount(long? discount, long? price)
+        {
+            long? amount = 0;
+            long? disounted
+                = discount * price / 100;
+            amount = price - disounted;
+            return amount;
+        }
         public long CalculateTimeRating(DateTime competitionDate, DateTime uploadDate)
         {
             long rating = 0 ;

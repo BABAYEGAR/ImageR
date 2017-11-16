@@ -57,6 +57,7 @@
 <table id="example-2" cellspacing="0" width="100%" class="table table-striped table-bordered">
     <thead>
     <tr>
+        <th>Image</th>
         <th>Name</th>
         <th>Description</th>
         <th>Action</th>
@@ -66,6 +67,10 @@
     @foreach (var item in Model)
     {
         <tr>
+            <td>
+                <img src='~/UploadedImage/PhotoCategory/@item.FileName'
+                     width="100" alt="" class="img-thumbnail img-responsive"/>
+            </td>
             <td>@item.Name</td>
             <td>@item.Description</td>
             <td>

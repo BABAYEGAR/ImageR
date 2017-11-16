@@ -4,6 +4,7 @@ using System.Linq;
 using CloudinaryDotNet;
 using CloudinaryDotNet.Actions;
 using Image.Data;
+using Image.Models;
 using Image.Models.APIFactory;
 using Image.Models.DataBaseConnections;
 using Image.Models.Encryption;
@@ -21,13 +22,13 @@ namespace Image.Controllers
     public class CompetitionController : Controller
     {
         private readonly ImageDataContext _databaseConnection;
-        Role _userRole;
+        public Role _userRole;
         private List<AppUser> users;
 
         public CompetitionController(ImageDataContext databaseConnection)
         {
             _databaseConnection = databaseConnection;
-            users = new AppUserFactory().GetAllUsersAsync("http://localhost:53017/appuser").Result;
+            users = new AppUserFactory().GetAllUsersAsync(new AppConfig().FetchUsersUrl).Result;
 
         }
 
@@ -294,11 +295,11 @@ namespace Image.Controllers
                     {
                         File = new FileDescription(competitionUpload.FileName, file.OpenReadStream())
                     };
-                    var uploadResult = cloudinary.Upload(uploadParams);
+                    var uploadResult = cloudinary.UploadAsync(uploadParams);
 
-                    if (uploadResult.Format != null)
+                    if (uploadResult.Result.Format != null)
                     {
-                        competitionUpload.FilePath = uploadResult.Uri.AbsolutePath;
+                        competitionUpload.FilePath = uploadResult.Result.Uri.AbsolutePath;
                         _databaseConnection.CompetitionUploads.Add(competitionUpload);
                         _databaseConnection.SaveChanges();
                     }
