@@ -1,0 +1,7 @@
+﻿@model Image.Models.Entities.Image
+@{
+    
+}
+@Html.LabelFor(model => model.LocationId, new { @class = "control-label" }) <a data-toggle="tooltip" title="Add a new Location" data-toggle="modal" class="loadModal4" style="font-weight: bolder" href="#">Add New</a>
+@Html.DropDownListFor(model => model.LocationId, null, "Select an Image Location", new {@class = "form-control", placeholder = ""})
+@Html.ValidationMessageFor(model => model.LocationId, "", new {@class = "text-danger"})

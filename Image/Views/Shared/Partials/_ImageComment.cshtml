@@ -23,7 +23,14 @@
             <time datetime="2015-12-10T20:50:48+07:00" class="text-muted fs-12">
                 @items.DateCreated.ToString("D") <i class="ti-time"></i> @items.DateCreated.ToString("h:mm:ss tt")</time>
             <p>@items.Comment</p>
-            <a href="" class="pull-right"><i class="fa fa-trash" style="color: red"></i></a>
+            <form asp-controller="Image" asp-action="DeleteComment" data-ajax="true" data-ajax-method="POST" data-ajax-update="#content-@items.ImageId" data-ajax-complete="onFormComplete">
+                <input type="hidden" value="@items.ImageCommentId" name="CommentId"/>
+                <input type="hidden" value="@items.ImageId" name="ImageId"/>
+                <button type="submit" class="btn btn-primary btn-sm pull-right" style="color: red; background: white">
+                    <i class="glyphicon glyphicon-trash"></i>
+                </button>
+
+            </form>
         </div>
      
     </li>

@@ -34,13 +34,13 @@
         </div>
         <div class="form-group col-md-6">
             @Html.LabelFor(model => model.Theme, new {@class = "control-label"})<span class="required">*</span>
-            @Html.EditorFor(model => model.Theme, new {htmlAttributes = new {@class = "form-control", placeholder = "Please enter the competition name"}})
+            @Html.EditorFor(model => model.Theme, new {htmlAttributes = new {@class = "form-control", placeholder = "Please enter the competition theme"}})
             @Html.ValidationMessageFor(model => model.Theme, "", new {@class = "text-danger"})
         </div>
-        <div class="form-group">
-            @Html.LabelFor(model => model.Description, new {@class = "control-label"})<span class="required">*</span>
-            @Html.TextAreaFor(model => model.Description, new {@class = "form-control", placeholder = "Please enter the competition description"})
-            @Html.ValidationMessageFor(model => model.Description, "", new {@class = "text-danger"})
+        <div class="form-group col-md-6">
+            @Html.LabelFor(model => model.Price, new {@class = "control-label"})<span class="required">*</span>
+            @Html.EditorFor(model => model.Price, new {htmlAttributes = new {@class = "form-control", placeholder = "Please enter the competition price"}})
+            @Html.ValidationMessageFor(model => model.Price, "", new {@class = "text-danger"})
         </div>
         <div class="form-group col-md-6">
             @Html.LabelFor(model => model.StartDate, new {@class = "control-label"})<span class="required">*</span>
@@ -52,7 +52,11 @@
             @Html.TextBoxFor(model => model.EndDate,  new {@class = "form-control", id = "no-icon-dtpicker2", placeholder = "Please select the competition end date"})
             @Html.ValidationMessageFor(model => model.EndDate, "", new {@class = "text-danger"})
         </div>
-
+        <div class="form-group">
+            @Html.LabelFor(model => model.Description, new {@class = "control-label"})<span class="required">*</span>
+            @Html.TextAreaFor(model => model.Description, new {@class = "form-control", placeholder = "Please enter the competition description"})
+            @Html.ValidationMessageFor(model => model.Description, "", new {@class = "text-danger"})
+        </div>
     </div>
     <div class="form-group">
             <button type="submit" class="btn btn-primary">Submit</button>

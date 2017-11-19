@@ -11,9 +11,10 @@ using System;
 namespace Image.Migrations
 {
     [DbContext(typeof(ImageDataContext))]
-    partial class ImageDataContextModelSnapshot : ModelSnapshot
+    [Migration("20171118040249_Migrate6")]
+    partial class Migrate6
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -196,8 +197,6 @@ namespace Image.Migrations
 
                     b.Property<long?>("CompetitionId");
 
-                    b.Property<long>("CompetitionUploadId");
-
                     b.Property<long?>("CreatedBy");
 
                     b.Property<DateTime>("DateCreated");
@@ -206,13 +205,11 @@ namespace Image.Migrations
 
                     b.Property<long?>("LastModifiedBy");
 
-                    b.Property<long?>("OwnerId");
+                    b.Property<long>("Votes");
 
                     b.HasKey("CompetitionVoteId");
 
                     b.HasIndex("CompetitionId");
-
-                    b.HasIndex("CompetitionUploadId");
 
                     b.ToTable("CompetitionVote");
                 });
@@ -690,11 +687,6 @@ namespace Image.Migrations
                     b.HasOne("Image.Models.Entities.Competition")
                         .WithMany("CompetitionVotes")
                         .HasForeignKey("CompetitionId");
-
-                    b.HasOne("Image.Models.Entities.CompetitionUpload", "CompetitionUpload")
-                        .WithMany()
-                        .HasForeignKey("CompetitionUploadId")
-                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("Image.Models.Entities.Image", b =>

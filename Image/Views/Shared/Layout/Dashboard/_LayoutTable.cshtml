@@ -51,6 +51,7 @@
     <style>
         .required { color: red }
     </style>
+    @RenderSection("Css", false)
 </head>
 <body data-sidebar-color="sidebar-light" class="sidebar-light">
 <!-- Header start-->
@@ -66,7 +67,7 @@
         </div>
         @if (userBank != null && (userBank.AccountName == null || userBank.AccountNumber == null || userBank.BankId == null))
         {
-            <div class="alert alert-danger alert-dismissable">
+            <div class="alert alert-info alert-dismissable">
                 Your Bank Account Information is Incomplete, Please Update to Receive Payment from Images Purchases .. Click Here <strong><a href="@Url.Action("UserBank","Account")">Update Information</a></strong> 
             </div>
         }

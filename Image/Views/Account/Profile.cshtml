@@ -15,7 +15,7 @@
     List<ImageComment> comments = ViewBag.ImageComments;
     List<AppUser> users = ViewBag.Users;
 
-    List<ImageAction> ratings = ViewBag.Ratings;
+    List<ImageAction> ratings = ViewBag.Rating;
 }
 @section Css
 {
@@ -138,6 +138,7 @@
         @foreach (var item in images)
         {
             var singleOrDefault = users.SingleOrDefault(n => n.AppUserId == item.AppUserId);
+            var singleRating = ratings.SingleOrDefault(n => n.AppUserId == appUser.AppUserId && n.ImageId == item.ImageId && n.TenancyId == new AppConfig().TenancyId);
             var pic = "https://res.cloudinary.com/" + item.FilePath;
             <div class="widget clear">
                 <div class="widget-heading">
@@ -177,24 +178,25 @@
                             </div>
                             <div class="text-right caption">
                                 <ul class="list-inline mb-0">
-                                    @if (ratings != null && ratings.Any(n => n.AppUserId == appUser.AppUserId && n.ImageId == item.ImageId && n.TenancyId == new AppConfig().TenancyId) == false)
+                                    @if (singleRating != null)
                                     {
-                                        <form asp-controller="Image" asp-action="RateImage" data-ajax-complete="onComplete"
-                                              data-ajax="true" data-ajax-method="POST" data-ajax-update="#" id="hideRating">
-                                            @Html.AntiForgeryToken()
-                                            @Html.ValidationSummary(true, "", new {@class = "text-danger"})
-                                            @Html.Hidden("ImageId", item.ImageId)
-                                            @Html.AntiForgeryToken()
-                                            @Html.ValidationSummary(true, "", new {@class = "text-danger"})
-                                            <input id="input-21d" name="rating" type="text" class="rating" data-min=0 data-max=5 data-step=1 data-size="sm">
-                                            <input type="submit" class="btn btn-primary" value="Rate" id="rateButton">
-                                        </form>
+                                  
+                                        <span id="showRatings" class="skill-instock"><i class="fa fa-star"></i>Already Rated</span>
                                     }
                                     else
                                     {
                                         if (appUser.AppUserId != null)
                                         {
-                                            <span id="showRatings" class="skill-instock"><i class="fa fa-star"></i>Already Rated</span>
+                                            <form asp-controller="Image" asp-action="RateImage" data-ajax-complete="onComplete"
+                                                  data-ajax="true" data-ajax-method="POST" data-ajax-update="#" id="hideRating">
+                                                @Html.AntiForgeryToken()
+                                                @Html.ValidationSummary(true, "", new {@class = "text-danger"})
+                                                @Html.Hidden("ImageId", item.ImageId)
+                                                @Html.AntiForgeryToken()
+                                                @Html.ValidationSummary(true, "", new {@class = "text-danger"})
+                                                <input id="input-21d" name="rating" type="text" class="rating" data-min=0 data-max=5 data-step=1 data-size="sm">
+                                                <input type="submit" class="btn btn-primary" value="Rate" id="rateButton">
+                                            </form>
                                         }
                                     }
                                 </ul>

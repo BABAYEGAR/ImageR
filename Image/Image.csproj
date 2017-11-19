@@ -9,12 +9,16 @@
   <ItemGroup>
     <Compile Remove="Views\Location - Copy\**" />
     <Compile Remove="Views\NewFolder\**" />
+    <Compile Remove="wwwroot\images\**" />
     <Content Remove="Views\Location - Copy\**" />
     <Content Remove="Views\NewFolder\**" />
+    <Content Remove="wwwroot\images\**" />
     <EmbeddedResource Remove="Views\Location - Copy\**" />
     <EmbeddedResource Remove="Views\NewFolder\**" />
+    <EmbeddedResource Remove="wwwroot\images\**" />
     <None Remove="Views\Location - Copy\**" />
     <None Remove="Views\NewFolder\**" />
+    <None Remove="wwwroot\images\**" />
   </ItemGroup>
 
   <ItemGroup>
@@ -35,7 +39,6 @@
   <ItemGroup>
     <Folder Include="wwwroot\css\" />
     <Folder Include="wwwroot\Dashboard\" />
-    <Folder Include="wwwroot\images\" />
     <Folder Include="wwwroot\js\" />
     <Folder Include="wwwroot\UploadedImage\ImageCategory\" />
     <Folder Include="wwwroot\UploadedImage\PhotoCategory\" />
@@ -62,5 +65,6 @@
     <None Include="wwwroot\Rating\js\star-rating.js" />
     <None Include="wwwroot\Rating\js\star-rating.min.js" />
   </ItemGroup>
-
+  <Target Name="Views" AfterTargets="AfterPublish">
+  </Target>
 </Project>

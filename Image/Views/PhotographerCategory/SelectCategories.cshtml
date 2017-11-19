@@ -1,120 +1,57 @@
 ﻿@using Image.Models.Entities
-@using Microsoft.AspNetCore.Http
 @model List<PhotographerCategory>
 @{
     Layout = "Layout/Dashboard/_LayoutTable";
     ViewBag.PageTitle = "List of Photographer Categories";
     ViewBag.PageHeader = "Manage My Photographer Categories";
     ViewBag.FormHeader = "Select and Remove the below listed photographer categories";
-    List<PhotographerCategoryMapping> mapping = ViewBag.Mapping;
-    var signedInUserId = Context.Session.GetInt32("userId");
+}
+@section Css
+{
+    <style>
+        .check {
+            color: #996;
+            opacity: 0.5;
+        }
+
+    </style>
 }
 @section Breadcrumbs
-    {
+{
     <div class="pull-left">
         <h4 class="mt-0 mb-5">@ViewBag.PageHeader</h4>
         <ol class="breadcrumb mb-0">
-            <li><a href="@Url.Action("Dashboard","Home")">Dashboard</a></li>
+            <li>
+                <a href="@Url.Action("Dashboard", "Home")">Dashboard</a>
+            </li>
             <li class="active">@ViewBag.PageHeader</li>
         </ol>
     </div>
 }
-<div class="modal fade" id="myModal1" tabindex="-1" role="dialog" aria-labelledby="myModalLabel1">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-                <h4 class="modal-title" id="myModalLabel1">Remove Category</h4>
-            </div>@using (Html.BeginForm("RemovePhographerCategoryMapping", "PhotographerCategory"))
-                  {
-                      <input type="hidden" id="id" name="PhtographerCategoryId" />
-                      <div class="modal-body">
+<div class="row" id="categoryBody">
+    @{
 
-                          @Html.AntiForgeryToken()
-                          <p>
-                              Are you sure you want to remove the Category?
-                          </p>
-
-                      </div>
-                      <div class="modal-footer">
-                          <input type="submit" value="Delete" class="btn btn-danger pull-right fa fa-trash" />
-                          <input type="button" data-dismiss="modal" value="Cancel" class="btn btn-default pull-left" />
-                      </div>
-                  }
-        </div>
-    </div>
+        Html.RenderPartial("Partials/_PartialPhotoCategory", Model);
+    }
 </div>
-
-@using (Html.BeginForm("MapPhotographyCategory", "PhotographerCategory", FormMethod.Post))
-{
-    @Html.AntiForgeryToken()
-    <div class="form-group">
-        <input type="submit" id="sumbitForm" value="Add Categories" class="btn btn-success pull-left fa fa-plus"/>
-    </div>
-    <br/>
-    <br/>
-    <table id="example-2" cellspacing="0" width="100%" class="table table-striped table-bordered">
-        <thead>
-
-        <tr>
-            <th class="text-center">
-                <div class="checkbox-custom">
-                    <input id="checkAll" type="checkbox">
-                    <label for="checkAll" class="pl-0">&nbsp;</label>
-                </div>
-            </th>
-            <th>Name</th>
-            <th>Description</th>
-        </tr>
-        </thead>
-        <tbody>
-        @foreach (var item in Model)
+<div class="row" id="">
+    <a href="@Url.Action("Dashboard","Home")" class="btn btn-primary btn-lg btn-block" style="color: white; background: black;">Done..<i class="fa fa-check"></i></a>
+</div>
+    @section Functions
         {
-            var mappingExist = mapping.SingleOrDefault(n => n.PhotographerCategoryId == item.PhotographerCategoryId && n.AppUserId == signedInUserId);
-            <tr>
-                @if (mappingExist != null)
-                {
-                    <td class="text-center">
-                        <a href="#" data-toggle="tooltip" style="color: red"; title="Delete the Category" data-id="@item.PhotographerCategoryId" data-toggle="modal" class="loadModal3">
-                            <i class="fa fa-trash fa-2x"></i> 
-                        </a>
-                    </td>
-                }
-                else
-                {
-                    <td class="text-center">
-                        <div class="checkbox-custom">
-                            <input name="table_records" id="@item.PhotographerCategoryId" type="checkbox" value="@item.PhotographerCategoryId">
-                            <label for="@item.PhotographerCategoryId" class="pl-0">&nbsp;</label>
-                        </div>
-                    </td> 
-                }
-
-                <td>@item.Name</td>
-                <td>@item.Description</td>
-            </tr>
-        }
-        </tbody>
-    </table>
-}
-@section scripts{ 
-    <script type="text/javascript" src="~/Dashboard/build/js/page-content/e-commerce/product-list.js"></script>
-}
-@section Functions {
-    <script>
-        $(document).ready(function() {
-            $(".loadModal3").click(function() { // Click to only happen on announce links
-                $("#id").val($(this).data('id'));
-                $('#myModal1').modal('show');
+        <script>
+        $(document).ready(function(e) {
+            $(".img-check").click(function() {
+                $(this).toggleClass("check");
+                var url =
+                    "@Url.Action("MapAndUnmapPhotographyCategory", "PhotographerCategory")"; // the url to the controller
+                var id = $(this).data('id'); // the id that's given to each button in the list
+                $.get(url + '/' + id,
+                    function (data) {
+                        //console.log(data);
+                        //$('#categoryBody').html(data);
+                    });
             });
         });
-    </script>
-    <script>
-        $('#checkAll').change(function() {
-            var checkboxes = $(this).closest('form').find(':checkbox');
-            checkboxes.prop('checked', $(this).is(':checked'));
-        });
-    </script>
-}
+        </script>
+    }

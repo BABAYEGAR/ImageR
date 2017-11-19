@@ -27,6 +27,7 @@ namespace Image
 
             if (env.IsDevelopment())
             {
+               
                 // For more details on using the user secret store see https://go.microsoft.com/fwlink/?LinkID=532709
                 //builder.AddUserSecrets<Startup>();
             }
@@ -42,7 +43,7 @@ namespace Image
         {
             // Add framework services.
             services.AddDbContext<ImageDataContext>(options =>
-                options.UseSqlServer(Configuration.GetConnectionString("Image")));
+                options.UseMySql(Configuration.GetConnectionString("Image")));
 
             services.AddMvc(options => options.MaxModelValidationErrors = 50).AddJsonOptions(options => {
                 options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();

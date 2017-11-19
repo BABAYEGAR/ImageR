@@ -1,39 +1,72 @@
 @using Image.Models.Entities
+@using Image.Models.Enum
 @using Microsoft.AspNetCore.Http
 @using Newtonsoft.Json
 @{
-    List<SystemNotification> notifications = new List<SystemNotification>();
+    var notifications = new List<SystemNotification>();
     if (Context.Session.GetString("Notifications") != null)
     {
         var notificationString = Context.Session.GetString("Notifications");
         notifications = JsonConvert.DeserializeObject<List<SystemNotification>>(notificationString);
     }
+    var payments = new List<Payment>();
+    if (Context.Session.GetString("Payment") != null)
+    {
+        var notificationString = Context.Session.GetString("Payment");
+        payments = JsonConvert.DeserializeObject<List<Payment>>(notificationString);
+    }
 }
 <header>
     <div class="search-bar closed">
-        <form>
-            <div class="input-group input-group-lg">
-                <input type="text" placeholder="Search for..." class="form-control"><span class="input-group-btn">
-                    <button type="button" class="btn btn-default search-bar-toggle"><i class="ti-close"></i></button>
-                </span>
-            </div>
-        </form>
-    </div><a href="@Url.Action("Index","Home")" class="brand pull-left">
-        <h2>Photo-Studio</h2>
-    </a><a href="javascript:;" role="button" class="hamburger-menu pull-left visible-xs"><span></span></a>
+    </div><a href="@Url.Action("Index", "Home")" class="brand pull-left">
+        <h2>
+            <img src="~/LandingPage/assets/img/icon-camerack-studio.png" alt="logo">
+        </h2>
+    </a><a href="javascript:;" role="button" class="hamburger-menu pull-left visible-xs">
+        <span></span>
+    </a>
     <ul class="notification-bar list-inline pull-right">
-        <li class="visible-xs"><a href="javascript:;" role="button" class="header-icon search-bar-toggle"><i class="ti-search"></i></a></li>
-        <li class="visible-lg"><a href="javascript:;" role="button" class="header-icon fullscreen-toggle"><i class="ti-fullscreen"></i></a></li>
-        <li class="dropdown">
-            <a id="dropdownMenu1" href="#" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false" class="dropdown-toggle bubble header-icon"><i class="ti-world"></i><span class="badge bg-danger">@notifications.Where(n=>n.Read == false).ToList().Count</span></a>
-            <div aria-labelledby="dropdownMenu1" class="dropdown-menu dropdown-menu-right dm-medium fs-12 animated fadeInDown">
-                @{
-                    @Html.Partial("Partials/_NotificationPartial",notifications)
-                }
-                <div class="dropdown-footer text-center p-10"><a href="@Url.Action("Notification","Account")" class="fw-500 text-muted">See all notifications</a></div>
-            </div>
+        <li class="visible-lg">
+            <a href="javascript:;" role="button" class="header-icon fullscreen-toggle">
+                <strong>
+                    Total Earnings : @payments.Where(n => n.Status == ImageStatus.Accepted.ToString()).ToList().Count
+                </strong>
+            </a>
         </li>
+        <li class="visible-lg">
+            <a href="javascript:;" role="button" class="header-icon fullscreen-toggle">
+                <i class="ti-fullscreen"></i>
+            </a>
+        </li>
+        @{
+            <li class="dropdown" id="numberOfNotifications">
+
+
+                @Html.Partial("Partials/_NotificationPartial", notifications)
+
+
+            </li>
+        }
         @*<li><a href="javascript:;" role="button" class="right-sidebar-toggle bubble header-icon"><i class="ti-layout-sidebar-right"></i><span class="dot bg-danger"></span></a></li>*@
-        <li><a href="@Url.Action("LogOut","Account")" role="button" class="header-icon"><i class="ti-power-off"></i></a></li>
+        <li>
+            <a href="@Url.Action("LogOut", "Account")" role="button" class="header-icon">
+                <i class="ti-power-off"></i>
+            </a>
+        </li>
     </ul>
 </header>
+<script>
+    $(document)
+        .ready(function() {
+
+            $(function() {
+                setInterval(function() {
+                        $('#numberOfNotifications')
+                            .load('@Url.Action("RealoadNavigation", "Home")');
+
+                    },
+                    10000);
+
+            });
+        });
+</script>

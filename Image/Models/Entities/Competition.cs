@@ -13,6 +13,8 @@ namespace Image.Models.Entities
         [Required]
         public string Theme { get; set; }
         [Required]
+        public string Price { get; set; }
+        [Required]
         public string Description { get; set; }
         [Required]
         [Display(Name = "Start Date & Time")]

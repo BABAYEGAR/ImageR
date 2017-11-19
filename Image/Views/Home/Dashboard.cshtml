@@ -17,7 +17,6 @@
     List<Payment> payments = ViewBag.Payments;
     List<Image> images = ViewBag.Images;
     List<AppUser> appUsers = ViewBag.AppUsers;
-    List<Competition> competitions = ViewBag.Competition;
 }
 <div class="row">
     @if (userRole != null && userRole.ManageApplicationUser)
@@ -51,18 +50,6 @@
             </div>
         </div>
     </a>
-    <a class="col-md-3 col-sm-6" href="@Url.Action("Index", "Image", new {status = ImageStatus.Pending.ToString()})">
-        <div class="widget text-center">
-            <div class="widget-body">
-                <h5 class="mb-5">Pending Images</h5>
-                <div class="fs-36 fw-600 mb-20 counter">@images.Where(n => n.Status == ImageStatus.Pending.ToString()).ToList().Count</div>
-                <div id="esp-comment" data-percent="75" style="height: 10px; line-height: 20px; padding: 5px; width: 140px;" class="easy-pie-chart fs-36">
-                    <i class="ti-image text-muted"></i>
-                </div>
-            </div>
-        </div>
-    </a>
-
     <a class="col-md-3 col-sm-6" href="@Url.Action("Index", "Image", new {status = ImageStatus.Accepted.ToString()})">
         <div class="widget text-center">
             <div class="widget-body">
@@ -130,47 +117,51 @@
                 </tr>
                 </thead>
                 <tbody>
-                @foreach (var item in orders)
+                @if (orders.Count > 0)
                 {
-                    <tr>
-                        <td>@item.OrderNumber</td>
-                        <td>
-                            <div class="media">
-                                <div class="media-left avatar">
-                                    <img src="~/UploadedImage/ProfilePicture/Avatar.jpg" alt="" class="media-object img-circle"><span class="status bg-success"></span>
-                                </div>
-                                <div class="media-body">
-                                    <h5 class="media-heading">
+                    foreach (var item in orders)
+                     {
+                         <tr>
+                             <td>@item.OrderNumber</td>
+                             <td>
+                                 <div class="media">
+                                     <div class="media-left avatar">
+                                         <img src="~/UploadedImage/ProfilePicture/Avatar.jpg" alt="" class="media-object img-circle"><span class="status bg-success"></span>
+                                     </div>
+                                     <div class="media-body">
+                                         <h5 class="media-heading">
 
 
-                                        @if (appUsers != null)
-                                        {
-                                            var singleOrDefault = appUsers.SingleOrDefault(n => n.AppUserId == item.AppUserId);
+                                             @if (appUsers != null)
+                                             {
+                                                 var singleOrDefault = appUsers.SingleOrDefault(n => n.AppUserId == item.AppUserId);
 
-                                            if (singleOrDefault != null)
-                                            {
-                                                @singleOrDefault.Name
-                                            }
-                                        }
-                                    </h5>
-                                </div>
-                            </div>
-                        </td>
-                        <td>@item.DateCreated.ToString("f")</td>
-                        <td>
+                                                 if (singleOrDefault != null)
+                                                 {
+                                                     @singleOrDefault.Name
+                                                 }
+                                             }
+                                         </h5>
+                                     </div>
+                                 </div>
+                             </td>
+                             <td>@item.DateCreated.ToString("f")</td>
+                             <td>
 
-                            @{
-                                var orDefault = images.SingleOrDefault(n => n.ImageId == item.ImageId);
-                            }
-                            @if (orDefault != null)
-                            {
-                                @orDefault.SellingPrice
-                            }</td>
-                        <td class="text-center text-success">
-                            <i class="ti-check"></i>
-                        </td>
-                    </tr>
+                                 @{
+                                     var orDefault = images.SingleOrDefault(n => n.ImageId == item.ImageId);
+                                 }
+                                 @if (orDefault != null)
+                                 {
+                                     @orDefault.SellingPrice
+                                 }</td>
+                             <td class="text-center text-success">
+                                 <i class="ti-check"></i>
+                             </td>
+                         </tr>
+                     }  
                 }
+         
 
                 </tbody>
             </table>

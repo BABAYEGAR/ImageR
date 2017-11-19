@@ -50,7 +50,7 @@ body {
 a { color: #f47e47 }
 
 a:focus, a:hover {
-    color: #054fa4;
+    color: #020303;
     outline: 0;
     text-decoration: none;
 }
@@ -63,7 +63,7 @@ a:focus, a:hover {
 
 .text-primary { color: #f47e47 }
 
-a.text-primary:focus, a.text-primary:hover { color: #f47e47 }
+a.text-primary:focus, a.text-primary:hover { color: #060403 }
 
 .text-success { color: #149278 }
 
@@ -1338,7 +1338,7 @@ header {
     -o-backface-visibility: hidden !important;
     -webkit-backface-visibility: hidden !important;
     backface-visibility: hidden !important;
-    background-color: #27120b;
+    background-color: #fafafa;
     box-shadow: 0 1px 4px rgba(31, 54, 79, .2);
     height: 64px;
     left: 0;
@@ -1346,6 +1346,7 @@ header {
     top: 0;
     width: 100%;
     z-index: 1040;
+    color: black;
 }
 
 .hamburger-menu span:after, .hamburger-menu span:before, .main-sidebar {
@@ -1354,17 +1355,17 @@ header {
 }
 
 header .header-icon {
-    color: #e6e6e6;
+    color: #f47e47;
     display: inline-block;
     font-size: 14px;
     line-height: 64px;
     padding: 0 20px;
 }
 
-header .header-icon:hover, header .search-form .form-control {
-    background-color: rgba(255, 255, 255, .1);
-    color: #FFF
-}
+    header .header-icon:hover, header .search-form .form-control {
+        background-color: rgba(255, 255, 255, .1);
+        color: #f47e47
+    }
 
 header .search-form { margin: 15px }
 
@@ -2723,7 +2724,7 @@ table.dataTable tbody > tr.selected, table.dataTable tbody > tr > .selected { ba
 
 .fc-state-default.focus, .fc-state-default:focus { outline: 0 }
 
-.fc-unthemed .fc-today { background-color: #f7f7f7 }
+.fc-unthemed .fc-today { background-color: #130e0e }
 
 .mailbox .inbox { border-right: 1px solid #e6e6e6 }
 

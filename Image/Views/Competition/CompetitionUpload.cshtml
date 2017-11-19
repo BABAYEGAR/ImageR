@@ -44,7 +44,7 @@
                 </td>
                 <td>@item.Competition.Name</td>
                 <td>@item.DateCreated.ToString("D")</td>
-                @*<td>@item.AppUser.Name</td>*@
+                <td></td>
                 <td>@item.Title</td>
                 <td>@item.Camera.Name</td>
                 <td>@item.Location.Name</td>
@@ -60,15 +60,14 @@
                                     <i class="icon-pencil"></i> View Image
                                 </a>
                             </li>
-                            @if (useRole.ManageCompetition && item.Competition.EndDate != null && item.Competition.EndDate.Date == DateTime.Now.Date)
+                            @if (useRole.ManageCompetition && item.Competition.EndDate.Date <= DateTime.Now.Date)
                             {
                                 <li>
-                                    <a href="@Url.Action("SelectWinner", "Competition", new {competitionId = item.CompetitionId,userId = item.AppUserId})" data-toggle="tooltip" title="Select Photographer as winner">
-                                        <i class="icon-pencil"></i> Set as Winner
+                                    <a href="@Url.Action("CompetitionImageRating", "Competition", new {id = item.CompetitionUploadId})" data-toggle="tooltip" title="Rate Photographer">
+                                        <i class="icon-pencil"></i> Ratings
                                     </a>
                                 </li>
                             }
-                  
                         </ul>
                     </div>
                 </td>

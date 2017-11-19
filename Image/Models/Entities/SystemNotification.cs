@@ -14,5 +14,6 @@ namespace Image.Models.Entities
         public long? ControllerId { get; set; }
         public long? AppUserId { get; set; }
         public bool? Read { get; set; }
+        public string Category { get; set; }
     }
 }

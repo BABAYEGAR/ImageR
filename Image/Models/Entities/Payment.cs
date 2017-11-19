@@ -8,5 +8,6 @@
         public string PaymentMethod { get; set; }
         public long? AppUserId { get; set; }
         public string Reference { get; set; }
+        public string Status { get; set; }
     }
 }

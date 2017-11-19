@@ -5,8 +5,10 @@ namespace Image.Models.Entities
     public class CompetitionVote : Transport
     {
         public long CompetitionVoteId { get; set; }
-        public long Votes { get; set; }
-        //user
         public long? AppUserId { get; set; }
+        public long? OwnerId { get; set; }
+        public long CompetitionUploadId { get; set; }
+        [ForeignKey("CompetitionUploadId")]
+        public CompetitionUpload CompetitionUpload { get; set; }
     }
 }

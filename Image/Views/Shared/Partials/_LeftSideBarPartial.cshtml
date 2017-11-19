@@ -15,12 +15,6 @@
         var userString = Context.Session.GetString("ImageLoggedInUser");
         appUser = JsonConvert.DeserializeObject<AppUser>(userString);
     }
-    Package package = null;
-    if (Context.Session.GetString("Package") != null)
-    {
-        var packageString = Context.Session.GetString("Package");
-        package = JsonConvert.DeserializeObject<Package>(packageString);
-    }
 
 }
 <aside data-mcs-theme="minimal-dark" class="main-sidebar mCustomScrollbar">
@@ -68,24 +62,13 @@
                         <a href="@Url.Action("Index", "Image")">Images </a>
                     </li>
                     <li>
-                        <a href="@Url.Action("Index", "Image",new{status = ImageStatus.Pending.ToString()})">Pending Images </a>
+                        <a href="@Url.Action("Report", "Image")">Reported Images </a>
                     </li>
                     <li>
                         <a href="@Url.Action("Index", "Image",new{status = ImageStatus.Accepted.ToString()})">Accepted Images </a>
                     </li>
                     <li>
                         <a href="@Url.Action("Index", "Image",new{status = ImageStatus.Rejected.ToString()})">Rejected Images </a>
-                    </li>
-                </ul>
-            </li>
-        }
-        @if (userRole != null && userRole.ManagePackages)
-        {
-            <li class="panel">
-                <a role="button" data-toggle="collapse" data-parent=".navigation" href="#collapse2" aria-expanded="false" aria-controls="collapse2" class="collapsed"><i class="ti-package"></i> Subscription Managment</a>
-                <ul id="collapse2" class="list-unstyled collapse">
-                    <li>
-                        <a href="@Url.Action("Index", "Package")">Packages</a>
                     </li>
                 </ul>
             </li>
@@ -127,9 +110,6 @@
                         <a href="@Url.Action("Index", "Image")">Images </a>
                     </li>
                     <li>
-                        <a href="@Url.Action("Index", "Image",new{status = ImageStatus.Pending.ToString()})">Pending Images </a>
-                    </li>
-                    <li>
                         <a href="@Url.Action("Index", "Image",new{status = ImageStatus.Accepted.ToString()})">Accepted Images </a>
                     </li>
                     <li>
@@ -165,7 +145,7 @@
                 </ul>
             </li>
         }
-        @if (userRole != null && userRole.ParticipateCompetition && package != null && package.Competition)
+        @if (userRole != null && userRole.ParticipateCompetition)
         {
             <li class="panel">
                 <a role="button" data-toggle="collapse" data-parent=".navigation" href="#collapse10" aria-expanded="false" aria-controls="collapse10" class="collapsed"><i class="ti-crown"></i> My Competitions @*<span class="label label-outline label-success">New</span>*@</a>
@@ -175,17 +155,6 @@
                     </li>
                     <li>
                         <a href="@Url.Action("CompetitionUpload", "Competition")">Competition Uploads</a>
-                    </li>
-                </ul>
-            </li>
-        }
-        @if (userRole != null && userRole.ParticipateCompetition && package != null && package.Contracts)
-        {
-            <li class="panel">
-                <a role="button" data-toggle="collapse" data-parent=".navigation" href="#collapse10" aria-expanded="false" aria-controls="collapse10" class="collapsed"><i class="ti-crown"></i> My Contracts @*<span class="label label-outline label-success">New</span>*@</a>
-                <ul id="collapse10" class="list-unstyled collapse">
-                    <li>
-                        <a href="@Url.Action("Index", "Competition")">Competitions </a>
                     </li>
                 </ul>
             </li>

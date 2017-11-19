@@ -16,8 +16,6 @@ namespace Image.Controllers
     public class PhotographerCategoryController : Controller
     {
         private readonly ImageDataContext _databaseConnection;
-        Role _userRole;
-        List<Models.Entities.Image> _images = new List<Models.Entities.Image>();
         private readonly IHostingEnvironment _hostingEnv;
 
         public PhotographerCategoryController(IHostingEnvironment env, ImageDataContext databaseConnection)
@@ -33,13 +31,6 @@ namespace Image.Controllers
             return View(_databaseConnection.PhotographerCategories.ToList());
         }
 
-        // GET: ImageCategory/Details/5
-        [SessionExpireFilter]
-        public ActionResult Details(int id)
-        {
-            return View(_databaseConnection.PhotographerCategories.Find(id));
-        }
-
         // GET: ImageCategory/Create
         [SessionExpireFilter]
         public ActionResult Create()
@@ -51,7 +42,8 @@ namespace Image.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [SessionExpireFilter]
-        public ActionResult Create(PhotographerCategory photographerCategory, IList<IFormFile> image, IFormCollection collection)
+        public ActionResult Create(PhotographerCategory photographerCategory, IList<IFormFile> image,
+            IFormCollection collection)
         {
             try
             {
@@ -76,7 +68,6 @@ namespace Image.Controllers
                                 file.CopyTo(fs);
                                 fs.Flush();
                                 photographerCategory.FileName = fileName;
-
                             }
                         }
                     }
@@ -88,10 +79,40 @@ namespace Image.Controllers
                 TempData["notificationtype"] = NotificationType.Success.ToString();
                 return RedirectToAction("Index");
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return View();
             }
+        }
+
+        public void MapAndUnmapPhotographyCategory(long id)
+        {
+            var allMappings = _databaseConnection.PhotographerCategoryMappings.ToList();
+            var signedInUserId = Convert.ToInt64(HttpContext.Session.GetInt32("userId"));
+            var userMapping =
+                allMappings.SingleOrDefault(n => n.AppUserId == signedInUserId && n.PhotographerCategoryId == id);
+            if (userMapping != null)
+            {
+                _databaseConnection.PhotographerCategoryMappings.Remove(userMapping);
+                _databaseConnection.SaveChanges();
+            }
+            else
+            {
+                var categoryMapping = new PhotographerCategoryMapping
+                {
+                    PhotographerCategoryId = id,
+                    AppUserId = signedInUserId,
+                    DateCreated = DateTime.Now,
+                    DateLastModified = DateTime.Now,
+                    LastModifiedBy = signedInUserId,
+                    CreatedBy = signedInUserId
+                };
+                _databaseConnection.PhotographerCategoryMappings.Add(categoryMapping);
+                _databaseConnection.SaveChanges();
+            }
+            //var categories = _databaseConnection.PhotographerCategories.ToList();
+            //ViewBag.Mapping = _databaseConnection.PhotographerCategoryMappings.ToList();
+            //return PartialView("Partials/_PartialPhotoCategory",categories);
         }
 
         public ActionResult SelectCategories()
@@ -131,8 +152,6 @@ namespace Image.Controllers
                         };
                         _databaseConnection.PhotographerCategoryMappings.Add(categoryMapping);
                         _databaseConnection.SaveChanges();
-
-                       
                     }
                 }
                 TempData["display"] = "you have succesfully added the category(s) to the profile!";
@@ -158,7 +177,8 @@ namespace Image.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [SessionExpireFilter]
-        public ActionResult Edit(PhotographerCategory photographerCategory, IList<IFormFile> image, IFormCollection collection)
+        public ActionResult Edit(PhotographerCategory photographerCategory, IList<IFormFile> image,
+            IFormCollection collection)
         {
             try
             {
@@ -182,12 +202,10 @@ namespace Image.Controllers
                                 file.CopyTo(fs);
                                 fs.Flush();
                                 photographerCategory.FileName = fileName;
-
                             }
                         }
                     }
                 _databaseConnection.Entry(photographerCategory).State = EntityState.Modified;
-                ;
                 _databaseConnection.SaveChanges();
 
                 //display notification
@@ -222,7 +240,7 @@ namespace Image.Controllers
             }
             catch
             {
-                return View();
+                return RedirectToAction("SelectCategories");
             }
         }
 

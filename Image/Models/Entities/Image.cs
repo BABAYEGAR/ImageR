@@ -57,5 +57,6 @@ namespace Image.Models.Entities
         public IEnumerable<ImageTag> ImageTags { get; set; }
         public IEnumerable<ImageComment> ImageComments { get; set; }
         public IEnumerable<ImageAction> ImageActions { get; set; }
+        public IEnumerable<ImageReport> ImageReports { get; set; }
     }
 }

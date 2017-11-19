@@ -1,16 +1,11 @@
 ﻿@using Image.Models.Entities
 @using Image.Models.Enum
-@using Image.Models.Services
-@using Microsoft.AspNetCore.Http
-@model List<Image>
+@model List<ImageReport>
 @{
-    var signedInUserId = Context.Session.GetInt32("userId");
-    Role role = ViewBag.Role;
-    string status = ViewBag.status;
     Layout = "Layout/Dashboard/_LayoutTable";
-    ViewBag.PageTitle = "List of Images";
-    ViewBag.PageHeader = "Manage Images";
-    ViewBag.FormHeader = "List of " + ViewBag.status + " Images";
+    ViewBag.PageTitle = "List of Image Reports";
+    ViewBag.PageHeader = "Manage Image Reports";
+    ViewBag.FormHeader = "List of Image Reports";
 }
 @section Breadcrumbs
 {
@@ -51,19 +46,6 @@
         </div>
     </div>
 </div>
-@if (role.UploadImage)
-{
-    <div class="row">
-        <div class="col-md-6">
-            <div class="btn-group">
-                <a href="@Url.Action("Create", "Image")" class="btn btn-primary" data-toggle="tooltip" title="Upload Image">
-                    Add New
-                    <i class="fa fa-plus"></i>
-                </a>
-            </div>
-        </div>
-    </div>
-}
 <br/>
 <table id="example-2" cellspacing="0" width="100%" class="table table-striped table-bordered">
     <thead>
@@ -71,26 +53,17 @@
         <th>Image</th>
         <th>Date-Time Added</th>
         <th>Title</th>
-        <th>Camera</th>
-        <th>Location</th>
-        <th>Discount</th>
-        <th>Intial Price</th>
-        <th>Sell Price</th>
-        @if (status == null)
-        {
-            <th>Status</th>
-        }
-
+        <th>Reason</th>
         <th>Action</th>
     </tr>
     </thead>
     <tbody>
     @foreach (var item in Model)
     {
-        var displayImage = "https://res.cloudinary.com/" + item.FilePath.Replace("upload/", new AppConfig().GeneralImage);
-        var image = "https://res.cloudinary.com/" + item.FilePath;
+        var displayImage = "https://res.cloudinary.com/" + item.Image.FilePath.Replace("upload/", new AppConfig().GeneralImage);
+        var image = "https://res.cloudinary.com/" + item.Image.FilePath;
         <tr>
-            @if (item.Status != null && item.Status != ImageStatus.Rejected.ToString())
+            @if (item.Image.Status != null && item.Image.Status != ImageStatus.Rejected.ToString())
             {
                 <td>
                     <img src='@image' width="100" alt="" class="img-thumbnail img-responsive"/>
@@ -103,34 +76,11 @@
                 </td>
             }
             <td>@item.DateCreated.ToString("D")</td>
-            <td>@item.Title</td>
+            <td>@item.Image.Title</td>
             <td>
-                @if (item.Camera != null)
-                {
-                    @item.Camera.Name
-                }</td>
-            <td>
-                @if (item.Location != null)
-                {
-                    @item.Location.Name
-                }</td>
-            <td>@item.Discount</td>
-            <td>@item.SellingPrice</td>
-            <td>
-                @if (item.Discount > 0)
-                {
-                    @(new CompetitionCalculator().CalculateDiscount(item.Discount, item.SellingPrice))
-                }
-                else
-                {
-                    @item.SellingPrice
-                }
 
+                @item.Reason
             </td>
-            @if (status == null)
-            {
-                <td>@item.Status</td>
-            }
             <td>
                 <div class="btn-group">
                     <button class="btn btn-xs btn-primary dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false">
@@ -143,27 +93,12 @@
                                 <i class="icon-pencil"></i> View Image
                             </a>
                         </li>
-                        @if (item.CreatedBy == signedInUserId)
-                        {
-                            <li>
-                                <a href="@Url.Action("Edit", "Image", new {id = item.ImageId})" data-toggle="tooltip" title="Edit the Image">
-                                    <i class="icon-pencil"></i> Edit
-                                </a>
-                            </li>
-                            <li>
-                                <a href="#" data-toggle="tooltip" title="Delete the Image" data-id="@item.ImageId" data-toggle="modal" class="loadModal3">
-                                    <i class="icon-trash"></i> Delete
-                                </a>
-                            </li>
-                        }
-                        @if (role.ManageImages && item.Status == ImageStatus.Accepted.ToString())
-                        {
-                            <li>
-                                <a href="@Url.Action("ApproveOrRejectImage", "Image", new {id = item.ImageId, status = ImageStatus.Rejected.ToString()})" data-toggle="tooltip" title="Edit the Image">
-                                    <i class="icon-pencil"></i> Disapprove Image
-                                </a>
-                            </li>
-                        }
+
+                        <li>
+                            <a href="#" data-toggle="tooltip" title="Delete the Image" data-id="@item.ImageId" data-toggle="modal" class="loadModal3">
+                                <i class="icon-trash"></i> Delete
+                            </a>
+                        </li>
                     </ul>
                 </div>
             </td>

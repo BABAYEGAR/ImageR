@@ -11,6 +11,7 @@ using Image.Models.Encryption;
 using Image.Models.Entities;
 using Image.Models.Enum;
 using Image.Models.Services;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -22,15 +23,17 @@ namespace Image.Controllers
     public class CompetitionController : Controller
     {
         private readonly ImageDataContext _databaseConnection;
-        public Role _userRole;
-        private List<AppUser> users;
+        private readonly IHostingEnvironment _hostingEnv;
+        public Role UserRole;
+        private readonly List<AppUser> _users;
 
-        public CompetitionController(ImageDataContext databaseConnection)
+        public CompetitionController(IHostingEnvironment env, ImageDataContext databaseConnection)
         {
+            _hostingEnv = env;
             _databaseConnection = databaseConnection;
-            users = new AppUserFactory().GetAllUsersAsync(new AppConfig().FetchUsersUrl).Result;
-
+            _users = new AppUserFactory().GetAllUsersAsync(new AppConfig().FetchUsersUrl).Result;
         }
+
 
         // GET: Package
         [SessionExpireFilter]
@@ -41,9 +44,9 @@ namespace Image.Controllers
             if (HttpContext.Session.GetString("Role") != null)
             {
                 var roleString = HttpContext.Session.GetString("Role");
-                _userRole = JsonConvert.DeserializeObject<Role>(roleString);
+                UserRole = JsonConvert.DeserializeObject<Role>(roleString);
             }
-            if (_userRole.ParticipateCompetition)
+            if (UserRole.ParticipateCompetition)
             {
                             competitions = (from a in _databaseConnection.Competition
                 join b in _databaseConnection.CompetitionCategories
@@ -53,11 +56,11 @@ namespace Image.Controllers
                 where c.AppUserId == signedInUserId
                 select a).ToList();
             }
-            if (_userRole.ManageCompetition)
+            if (UserRole.ManageCompetition)
             {
                 competitions = _databaseConnection.Competition.ToList();
             }
-            ViewBag.Role = _userRole;
+            ViewBag.Role = UserRole;
             return View(competitions);
         }
         [SessionExpireFilter]
@@ -68,16 +71,16 @@ namespace Image.Controllers
             if (HttpContext.Session.GetString("Role") != null)
             {
                 var roleString = HttpContext.Session.GetString("Role");
-                _userRole = JsonConvert.DeserializeObject<Role>(roleString);
+                UserRole = JsonConvert.DeserializeObject<Role>(roleString);
             }
         
-            if (_userRole.ManageCompetition)
+            if (UserRole.ManageCompetition)
             {
                 competitionUploads = id != null ? _databaseConnection.CompetitionUploads.Include(n=>n.Competition).Include(n=>n.Location).Include(n=>n.Camera)
                     .Where(n=>n.CompetitionId == id).ToList() : _databaseConnection.CompetitionUploads
                     .Include(n => n.Competition).Include(n => n.Location).Include(n => n.Camera).ToList();
             }
-            if (_userRole.ParticipateCompetition)
+            if (UserRole.ParticipateCompetition)
             {
                 competitionUploads = id != null ? _databaseConnection.CompetitionUploads.Include(n => n.Competition).Include(n => n.Location).Include(n => n.Camera)
                     .Where(n => n.AppUserId == signedInUserId && n.CompetitionId == id).ToList() : 
@@ -85,16 +88,9 @@ namespace Image.Controllers
                     .Where(n => n.AppUserId == signedInUserId)
                     .ToList();
             }
-            ViewBag.Role = _userRole;
+            ViewBag.Role = UserRole;
             return View(competitionUploads);
         }
-        // GET: Package/Details/5
-        [SessionExpireFilter]
-        public ActionResult Details(long id)
-        {
-            return View();
-        }
-
         // GET: Package/Create
         [SessionExpireFilter]
         public ActionResult Create()
@@ -146,6 +142,7 @@ namespace Image.Controllers
             var allMappings = _databaseConnection.CompetitionCategories.ToList();
             var signedInUserId = HttpContext.Session.GetInt32("userId");
             var competitionId = Convert.ToInt64(collection["CompetitionId"]);
+            var competition = _databaseConnection.Competition.Find(competitionId);
             if (table_records != null)
             {
                 var length = table_records.Length;
@@ -173,7 +170,7 @@ namespace Image.Controllers
                         _databaseConnection.CompetitionCategories.Add(competitionMapping);
                         _databaseConnection.SaveChanges();
 
-                        var users = (from a in this.users
+                        var users = (from a in _users
                             join b in _databaseConnection.PhotographerCategoryMappings
                             on a.AppUserId equals b.AppUserId
                             join c in _databaseConnection.CompetitionCategories on competitionMapping.CompetitionId
@@ -194,9 +191,12 @@ namespace Image.Controllers
                                 LastModifiedBy = signedInUserId,
                                 CreatedBy = signedInUserId
                             };
-                            _databaseConnection.SystemNotifications.Add(notification);
-                            _databaseConnection.SaveChanges();
+                            _databaseConnection.SystemNotifications.AddRange(notification);
+                            var link = _hostingEnv.WebRootPath;
+                            var mail = new Mailer();
+                            mail.SendCompetitionEmail(new AppConfig().CompetitionHtml, item, competition);
                         }
+                        _databaseConnection.SaveChanges();
 
                         TempData["display"] = "you have succesfully added the category(s) to the competition!";
                         TempData["notificationtype"] = NotificationType.Success.ToString();
@@ -234,7 +234,6 @@ namespace Image.Controllers
                 competition.LastModifiedBy = signedInUserId;
 
                 _databaseConnection.Entry(competition).State = EntityState.Modified;
-                ;
                 _databaseConnection.SaveChanges();
 
                 //display notification
@@ -272,8 +271,6 @@ namespace Image.Controllers
         {
             try
             {
-                if (file != null && file.Length < 15728640)
-                {
                     // TODO: Add insert logic here
                     var signedInUserId = HttpContext.Session.GetInt32("userId");
                     competitionUpload.AppUserId = signedInUserId;
@@ -314,7 +311,7 @@ namespace Image.Controllers
                                 DateLastModified = DateTime.Now,
                                 CreatedBy = signedInUserId,
                                 LastModifiedBy = signedInUserId,
-                                TimeDeliveryRating = new CompetitionCalculator().CalculateTimeRating((DateTime) competition.EndDate, competitionUpload.DateCreated)
+                                TimeDeliveryRating = new CompetitionCalculator().CalculateTimeRating(competition.EndDate, competitionUpload.DateCreated)
                     };
                         _databaseConnection.ImageCompetitionRatings.Add(rating);
                         _databaseConnection.SaveChanges();
@@ -324,21 +321,7 @@ namespace Image.Controllers
                     TempData["display"] = "You have successfully uploaded an image for the competition!";
                     TempData["notificationtype"] = NotificationType.Success.ToString();
                     return RedirectToAction("Index");
-                }
-                {
-                    // TODO: Add insert logic here
-                    var signedInUserId = HttpContext.Session.GetInt32("userId");
-                    ViewBag.CameraId = new SelectList(_databaseConnection.Cameras.Where(n => n.CreatedBy == signedInUserId).ToList(), "CameraId",
-                        "Name", competitionUpload.CameraId);
-                    ViewBag.LocationId = new SelectList(_databaseConnection.Locations.Where(n => n.CreatedBy == signedInUserId).ToList(), "LocationId",
-                        "Name", competitionUpload.LocationId);
-                    ViewBag.Competition = _databaseConnection.Competition.Find(competitionUpload.CompetitionId);
-                    //display notification
-                    TempData["display"] =
-                        "No Image was Selected or selected image violate the Upload Size Rule of 15MB!";
-                    TempData["notificationtype"] = NotificationType.Error.ToString();
-                    return View(competitionUpload);
-                }
+
             }
             catch (Exception ex)
             {
@@ -385,13 +368,13 @@ namespace Image.Controllers
             var signedInUserId = HttpContext.Session.GetInt32("userId");
             var competitionUploads = _databaseConnection.CompetitionUploads.Where(n=>n.CompetitionId == competitionId);
             var competition = _databaseConnection.Competition.Find(competitionId);
-            foreach (var item in competitionUploads.Where(n=>n.Competition.EndDate.Date == DateTime.Now.Date))
+            foreach (var item in competitionUploads)
             {
                 //get rating
                 var rating =
                     _databaseConnection.ImageCompetitionRatings.Include(n=>n.CompetitionUpload).SingleOrDefault(
                         n => n.CompetitionUpload.AppUserId == item.AppUserId);
-                rating.AcceptanceRating = new CompetitionCalculator().CalculateUserAcceptanceRating(users.Count,item.Vote);
+                rating.AcceptanceRating = new CompetitionCalculator().CalculateUserAcceptanceRating(_users.Count,item.Vote);
                 rating.TotalRating = rating.AcceptanceRating + rating.ClearityRating + rating.ConceptRating +
                                      rating.DescriptionRating + rating.QualityRating + rating.TimeDeliveryRating;
 

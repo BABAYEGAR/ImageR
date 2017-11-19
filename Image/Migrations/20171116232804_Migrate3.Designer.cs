@@ -11,9 +11,10 @@ using System;
 namespace Image.Migrations
 {
     [DbContext(typeof(ImageDataContext))]
-    partial class ImageDataContextModelSnapshot : ModelSnapshot
+    [Migration("20171116232804_Migrate3")]
+    partial class Migrate3
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -100,9 +101,6 @@ namespace Image.Migrations
                     b.Property<long?>("LastModifiedBy");
 
                     b.Property<string>("Name")
-                        .IsRequired();
-
-                    b.Property<string>("Price")
                         .IsRequired();
 
                     b.Property<DateTime>("StartDate");
@@ -196,8 +194,6 @@ namespace Image.Migrations
 
                     b.Property<long?>("CompetitionId");
 
-                    b.Property<long>("CompetitionUploadId");
-
                     b.Property<long?>("CreatedBy");
 
                     b.Property<DateTime>("DateCreated");
@@ -206,13 +202,11 @@ namespace Image.Migrations
 
                     b.Property<long?>("LastModifiedBy");
 
-                    b.Property<long?>("OwnerId");
+                    b.Property<long>("Votes");
 
                     b.HasKey("CompetitionVoteId");
 
                     b.HasIndex("CompetitionId");
-
-                    b.HasIndex("CompetitionUploadId");
 
                     b.ToTable("CompetitionVote");
                 });
@@ -405,30 +399,6 @@ namespace Image.Migrations
                     b.ToTable("ImageCompetitionRatings");
                 });
 
-            modelBuilder.Entity("Image.Models.Entities.ImageReport", b =>
-                {
-                    b.Property<long>("ImageReportId")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<long?>("CreatedBy");
-
-                    b.Property<DateTime>("DateCreated");
-
-                    b.Property<DateTime>("DateLastModified");
-
-                    b.Property<long?>("ImageId");
-
-                    b.Property<long?>("LastModifiedBy");
-
-                    b.Property<string>("Reason");
-
-                    b.HasKey("ImageReportId");
-
-                    b.HasIndex("ImageId");
-
-                    b.ToTable("ImageReports");
-                });
-
             modelBuilder.Entity("Image.Models.Entities.ImageSubCategory", b =>
                 {
                     b.Property<long>("ImageSubCategoryId")
@@ -498,6 +468,65 @@ namespace Image.Migrations
                     b.HasKey("LocationId");
 
                     b.ToTable("Locations");
+                });
+
+            modelBuilder.Entity("Image.Models.Entities.Package", b =>
+                {
+                    b.Property<long>("PackageId")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<long?>("Amount")
+                        .IsRequired();
+
+                    b.Property<bool>("Competition");
+
+                    b.Property<bool>("Contracts");
+
+                    b.Property<long?>("CreatedBy");
+
+                    b.Property<DateTime>("DateCreated");
+
+                    b.Property<DateTime>("DateLastModified");
+
+                    b.Property<string>("Description");
+
+                    b.Property<bool>("ImagePriority");
+
+                    b.Property<long?>("LastModifiedBy");
+
+                    b.Property<string>("Name")
+                        .IsRequired();
+
+                    b.Property<bool>("Packaging");
+
+                    b.HasKey("PackageId");
+
+                    b.ToTable("Packages");
+                });
+
+            modelBuilder.Entity("Image.Models.Entities.PackageItem", b =>
+                {
+                    b.Property<long>("PackageItemId")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<long?>("CreatedBy");
+
+                    b.Property<DateTime>("DateCreated");
+
+                    b.Property<DateTime>("DateLastModified");
+
+                    b.Property<long?>("LastModifiedBy");
+
+                    b.Property<string>("Name")
+                        .IsRequired();
+
+                    b.Property<long?>("PackageId");
+
+                    b.HasKey("PackageItemId");
+
+                    b.HasIndex("PackageId");
+
+                    b.ToTable("PackageItem");
                 });
 
             modelBuilder.Entity("Image.Models.Entities.PhotographerCategory", b =>
@@ -656,6 +685,38 @@ namespace Image.Migrations
                     b.ToTable("UserBanks");
                 });
 
+            modelBuilder.Entity("Image.Models.Entities.UserSubscription", b =>
+                {
+                    b.Property<long>("UserSubscriptionId")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<long?>("Amount");
+
+                    b.Property<long?>("AppUserId");
+
+                    b.Property<long?>("CreatedBy");
+
+                    b.Property<DateTime>("DateCreated");
+
+                    b.Property<DateTime>("DateLastModified");
+
+                    b.Property<DateTime?>("ExpiryDate");
+
+                    b.Property<long?>("LastModifiedBy");
+
+                    b.Property<long?>("MonthLength");
+
+                    b.Property<long?>("PackageId");
+
+                    b.Property<string>("Status");
+
+                    b.HasKey("UserSubscriptionId");
+
+                    b.HasIndex("PackageId");
+
+                    b.ToTable("UserSubscriptions");
+                });
+
             modelBuilder.Entity("Image.Models.Entities.CompetitionCategory", b =>
                 {
                     b.HasOne("Image.Models.Entities.Competition", "Competition")
@@ -690,11 +751,6 @@ namespace Image.Migrations
                     b.HasOne("Image.Models.Entities.Competition")
                         .WithMany("CompetitionVotes")
                         .HasForeignKey("CompetitionId");
-
-                    b.HasOne("Image.Models.Entities.CompetitionUpload", "CompetitionUpload")
-                        .WithMany()
-                        .HasForeignKey("CompetitionUploadId")
-                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("Image.Models.Entities.Image", b =>
@@ -740,13 +796,6 @@ namespace Image.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("Image.Models.Entities.ImageReport", b =>
-                {
-                    b.HasOne("Image.Models.Entities.Image", "Image")
-                        .WithMany("ImageReports")
-                        .HasForeignKey("ImageId");
-                });
-
             modelBuilder.Entity("Image.Models.Entities.ImageSubCategory", b =>
                 {
                     b.HasOne("Image.Models.Entities.ImageCategory", "ImageCategory")
@@ -762,6 +811,13 @@ namespace Image.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
+            modelBuilder.Entity("Image.Models.Entities.PackageItem", b =>
+                {
+                    b.HasOne("Image.Models.Entities.Package", "Package")
+                        .WithMany("PackageItems")
+                        .HasForeignKey("PackageId");
+                });
+
             modelBuilder.Entity("Image.Models.Entities.PhotographerCategoryMapping", b =>
                 {
                     b.HasOne("Image.Models.Entities.PhotographerCategory", "PhotographerCategory")
@@ -775,6 +831,13 @@ namespace Image.Migrations
                     b.HasOne("Image.Models.Entities.Bank", "Bank")
                         .WithMany("UserBanks")
                         .HasForeignKey("BankId");
+                });
+
+            modelBuilder.Entity("Image.Models.Entities.UserSubscription", b =>
+                {
+                    b.HasOne("Image.Models.Entities.Package", "Package")
+                        .WithMany("UserSubscriptions")
+                        .HasForeignKey("PackageId");
                 });
 #pragma warning restore 612, 618
         }

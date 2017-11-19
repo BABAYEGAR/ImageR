@@ -28,37 +28,40 @@
     @Html.HiddenFor(m=>m.TimeDeliveryRating)
     @Html.HiddenFor(m=>m.TotalRating)
     @Html.ValidationSummary(true, "", new {@class = "text-danger"})
-
+    <div class="row">
     <div class="form-body">
         <div class="form-group col-md-6">
             @Html.LabelFor(model => model.ConceptRating, new {@class = "control-label"})<span class="required">*</span>
-            @Html.EditorFor(model => model.ConceptRating, new {htmlAttributes = new {@class = "form-control", placeholder = "Please enter the competition name"}})
+            @Html.TextBoxFor(model => model.ConceptRating, new {@class = "form-control", placeholder = "Please enter the competition name", max = "20"})
             @Html.ValidationMessageFor(model => model.ConceptRating, "", new {@class = "text-danger"})
         </div>
         <div class="form-group col-md-6">
             @Html.LabelFor(model => model.ClearityRating, new {@class = "control-label"})<span class="required">*</span>
-            @Html.EditorFor(model => model.ClearityRating, new {htmlAttributes = new {@class = "form-control", placeholder = "Please enter the competition name"}})
+            @Html.TextBoxFor(model => model.ClearityRating,new {@class = "form-control", placeholder = "Please enter the competition name", max = "10" })
             @Html.ValidationMessageFor(model => model.ClearityRating, "", new {@class = "text-danger"})
         </div>
-        <div class="form-group">
+        <div class="form-group col-md-6">
             @Html.LabelFor(model => model.QualityRating, new {@class = "control-label"})<span class="required">*</span>
-            @Html.TextAreaFor(model => model.QualityRating, new {@class = "form-control", placeholder = "Please enter the competition description"})
+            @Html.TextBoxFor(model => model.QualityRating, new {@class = "form-control", placeholder = "Please enter the competition description", max = "10" })
             @Html.ValidationMessageFor(model => model.QualityRating, "", new {@class = "text-danger"})
         </div>
-        <div class="form-group">
+        <div class="form-group col-md-6">
             @Html.LabelFor(model => model.DescriptionRating, new {@class = "control-label"})<span class="required">*</span>
-            @Html.TextAreaFor(model => model.DescriptionRating, new {@class = "form-control", placeholder = "Please enter the competition description"})
+            @Html.TextBoxFor(model => model.DescriptionRating, new {@class = "form-control", placeholder = "Please enter the competition description", max = "10" })
             @Html.ValidationMessageFor(model => model.DescriptionRating, "", new {@class = "text-danger"})
         </div>
-        <div class="form-group">
+        <div class="form-group col-md-6">
             @Html.LabelFor(model => model.TimeDeliveryRating, new {@class = "control-label"})<span class="required">*</span>
-            @Html.TextAreaFor(model => model.TimeDeliveryRating, new {@class = "form-control", placeholder = "Please enter the time delivery rating",disabled = "disabled"})
+            @Html.TextBoxFor(model => model.TimeDeliveryRating, new {@class = "form-control", placeholder = "Please enter the time delivery rating",disabled = "disabled"})
             @Html.ValidationMessageFor(model => model.TimeDeliveryRating, "", new {@class = "text-danger"})
         </div>
     </div>
+    </div>
+    <div class="row">
     <div class="form-group">
-            <button type="submit" class="btn btn-primary">Submit</button>
-            <a href="@Url.Action("Index","Competition")"  class="btn btn-default">Cancel</a>
+        <button type="submit" class="btn btn-primary">Submit</button>
+        <a href="@Url.Action("Index","Competition")"  class="btn btn-default">Cancel</a>
+    </div>
     </div>
 }
 @section Scripts{ 

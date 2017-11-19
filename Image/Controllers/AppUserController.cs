@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using Image.Models;
 using Image.Models.APIFactory;
@@ -13,8 +11,6 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json;
 
 namespace Image.Controllers
 {
@@ -36,14 +32,6 @@ namespace Image.Controllers
             ViewBag.Role = _databaseConnection.Roles.ToList();
             return View(users.Result);
         }
-
-        // GET: AppUser/Details/5
-        [SessionExpireFilter]
-        public ActionResult Details(int id)
-        {
-            return View();
-        }
-
         // GET: AppUser/Create
         //[SessionExpireFilter]
         public ActionResult Create()
@@ -76,8 +64,6 @@ namespace Image.Controllers
                     Password = model.Password,
                     ConfirmPassword = model.ConfirmPassword
                 };
-                var subscriptionStrings = JsonConvert.SerializeObject(model);
-
                 //define acceskeys
                 var accessKey = new AppUserAccessKey
                 {
@@ -105,9 +91,6 @@ namespace Image.Controllers
                         _databaseConnection.AccessKeys.Add(accessKey);
                         _databaseConnection.SaveChanges();
 
-                    
-
-
                     var role = _databaseConnection.Roles.Find(appUser.RoleId);
 
                     var link = _hostingEnv.WebRootPath;
@@ -120,7 +103,7 @@ namespace Image.Controllers
                     return RedirectToAction("Index","AppUser");
                 
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 //display notification
                 TempData["display"] =
@@ -151,53 +134,5 @@ namespace Image.Controllers
             return RedirectToAction("Index");
         }
 
-        // GET: AppUser/Edit/5
-        [SessionExpireFilter]
-        public ActionResult Edit(long id)
-        {
-            return View();
-        }
-
-        // POST: AppUser/Edit/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        [SessionExpireFilter]
-        public ActionResult Edit(AppUser user, IFormCollection collection)
-        {
-            try
-            {
-                // TODO: Add update logic here
-                var signedInUserId = HttpContext.Session.GetInt32("userId");
-                user.DateLastModified = DateTime.Now;
-                user.LastModifiedBy = signedInUserId;
-
-                _databaseConnection.Entry(user).State = EntityState.Modified; ;
-                _databaseConnection.SaveChanges();
-
-                //display notification
-                TempData["display"] = "You have successfully modified the user!";
-                TempData["notificationtype"] = NotificationType.Success.ToString();
-                return RedirectToAction("Index");
-            }
-            catch
-            {
-                return View();
-            }
-        }
-        // POST: AppUser/Delete/5
-        [SessionExpireFilter]
-        public ActionResult Delete(int id, IFormCollection collection)
-        {
-            try
-            {
-                // TODO: Add delete logic here
-
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
-        }
     }
 }

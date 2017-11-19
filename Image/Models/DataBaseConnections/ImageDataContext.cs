@@ -27,10 +27,7 @@ namespace Image.Models.DataBaseConnections
         public virtual DbSet<ImageComment> ImageComments { get; set; }
         public virtual DbSet<ImageCategory> ImageCategories { get; set; }
         public virtual DbSet<ImageAction> ImageActions { get; set; }
-        public virtual DbSet<Package> Packages { get; set; }
-        public virtual DbSet<PackageItem> PackageItem { get; set; }
         public virtual DbSet<ImageSubCategory> ImageSubCategories { get; set; }
-        public virtual DbSet<UserSubscription> UserSubscriptions { get; set; }
         public virtual DbSet<Competition> Competition { get; set; }
         public virtual DbSet<PhotographerCategory> PhotographerCategories { get; set; }
         public virtual DbSet<Camera> Cameras { get; set; }
@@ -41,10 +38,11 @@ namespace Image.Models.DataBaseConnections
         public virtual DbSet<AppUserAccessKey> AccessKeys { get; set; }
         public virtual DbSet<SystemNotification> SystemNotifications { get; set; }
         public virtual DbSet<Bank> Bank { get; set; }
+        public virtual DbSet<ImageReport> ImageReports { get; set; }
         public virtual DbSet<UserBank> UserBanks { get; set; }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlServer(@"Server=.;Database=Image;Trusted_Connection=True;");
+            //optionsBuilder.UseSqlServer(@"Server=.;Database=Image;Trusted_Connection=True;");
             //optionsBuilder.UseMySql(@"Server=localhost;port=3306;Database=Image;User=CloudMab;Password=Brigada95#;");
 
 

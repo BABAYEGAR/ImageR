@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Image.Models;
-using Image.Models.APIFactory;
 using Image.Models.DataBaseConnections;
 using Image.Models.Encryption;
 using Image.Models.Entities;
@@ -64,13 +62,6 @@ namespace Image.Controllers
             ViewBag.Role = _userRole;
             return View(_images);
         }
-        // GET: ImageCategory/Details/5
-        [SessionExpireFilter]
-        public ActionResult Details(int id)
-        {
-            return View(_databaseConnection.ImageCategories.Find(id));
-        }
-
         // GET: ImageCategory/Create
         [SessionExpireFilter]
         public ActionResult Create()
@@ -119,7 +110,7 @@ namespace Image.Controllers
                 TempData["notificationtype"] = NotificationType.Success.ToString();
                 return RedirectToAction("Index");
             }
-            catch(Exception ex)
+            catch(Exception)
             {
                 return View();
             }
@@ -164,7 +155,7 @@ namespace Image.Controllers
                             }
                         }
                     }
-                _databaseConnection.Entry(imageCategory).State = EntityState.Modified;;
+                _databaseConnection.Entry(imageCategory).State = EntityState.Modified;
                 _databaseConnection.SaveChanges();
 
                 //display notification
@@ -172,7 +163,7 @@ namespace Image.Controllers
                 TempData["notificationtype"] = NotificationType.Success.ToString();
                 return RedirectToAction("Index");
             }
-            catch(Exception ex)
+            catch(Exception)
             {
                 return View();
             }

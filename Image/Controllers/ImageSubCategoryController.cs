@@ -123,7 +123,7 @@ namespace Image.Controllers
                 imageSubCategory.DateLastModified = DateTime.Now;
                 imageSubCategory.LastModifiedBy = signedInUserId;
 
-                _databaseConnection.Entry(imageSubCategory).State = EntityState.Modified; ;
+                _databaseConnection.Entry(imageSubCategory).State = EntityState.Modified;
                 _databaseConnection.SaveChanges();
 
                 //display notification
@@ -154,7 +154,7 @@ namespace Image.Controllers
             }
             catch
             {
-                return View();
+                return RedirectToAction("Index");
             }
         }
     }

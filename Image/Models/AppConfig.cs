@@ -15,8 +15,8 @@
         #endregion
 
         #region SSO
-        public string SSOBaseUrl => "http://localhost:53017/";
-        //public string SSOBaseUrl => "http://sso.camerack.com/";
+        //public string SSOBaseUrl => "http://localhost:53017/";
+        public string SSOBaseUrl => "http://sso.camerack.com/";
         public string RegisterUsersUrl => SSOBaseUrl + "Account/Register";
         public string LoginUrl => SSOBaseUrl + "Account/Login";
         public string FetchUsersUrl => SSOBaseUrl + "AppUser/Index";
@@ -32,11 +32,23 @@
 
         #region Camerack API URL
 
-        //public string CamerackBaseUrl => "http://camerack.com/";
-        public string CamerackBaseUrl => "http://localhost:51851/";
+        public string CamerackBaseUrl => "http://camerack.com/";
+        //public string CamerackBaseUrl => "http://localhost:51851/";
         public string FetchOrdersUrl => CamerackBaseUrl + "API/GetAllOrders";
         public string FetchPaymentsUrl => CamerackBaseUrl + "API/GetAllPayments";
         public string FetchInvoiceUrl => CamerackBaseUrl + "API/GetAllInvoices";
+        #endregion
+
+        #region Mailer
+
+        public string EmailServer => "smtp.gmail.com";
+        public string Email => "support@camerack.com";
+        public string Password => "Brigada95";
+        public int Port => 465;
+        public string NewUserHtml => "http://studio.camerack.com/EmailTemplates/NewUser.html";
+        public string ForgotPasswordHtml => "http://studio.camerack.com/EmailTemplates/ForgotPassword.html";
+        public string CompetitionHtml => "http://studio.camerack.com/EmailTemplates/Competition.html";
+
         #endregion
     }
 }

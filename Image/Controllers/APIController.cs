@@ -122,6 +122,14 @@ namespace Image.Controllers
 
         }
         [HttpPost]
+        public JsonResult SaveImageReport([FromBody] ImageReport report)
+        {
+            _databaseConnection.Add(report);
+            _databaseConnection.SaveChanges();
+            return Json(report);
+
+        }
+        [HttpPost]
         public JsonResult SaveComment([FromBody] ImageComment comment)
         {
             _databaseConnection.Add(comment);

@@ -15,37 +15,50 @@ namespace Image.Models.APIFactory
         {
             if (baseAddress == null) throw new ArgumentNullException(nameof(baseAddress));
             IEnumerable<Order> orders = new List<Order>();
-
-            using (var httpClient = new HttpClient())
+            try
             {
-                // Do the actual request and await the response
-                var httpResponse = await httpClient.GetAsync(baseAddress);
-                if (httpResponse != null)
-                    if (httpResponse.IsSuccessStatusCode)
-                    {
-                        var stringData = httpResponse.Content.ReadAsStringAsync().Result;
-                        orders = await Task.Run(() => JsonConvert.DeserializeObject<List<Order>>(stringData));
-                    }
+                using (var httpClient = new HttpClient())
+                {
+                    // Do the actual request and await the response
+                    var httpResponse = await httpClient.GetAsync(baseAddress);
+                    if (httpResponse != null)
+                        if (httpResponse.IsSuccessStatusCode)
+                        {
+                            var stringData = httpResponse.Content.ReadAsStringAsync().Result;
+                            orders = await Task.Run(() => JsonConvert.DeserializeObject<List<Order>>(stringData));
+                        }
+                }
+                return orders.ToList();
             }
-            return orders.ToList();
+            catch (Exception)
+            {
+                return orders.ToList();
+            }
         }
         public async Task<List<Payment>> GetAllPaymentsAsync(string baseAddress)
         {
             if (baseAddress == null) throw new ArgumentNullException(nameof(baseAddress));
             IEnumerable<Payment> payments = new List<Payment>();
-
-            using (var httpClient = new HttpClient())
+            try
             {
-                // Do the actual request and await the response
-                var httpResponse = await httpClient.GetAsync(baseAddress);
-                if (httpResponse != null)
-                    if (httpResponse.IsSuccessStatusCode)
-                    {
-                        var stringData = httpResponse.Content.ReadAsStringAsync().Result;
-                        payments = await Task.Run(() => JsonConvert.DeserializeObject<List<Payment>>(stringData));
-                    }
+                using (var httpClient = new HttpClient())
+                {
+                    // Do the actual request and await the response
+                    var httpResponse = await httpClient.GetAsync(baseAddress);
+                    if (httpResponse != null)
+                        if (httpResponse.IsSuccessStatusCode)
+                        {
+                            var stringData = httpResponse.Content.ReadAsStringAsync().Result;
+                            payments = await Task.Run(() => JsonConvert.DeserializeObject<List<Payment>>(stringData));
+                        }
+                }
+                return payments.ToList();
             }
-            return payments.ToList();
+            catch (Exception)
+            {
+                return payments.ToList();
+            }
+          
         }
     }
 }

@@ -26,7 +26,6 @@ namespace Image.Controllers
         }
         public IActionResult Index()
         {
-            ViewBag.Packages = _databaseConnection.Packages.Include(n=>n.PackageItems).ToList();
             return View();
         }
 
@@ -44,6 +43,13 @@ namespace Image.Controllers
             return View();
         }
 
+        public PartialViewResult RealoadNavigation()
+        {
+            var signedInUserId = HttpContext.Session.GetInt32("userId");
+            var notifications = _databaseConnection.SystemNotifications.Where(n => n.AppUserId == signedInUserId)
+                .ToList();
+            return PartialView("Partials/_NotificationPartial",notifications);
+        }
         public IActionResult Dashboard()
         {
             var signedInUserId = HttpContext.Session.GetInt32("userId");
@@ -72,13 +78,19 @@ namespace Image.Controllers
                     .Where(n => n.CreatedBy == signedInUserId).ToList();
                 ViewBag.Locations = _databaseConnection.Locations
                     .Where(n => n.CreatedBy == signedInUserId).ToList();
-                ViewBag.Orders = new OrderFactory().GetAllOrdersAsync(new AppConfig().FetchOrdersUrl).Result
-                    .Where(n => n.CreatedBy == signedInUserId).ToList();
-                ViewBag.Payments = new OrderFactory().GetAllPaymentsAsync(new AppConfig().FetchPaymentsUrl).Result
-                    .Where(n => n.CreatedBy == signedInUserId).ToList();
+                var result = new OrderFactory().GetAllOrdersAsync(new AppConfig().FetchOrdersUrl).Result;
+                if (result != null)
+                {
+                    ViewBag.Orders = result
+                        .Where(n => n.CreatedBy == signedInUserId).ToList();
+             
+                }
+                var payments = new OrderFactory().GetAllPaymentsAsync(new AppConfig().FetchPaymentsUrl).Result;
+                if (payments != null)
+                    ViewBag.Payments = payments
+                        .Where(n => n.CreatedBy == signedInUserId).ToList();
             }
             ViewBag.AppUsers = new AppUserFactory().GetAllUsersAsync(new AppConfig().FetchUsersUrl).Result.ToList();
-            ViewBag.Competition = _databaseConnection.Competition.ToList();
             return View();
         }
     }

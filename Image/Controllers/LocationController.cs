@@ -7,6 +7,7 @@ using Image.Models.Entities;
 using Image.Models.Enum;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 
@@ -58,13 +59,6 @@ namespace Image.Controllers
             ViewBag.Role = _userRole;
             return View(_images);
         }
-        // GET: ImageCategory/Details/5
-        [SessionExpireFilter]
-        public ActionResult Details(int id)
-        {
-            return View(_databaseConnection.Locations.Find(id));
-        }
-
         // GET: ImageCategory/Create
         [SessionExpireFilter]
         public ActionResult Create()
@@ -95,11 +89,14 @@ namespace Image.Controllers
 
                 if (collection != null && collection["Image"] != "" && collection["Image"] == "Redirect")
                 {
-                    return RedirectToAction("Create", "Image");
+                    ViewBag.LocationId = new SelectList(
+                        _databaseConnection.Locations.Where(n => n.CreatedBy == signedInUserId).ToList(), "LocationId",
+                        "Name");
+                    return PartialView("Partials/_PartialImageLocation");
                 }
                 return RedirectToAction("Index");
             }
-            catch(Exception ex)
+            catch(Exception)
             {
                 return View();
             }
@@ -125,7 +122,7 @@ namespace Image.Controllers
                 location.DateLastModified = DateTime.Now;
                 location.LastModifiedBy = signedInUserId;
 
-                _databaseConnection.Entry(location).State = EntityState.Modified;;
+                _databaseConnection.Entry(location).State = EntityState.Modified;
                 _databaseConnection.SaveChanges();
 
                 //display notification
