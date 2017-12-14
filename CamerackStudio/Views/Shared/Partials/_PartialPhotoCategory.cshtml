@@ -1,0 +1,57 @@
+﻿@using CamerackStudio.Models.Entities
+@using CamerackStudio.Models.Redis
+@using Microsoft.AspNetCore.Http
+@model List<CamerackStudio.Models.Entities.PhotographerCategory>
+@{
+    List<PhotographerCategoryMapping> mapping = ViewBag.Mapping;
+    var signedInUserId = Convert.ToInt64(new RedisDataAgent().GetStringValue("CamerackLoggedInUserId"));
+}
+
+@foreach (var item in Model)
+{
+    var id = "cb" + item.PhotographerCategoryId;
+    var mappingExist = mapping.SingleOrDefault(n => n.PhotographerCategoryId == item.PhotographerCategoryId && n.AppUserId == signedInUserId);
+    if (mappingExist != null)
+    {
+        <a class="col-md-4 col-sm-6" href="#">
+            <div class="widget text-center">
+                <div class="widget-body">
+                    <label class="btn btn-primary">
+                        <img src="~/UploadedImage/PhotoCategory/@item.FileName" alt="..." class="img-thumbnail img-check check" data-id="@item.PhotographerCategoryId"><input type="checkbox" name="chk1" id="@id" data-id="@item.PhotographerCategoryId" value="@item.PhotographerCategoryId" class="hidden" autocomplete="off">
+                        <p class="text-center">@item.Name</p>
+                        <br/>
+                  
+                    </label>
+                </div>
+                <p class="text-center"><strong>@item.Description</strong></p>
+                @if (item.Description.Length < 100)
+                {
+                    <br />
+                    <br />
+                }
+            </div>
+        </a>
+    }
+    else
+    {
+        <a class="col-md-4 col-sm-6" href="#">
+            <div class="widget text-center">
+                <div class="widget-body">
+                    <label class="btn btn-primary">
+                        <img src="~/UploadedImage/PhotoCategory/@item.FileName" data-id="@item.PhotographerCategoryId" alt="..." class="img-thumbnail img-check"><input type="checkbox" name="chk1" id="@id" data-id="@item.PhotographerCategoryId" value="@item.PhotographerCategoryId" class="hidden" autocomplete="off">
+                        <p class="text-center">@item.Name</p>
+                        <br/>
+                    </label>
+                </div>
+                <p class="text-center"><strong>@item.Description</strong></p>
+                @if (item.Description.Length < 100)
+                {
+                    <br />
+                    <br />
+                }
+            </div>
+        </a>
+    }
+}
+
+<script type="text/javascript" src="~/Dashboard/plugins/jquery/dist/jquery.min.js"></script>

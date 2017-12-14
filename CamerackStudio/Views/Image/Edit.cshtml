@@ -1,0 +1,214 @@
+﻿@using CamerackStudio.Models.Entities
+@model CamerackStudio.Models.Entities.Image
+@{
+    Layout = "Layout/Dashboard/_LayoutForm";
+    ViewBag.PageTitle = "Image Upload";
+    ViewBag.PageHeader = "Image Upload";
+    ViewBag.FormHeader = "Edit Image Upload (Make sure to fill all compulsory fields *)";
+}
+@section css{
+
+    <!-- Bootstrap Markdown-->
+    <link rel="stylesheet" type="text/css" href="~/Dashboard/plugins/bootstrap-markdown/css/bootstrap-markdown.min.css">
+}
+@section Breadcrumbs
+{
+    <div class="pull-left">
+        <h4 class="mt-0 mb-5">@ViewBag.PageHeader</h4>
+        <ol class="breadcrumb mb-0">
+            <li><a href="@Url.Action("Dashboard","Home")">Dashboard</a></li>
+            <li><a href="@Url.Action("Index")">Images</a></li>
+            <li class="active">@ViewBag.PageHeader</li>
+        </ol>
+    </div>
+}
+<div class="widget-body">
+    @using (Html.BeginForm("Edit", "Image", FormMethod.Post, new {enctype = "multipart/form-data", role = "form"}))
+    {
+        @Html.AntiForgeryToken()
+        @Html.ValidationSummary(true, "", new {@class = "text-danger"})
+        @Html.HiddenFor(m=>m.ImageId)
+        @Html.HiddenFor(m=>m.AppUserId)
+        @Html.HiddenFor(m=>m.CreatedBy)
+        @Html.HiddenFor(m=>m.DateCreated)
+        @Html.HiddenFor(m=>m.FilePath)
+        @Html.HiddenFor(m=>m.FileName)
+        @Html.HiddenFor(m=>m.Featured)
+        @Html.HiddenFor(m=>m.A1)
+        @Html.HiddenFor(m=>m.A2)
+        @Html.HiddenFor(m=>m.A3)
+        @Html.HiddenFor(m=>m.A4)
+        @Html.HiddenFor(m=>m.A5)
+        @Html.HiddenFor(m=>m.A6)
+        @Html.HiddenFor(m=>m.Status)
+        @Html.HiddenFor(m=>m.Rating)
+        @Html.HiddenFor(m=>m.SellingPrice)
+        @Html.HiddenFor(m=>m.Discount)
+        <div class="form-body">
+            <div class="row">
+                <div class="form-group col-md-6">
+                    @Html.LabelFor(model => model.Title, new {@class = "control-label"})<span class="required">*</span>
+                    @Html.EditorFor(model => model.Title, new {htmlAttributes = new {@class = "form-control", placeholder = "Please enter the category name"}})
+                    @Html.ValidationMessageFor(model => model.Title, "", new {@class = "text-danger"})
+                </div>
+                <div class="form-group col-md-6">
+                    @Html.LabelFor(model => model.Theme, new {@class = "control-label"})<span class="required">*</span>
+                    @Html.EditorFor(model => model.Theme, new {htmlAttributes = new {@class = "form-control", placeholder = "Please enter the category name"}})
+                    @Html.ValidationMessageFor(model => model.Theme, "", new {@class = "text-danger"})
+                </div>
+                <div class="form-group col-md-6">
+                    @Html.LabelFor(model => model.ImageCategoryId, new {@class = "control-label"})<span class="required">*</span>
+                    @Html.DropDownListFor(model => model.ImageCategoryId, null, "Select an Image Category/Genre", new {@class = "form-control", placeholder = "", id = "category"})
+                    @Html.ValidationMessageFor(model => model.ImageCategoryId, "", new {@class = "text-danger"})
+                </div>
+                <div class="form-group col-md-6">
+                    @Html.LabelFor(model => model.ImageSubCategoryId, new {@class = "control-label"})<span class="required">*</span>
+                    @Html.DropDownListFor(m => m.ImageSubCategoryId, new SelectList(string.Empty, "Value", "Text"), "--Please select a Sub-Category/ Sub-Genre--", new {@class = "form-control", id = "sub"})
+                    @Html.ValidationMessageFor(model => model.ImageSubCategoryId, "", new {@class = "text-danger"})
+                </div>
+                <div class="form-group col-md-6" id="reloadLocationPartial">
+
+                    @{
+                        Html.RenderPartial("Partials/_PartialImageLocation", Model);
+                    }
+                </div>
+                <div class="form-group col-md-6">
+                    @Html.LabelFor(model => model.Inspiration, new {@class = "control-label"})
+                    @Html.EditorFor(model => model.Inspiration, new {htmlAttributes = new {@class = "form-control", placeholder = "Please enter the your inspiration for taking the image"}})
+                    @Html.ValidationMessageFor(model => model.Inspiration, "", new {@class = "text-danger"})
+                </div>
+                <div class="form-group col-md-6" id="reloadCameraPartial">
+
+                    @{
+                        Html.RenderPartial("Partials/_PartialImageCamera", Model);
+                    }
+                </div>
+                <div class="form-group col-md-6">
+                    <label for="state">Pricing Category</label><span class="required">*</span>
+                    <select name="state" class="form-control" id="state">
+                        <option value="Free">Free</option>
+                        <option value="NotFree">Set Price</option>
+                    </select>
+                </div>
+                <div class="form-group col-md-6">
+                    @Html.LabelFor(model => model.SellingPrice, new {@class = "control-label"})<span style="font-weight: bolder" class="required">(N1000 - N500,000)*</span>
+                    @Html.EditorFor(model => model.SellingPrice, new {htmlAttributes = new {@class = "form-control", placeholder = "Please enter the selling price for the image", min="1000" ,max="500000", value=0,id="price"}})
+                    @Html.ValidationMessageFor(model => model.SellingPrice, "", new {@class = "text-danger"})
+                </div>
+                <div class="form-group col-md-6">
+                    @Html.LabelFor(model => model.Discount, new {@class = "control-label"})<span style="font-weight: bolder" class="required"> (0.01% - 100%)</span>
+                    @Html.EditorFor(model => model.Discount, new {htmlAttributes = new {@class = "form-control", placeholder = "Please enter the discount % for the image",min="0",max="100",id="discount"}})
+                    @Html.ValidationMessageFor(model => model.Discount, "", new {@class = "text-danger"})
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Description, new { @class = "control-label" })<span class="required">*</span>
+                    <textarea name="Description" id="description" data-provide="markdown" rows="10" required="required"></textarea>
+                    @Html.ValidationMessageFor(model => model.Description, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <button type="submit" class="btn btn-primary">
+                <i class="glyphicon glyphicon-upload"></i>
+                Submit
+            </button>
+            <a href="@Url.Action("Index", "Image")" class="btn btn-default">Cancel</a>
+        </div>
+    }
+</div >
+
+
+@section Scripts
+{
+    <!-- Bootstrap Markdown-->
+    <script type="text/javascript" src="~/Dashboard/plugins/bootstrap-markdown/js/bootstrap-markdown.js"></script>
+
+}
+@section Functions {
+    <script>
+        $(document)
+            .ready(function () {
+                //set all checkboxes to their values
+                $('#description').val('@Model.Description');
+
+                //disable price and discount if the set price option not selected
+                var $state = $('#state'),
+                    $price = $('#price');
+                $discount = $('#discount');
+                $state.change(function() {
+                    if ($state.val() == 'NotFree') {
+                        $price.removeAttr('disabled');
+                        $discount.removeAttr('disabled');
+                    } else {
+                        $price.attr('disabled', 'disabled');
+                        $discount.attr('disabled', 'disabled');
+                    }
+                }).trigger('change'); // added trigger to calculate initial state
+
+           
+
+                //checks if the state has a value before displaying assigned category
+                if ($('#category').val() != '') {
+                    getSubCategories();
+                }
+
+                //loads assigned lga for state on change/select
+                $('#category').on('change', function() { getSubCategories(); });
+
+                //Ajax call for SUB assigned to state
+                function getSubCategories() {
+
+                    $("#sub").empty();
+                    $.ajax({
+                        type: 'GET',
+                        url: '@Url.Action("GetSubForCategories", "Image")',
+                        dataType: 'json',
+                        data: { id: $("#category").val() },
+                        success: function(sub) {
+
+                            $.each(sub,
+                                function(i, sub) {
+                                    console.log(sub);
+                                    $("#sub").append('<option value="' +
+                                        sub.imageSubCategoryId +
+                                        '">' +
+                                        sub.name +
+                                        '</option>');
+                                });
+                        },
+                        error: function(ex) {
+                            alert('Failed to retrieve Sub-Categories.' + ex);
+                        }
+                    });
+                }
+
+                //Ajax ends
+            });
+    </script>
+    <script>
+        $(document).ready(function () {
+            $(".loadModal3").click(function () { // Click to only happen on announce links
+                $('#myModal1').modal('show');
+            });
+        });
+    </script>
+    <script>
+        $(document).ready(function () {
+            $(".loadModal4").click(function () { // Click to only happen on announce links
+                $('#myModal2').modal('show');
+            });
+        });
+    </script>
+    <script>
+        var onCameraComplete = function () {
+            $('#myModal1').modal('hide');
+        };
+        var onLocationComplete = function () {
+            $('#myModal2').modal('hide');
+        };
+    </script>
+}

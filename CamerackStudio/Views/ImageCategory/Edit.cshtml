@@ -1,0 +1,73 @@
+﻿
+
+@using CamerackStudio.Models.Entities
+@model CamerackStudio.Models.Entities.ImageCategory
+@{
+    Layout = "Layout/Dashboard/_LayoutForm";
+    ViewBag.PageTitle = "Edit Image Category";
+    ViewBag.PageHeader = "Image Category";
+    ViewBag.FormHeader = "Edit the Image Category (Make sure to fill all compulsory fields *)";
+}
+@section Breadcrumbs
+    {
+    <div class="pull-left">
+        <h4 class="mt-0 mb-5">@ViewBag.PageHeader</h4>
+        <ol class="breadcrumb mb-0">
+            <li><a href="@Url.Action("Dashboard","Home")">Dashboard</a></li>
+            <li><a href="@Url.Action("Index")">Image Categories</a></li>
+            <li class="active">@ViewBag.PageHeader</li>
+        </ol>
+    </div>
+}
+@section css{ 
+    <!-- Bootstrap Markdown-->
+    <link rel="stylesheet" type="text/css" href="~/Dashboard/plugins/bootstrap-markdown/css/bootstrap-markdown.min.css">
+    <style>
+        .fileinput-upload-button {
+            visibility: hidden
+        }
+
+        .page-header {
+            padding: 0px;
+        }
+    </style>
+    }
+@using (Html.BeginForm("Edit", "ImageCategory", FormMethod.Post, new {enctype = "multipart/form-data", role = "form"}))
+{
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(m=>m.ImageCategoryId)
+    @Html.HiddenFor(m=>m.DateCreated)
+    @Html.HiddenFor(m=>m.CreatedBy)
+    @Html.HiddenFor(m=>m.FileName)
+    @Html.ValidationSummary(true, "", new {@class = "text-danger"})
+
+    <div class="form-body">
+        <div class="form-group">
+            @Html.LabelFor(model => model.Name, new {@class = "control-label"})<span class="required">*</span>
+            @Html.EditorFor(model => model.Name, new {htmlAttributes = new {@class = "form-control", placeholder = "Please enter the category name"}})
+            @Html.ValidationMessageFor(model => model.Name, "", new {@class = "text-danger"})
+        </div>
+        <div class="form-group">
+            <br/>
+            <br/>
+
+            <label class="col-sm-2 control-label">Image Upload</label>
+            <div class="col-sm-10">
+                
+                <input id="input-5" name="image" type="file" multiple="" class="file-loading">
+                <p class="help-block">Note that uploading large image sizes might take some more time to upload to the server at such please be patient, but a quick fix is to have a speedy internet connection.
+                </p>
+            </div>
+        </div>
+    </div>
+    <div class="form-group">
+        <button type="submit" class="btn btn-primary">Submit</button>
+        <a href="@Url.Action("Index","ImageCategory")"  class="btn btn-default">Cancel</a>
+    </div>
+}
+@section Scripts
+{
+    <!-- Bootstrap Markdown-->
+    <script type="text/javascript" src="~/Dashboard/plugins/bootstrap-markdown/js/bootstrap-markdown.js"></script>
+
+}

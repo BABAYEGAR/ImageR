@@ -1,0 +1,189 @@
+﻿@using CamerackStudio.Models
+@using CamerackStudio.Models.Entities
+@using CamerackStudio.Models.Enum
+@using CamerackStudio.Models.Services
+@using Microsoft.AspNetCore.Http
+@model List<CamerackStudio.Models.Entities.Image>
+@{
+    var signedInUserId = Context.Session.GetInt32("CamerackLoggedInUserId");
+    Role role = ViewBag.Role;
+    string status = ViewBag.status;
+    Layout = "Layout/Dashboard/_LayoutTable";
+    ViewBag.PageTitle = "List of Images";
+    ViewBag.PageHeader = "Manage Images";
+    ViewBag.FormHeader = "List of " + ViewBag.status + " Images";
+}
+@section Breadcrumbs
+{
+    <div class="pull-left">
+        <h4 class="mt-0 mb-5">@ViewBag.PageHeader</h4>
+        <ol class="breadcrumb mb-0">
+            <li>
+                <a href="@Url.Action("Dashboard", "Home")">Dashboard</a>
+            </li>
+            <li class="active">@ViewBag.PageHeader</li>
+        </ol>
+    </div>
+}
+<div class="modal fade" id="myModal1" tabindex="-1" role="dialog" aria-labelledby="myModalLabel1">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title" id="myModalLabel1">Delete Image</h4>
+            </div>@using (Html.BeginForm("Delete", "Image"))
+                  {
+                      <input type="hidden" id="id" name="ImageId"/>
+                      <div class="modal-body">
+
+                          @Html.AntiForgeryToken()
+                          <p>
+                              Are you sure you want to delete the Image?
+                          </p>
+
+                      </div>
+                      <div class="modal-footer">
+                          <input type="submit" value="Delete" class="btn btn-danger pull-right fa fa-trash"/>
+                          <input type="button" data-dismiss="modal" value="Cancel" class="btn btn-default pull-left"/>
+                      </div>
+                  }
+        </div>
+    </div>
+</div>
+@if (role.UploadImage)
+{
+    <div class="row">
+        <div class="col-md-6">
+            <div class="btn-group">
+                <a href="@Url.Action("Create", "Image")" class="btn btn-primary" data-toggle="tooltip" title="Upload Image">
+                    Add New
+                    <i class="fa fa-plus"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+}
+<br/>
+<table id="example-2" cellspacing="0" width="100%" class="table table-striped table-bordered">
+    <thead>
+    <tr>
+        <th>Image</th>
+        <th>Date-Time Added</th>
+        <th>Title</th>
+        <th>Camera</th>
+        <th>Location</th>
+        <th>Discount</th>
+        <th>Intial Price</th>
+        <th>Sell Price</th>
+        @if (status == null)
+        {
+            <th>Status</th>
+        }
+
+        <th>Action</th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var item in Model)
+    {
+        var displayImage = "https://res.cloudinary.com/" + item.FilePath.Replace("upload/", new AppConfig().GeneralImage);
+        var image = "https://res.cloudinary.com/" + item.FilePath.Replace("upload/", "upload/w_50,l_watermark/");
+        <tr>
+            @if (item.Status != null && item.Status != ImageStatus.Rejected.ToString())
+            {
+                <td>
+                    <img src='@image' width="100" alt="" class="img-thumbnail img-responsive"/>
+                </td>
+            }
+            else
+            {
+                <td>
+                    N/A
+                </td>
+            }
+            <td>@item.DateCreated.ToString("D")</td>
+            <td>@item.Title</td>
+            <td>
+                @if (item.Camera != null)
+                {
+                    @item.Camera.Name
+                }</td>
+            <td>
+                @if (item.Location != null)
+                {
+                    @item.Location.Name
+                }</td>
+            <td>@item.Discount</td>
+            <td><del>N</del> @string.Format("{0:n0}", item.SellingPrice)</td>
+            <td>
+                @if (item.Discount > 0)
+                {
+                    <del>N</del> @string.Format("{0:n0}", (new CompetitionCalculator().CalculateDiscount(item.Discount, item.SellingPrice)))
+                }
+                else
+                {
+                    <del>N</del> @string.Format("{0:n0}", item.SellingPrice)
+                }
+
+            </td>
+            @if (status == null)
+            {
+                <td>@item.Status</td>
+            }
+            <td>
+                <div class="btn-group">
+                    <button class="btn btn-xs btn-primary dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false">
+                        Actions
+                        <i class="fa fa-angle-down"></i>
+                    </button>
+                    <ul class="dropdown-menu pull-right" role="menu">
+                        <li>
+                            <a href="@displayImage" data-toggle="tooltip" title="View the Image" target="_blank">
+                                <i class="icon-pencil"></i> View Image
+                            </a>
+                        </li>
+                        @if (item.CreatedBy == signedInUserId)
+                        {
+                            <li>
+                                <a href="@Url.Action("Edit", "Image", new {id = item.ImageId})" data-toggle="tooltip" title="Edit the Image">
+                                    <i class="icon-pencil"></i> Edit
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#" data-toggle="tooltip" title="Delete the Image" data-id="@item.ImageId" data-toggle="modal" class="loadModal3">
+                                    <i class="icon-trash"></i> Delete
+                                </a>
+                            </li>
+                        }
+                        @if (role.ManageImages && item.Status == ImageStatus.Accepted.ToString())
+                        {
+                            <li>
+                                <a href="@Url.Action("ApproveOrRejectImage", "Image", new {id = item.ImageId, status = ImageStatus.Rejected.ToString()})" data-toggle="tooltip" title="Edit the Image">
+                                    <i class="icon-pencil"></i> Disapprove Image
+                                </a>
+                            </li>
+                            <li>
+                                <a href="@Url.Action("SetAsFeatured", "Image", new {id = item.ImageId})" data-toggle="tooltip" title="Make this Image a priority">
+                                    <i class="icon-pencil"></i> Mark as Featured
+                                </a>
+                            </li>
+                        }
+                    </ul>
+                </div>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>
+@section Functions {
+    <script>
+        $(document).ready(function() {
+            $(".loadModal3").click(function() { // Click to only happen on announce links
+                $("#id").val($(this).data('id'));
+                $('#myModal1').modal('show');
+            });
+        });
+    </script>
+}

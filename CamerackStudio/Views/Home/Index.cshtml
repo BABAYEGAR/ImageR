@@ -1,0 +1,180 @@
+﻿@{
+    Layout = "Layout/LandingPage/_LandingPageLayout";
+    ViewBag.PageTitle = "Photo Studio | Home";
+}
+@section Css{ 
+    <style>
+        .widget-body {
+            padding: 20px;
+        }
+    </style>
+}
+<!-- START HTML5 VIDEO BACKGROUNSD -->
+<section id="home" class="home-static html5-video">
+    <video class="text-center" muted="" autoplay="" loop="">
+        <!-- WebM/VP8 for Firefox4, Opera, and Chrome -->
+        <source type="video/webm" src="~/LandingPage/assets/video/video.webm">
+        <!-- MP4 for Safari, IE9, iPhone, iPad, Android, and Windows Phone 7 -->
+        <source type="video/mp4" src="~/LandingPage/assets/video/video.mp4">
+        Your browser does not support the video tag.
+    </video>
+    <div class="home-static-text htm5-video-text text-center">
+        <h2 data-wow-delay="0.5s" data-wow-duration="3s" class="wow fadeInLeft">Camerack presents what you love to do</h2>
+        <p data-wow-delay="0.5s" data-wow-duration="3s" class="wow fadeInRight"><strong>
+                                                                                    Can your pictures capture the imagination? Camerack offers a platform for selling your photos and connecting with other photographers and users.Present the best images your camera has ever taken, we dare you!
+        </strong></p>
+        <a data-wow-delay="0.5s" data-wow-duration="3s" class="btn-home-slider page-scroll wow fadeInUp" href="#about">Learn More</a>
+    </div>
+</section>
+<!-- END HTML5 VIDEO BACKGROUNSD -->
+
+
+<!-- START ABOUT -->
+<section id="about" class="about-us section-padding">
+    <div class="container text-center">
+        <div class="row">
+            <div class="section-title">
+                <h2>About us</h2>
+                <span>
+                    <i class="fa fa-heart-o"></i>
+                </span>
+                <p>On camerack, photographers are merchants of their creative works, users are buyers and camerack the market place.</p>
+            </div>
+            <!-- END SECTION TITLE -->
+            <div class="col-md-4 col-sm-6 col-xs-12">
+                <div class="about-single">
+                    <div class="icon">
+                        <span>
+                            <i class="fa fa-coffee"></i>
+                        </span>
+                    </div>
+                    <h4>Our history</h4>
+                    <p>Camerack is a new photography marketplace powered by CloudMab technology limited in 2017. CloudMab is a Cloud Software Solutions Provider.</p>
+                </div>
+            </div>
+            <!--- END COL -->
+            <div class="col-md-4 col-sm-6 col-xs-12">
+                <div class="about-single">
+                    <div class="icon">
+                        <span>
+                            <i class="fa fa-tablet"></i>
+                        </span>
+                    </div>
+                    <h4>Our Mission</h4>
+                    <p>To connect photographers to photography end users and help them earn money for their creative works.
+                        <br/>
+                        <br/>
+                    </p>
+                </div>
+            </div>
+            <!--- END COL -->
+            <div class="col-md-4 col-sm-6 col-xs-12">
+                <div class="about-single">
+                    <div class="icon">
+                        <span>
+                            <i class="fa fa-external-link"></i>
+                        </span>
+                    </div>
+                    <h4>Our vision</h4>
+                    <p>To create the best photography market place for the best photographers in Africa and beyond.
+                        <br/>
+                        <br/>
+                        <br/>
+                    </p>
+                </div>
+            </div>
+            <!--- END COL -->
+        </div>
+        <!--- END ROW -->
+    </div>
+    <!--- END CONTAINER -->
+</section>
+<!-- END ABOUT -->
+<!-- START CONTACT -->
+<section id="contact" class="contact-area section-padding section-back-image" data-background="~/LandingPage/assets/img/bg/contact-bg.jpg">
+    <div class="container">
+        <div class="row">
+            <div class="section-title text-center">
+                <h2 class="section-title-white">Connect with us</h2>
+                <span class="section-title-white-span">
+                    <i class="fa fa-rocket"></i>
+                </span>
+                <p class="section-dec-white">‘We will absolutely love to hear from you. Your thoughts and ideas are invaluable in helping us to provide the best experience for you on Camerack’</p>
+            </div>
+            <!-- END SECTION TITLE -->
+
+            <!-- START CONTACT ADDRESS -->
+            <div class="text-center clearfix">
+                <div class="row">
+                    <div class="col-md-3 col-sm-6 col-xs-12">
+                        <div class="single-address">
+                            <i class="fa fa-phone"></i>
+                            <p>(+234) 811-4675-635</p>
+                            <br />
+                        </div>
+                    </div>
+                    <!-- END COL -->
+                    <div class="col-md-3 col-sm-6 col-xs-12">
+                        <div class="single-address">
+                            <i class="fa fa-envelope-o"></i>
+                            <p>support@camerack.com</p>
+                            <br />
+                        </div>
+                    </div>
+                    <!-- END COL -->
+                    <div class="col-md-3 col-sm-6 col-xs-12">
+                        <div class="single-address">
+                            <i class="fa fa-map-marker"></i>
+                            <p>Godab Estate,Road 4, House 2,Life Camp,Abuja,Nigeria </p>
+                        </div>
+                    </div>
+                    <!-- END COL -->
+                    <div class="col-md-3 col-sm-6 col-xs-12">
+                        <div class="single-address">
+                            <i class="fa fa-clock-o"></i>
+                            <p>Mon - Sat: 8.00AM - 19.00PM</p>
+                            <br />
+                        </div>
+                    </div>
+                    <!-- END COL -->
+
+                </div>
+                <!-- END ROW -->
+            </div>
+            <div class="col-md-10 col-md-offset-1 col-sm-12 col-xs-12 wow fadeInDown" data-wow-duration="1s" data-wow-delay="0.1s" data-wow-offset="0">
+                <div class="col-md-10 col-md-offset-1 col-sm-12 col-xs-12 wow fadeIn" data-wow-duration="1s" data-wow-delay="0.1s" data-wow-offset="0">
+                    <div class="contact">
+                        <form id="contact-form" class="form" name="enq" method="POST" action="form-process.php">
+                            <div class="row">
+                                <div class="form-group col-md-12">
+                                    <input type="text" name="name" class="form-control" id="first-name" placeholder="Name" required="required">
+                                </div>
+                                <div class="form-group col-md-12">
+                                    <input type="email" name="email" class="form-control" id="email" placeholder="Email" required="required">
+                                </div>
+                                <div class="form-group col-md-12">
+                                    <textarea rows="6" name="message" class="form-control" id="description" placeholder="Your Message Here ..." required="required"></textarea>
+                                </div>
+                                <div class="form-group col-md-12 mb0 text-center">
+                                    <div class="actions">
+                                        <input type="submit" value="Send Message" name="submit" id="submitButton" class="btn btn-lg btn-contact-bg" title="Click here to submit your message!"/>
+                                        <img src="~/LandingPage/assets/img/ajax-loader.gif" width="16" height="16" id="loader" style="display: none" alt="loading">
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <!-- END COL -->
+
+            </div>
+            <!--- END ROW -->
+        </div>
+        <!--- END CON -->
+    </div>
+</section>
+<!-- END CONTACT -->
+
+@*<!-- START MAP -->
+<div id="map"></div>
+<!-- END MAP -->*@

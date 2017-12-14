@@ -1,0 +1,134 @@
+﻿@using CamerackStudio.Models.Entities
+@model CamerackStudio.Models.Entities.CompetitionUpload
+@{
+    Layout = "Layout/Dashboard/_LayoutForm";
+    ViewBag.PageTitle = "Upload Image";
+    ViewBag.PageHeader = "Competition Image Upload";
+    ViewBag.FormHeader = "Upload an Image for the Competition (Make sure to fill all compulsory fields *)";
+    Competition competition = ViewBag.Competition;
+}
+@section css{
+
+    <!-- Bootstrap Markdown-->
+    <link rel="stylesheet" type="text/css" href="~/Dashboard/plugins/bootstrap-markdown/css/bootstrap-markdown.min.css">
+    <style>
+        .fileinput-upload-button {
+            visibility: hidden
+        }
+    </style>
+}
+@section Breadcrumbs
+{
+    <div class="pull-left">
+        <h4 class="mt-0 mb-5">@ViewBag.PageHeader</h4>
+        <ol class="breadcrumb mb-0">
+            <li><a href="@Url.Action("Dashboard","Home")">Dashboard</a></li>
+            <li><a href="@Url.Action("Index")">Competitions</a></li>
+            <li class="active">@ViewBag.PageHeader</li>
+        </ol>
+    </div>
+}
+<div class="widget-body">
+    <p style="font-size: 16px">
+        <label><strong>Name:</strong> @competition.Name</label><br/>
+        <label><strong>Theme:</strong> @competition.Theme</label><br />
+        <label><strong>Start Date & Time:</strong> @competition.StartDate</label><br />
+        <label><strong>End Date & Time:</strong> @competition.EndDate</label><br />
+        <label><strong>Status:</strong> @competition.Status</label><br />
+        <label><strong>Description:</strong> @competition.Description</label><br />
+    </p>
+    <p style="font-size: 16px">
+        <span class="required">*</span> Make sure to <strong class="annouce">upload an Image</strong> in the <strong class="annouce">next tab</strong> ..
+    </p>
+    <p>
+        <span class="required">*</span> Note That the <strong class="annouce">Maximum Size</strong> for Image Uploads is <strong class="annouce">15MB</strong>..
+    </p>
+    <div role="tabpanel">
+        <ul role="tablist" class="nav nav-tabs nav-justified mb-15">
+            <li role="presentation" class="active">
+                <a id="home-tab5" href="#home5" role="tab" data-toggle="tab" aria-controls="home5" aria-expanded="true">Image Details</a>
+            </li>
+            <li role="presentation">
+                <a id="profile-tab5" href="#profile5" role="tab" data-toggle="tab" aria-controls="profile5" aria-expanded="False">Image Upload</a>
+            </li>
+        </ul>
+
+        @using (Html.BeginForm("UploadImage", "Competition", FormMethod.Post, new {enctype = "multipart/form-data", role = "form"}))
+        {
+            <div class="tab-content">
+
+                <div id="home5" role="tabpanel" aria-labelledby="home-tab5" class="tab-pane fade active in">
+                    @Html.AntiForgeryToken()
+                    @Html.Hidden("CompetitionId", competition.CompetitionId)
+                    @Html.ValidationSummary(true, "", new {@class = "text-danger"})
+
+                    <div class="form-body">
+                        <div class="row">
+                            <div class="form-group col-md-6">
+                                @Html.LabelFor(model => model.Title, new {@class = "control-label"})<span class="required">*</span>
+                                @Html.EditorFor(model => model.Title, new {htmlAttributes = new {@class = "form-control", placeholder = "Please enter the category name"}})
+                                @Html.ValidationMessageFor(model => model.Title, "", new {@class = "text-danger"})
+                            </div>
+                            <div class="form-group col-md-6">
+                                @Html.LabelFor(model => model.LocationId, new {@class = "control-label"})<span class="required">*</span>
+                                @Html.DropDownListFor(model => model.LocationId, null, "Select an Image Location", new {@class = "form-control", placeholder = ""})
+                                @Html.ValidationMessageFor(model => model.LocationId, "", new {@class = "text-danger"})
+                            </div>
+                            <div class="form-group col-md-6">
+                                @Html.LabelFor(model => model.Inspiration, new {@class = "control-label"})<span class="required">*</span>
+                                @Html.EditorFor(model => model.Inspiration, new {htmlAttributes = new {@class = "form-control", placeholder = "Please enter the your inspiration for taking the image"}})
+                                @Html.ValidationMessageFor(model => model.Inspiration, "", new {@class = "text-danger"})
+                            </div>
+                            <div class="form-group col-md-6">
+                                @Html.LabelFor(model => model.CameraId, new {@class = "control-label"})
+                                @Html.DropDownListFor(model => model.CameraId, null, "Select the Camera Used", new {@class = "form-control", placeholder = ""})
+                                @Html.ValidationMessageFor(model => model.CameraId, "", new {@class = "text-danger"})
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.Description, new {@class = "control-label"})<span class="required">*</span>
+                                <textarea name="Description" data-provide="markdown" rows="10"></textarea>
+                                @Html.ValidationMessageFor(model => model.Description, "", new {@class = "text-danger"})
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+                <div id="profile5" role="tabpanel" aria-labelledby="profile-tab5" class="tab-pane fade">
+                    <div class="form-group">
+                        <br/>
+                        <br/>
+                        <label class="col-sm-2 control-label">Image Upload</label>
+                        <div class="col-sm-10">
+                            <input id="input-5" name="file" type="file" multiple="" class="file-loading" required="required">
+                            <p class="help-block">Initialize file input widget via javascript. Hide the caption and display widget with only buttons. You can add the <code>file-loading</code> class to show a spinning indicator, while the plugin loads.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="glyphicon glyphicon-upload"></i>
+                        Submit
+                    </button>
+                    <a href="@Url.Action("Index", "Competition")" class="btn btn-default">Cancel</a>
+                </div>
+
+
+            </div>
+        }
+    </div >
+
+</div>
+    
+@section Scripts
+{
+    <!-- Bootstrap Markdown-->
+    <script type="text/javascript" src="~/Dashboard/plugins/bootstrap-markdown/js/bootstrap-markdown.js"></script>
+
+}
+
+@section Functions {
+}

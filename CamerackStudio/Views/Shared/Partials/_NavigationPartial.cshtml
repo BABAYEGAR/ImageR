@@ -1,0 +1,70 @@
+@using CamerackStudio.Models
+@using CamerackStudio.Models.APIFactory
+@using CamerackStudio.Models.Entities
+@using CamerackStudio.Models.Redis
+@using Microsoft.AspNetCore.Http
+@using Newtonsoft.Json
+@{
+    var notifications = new List<SystemNotification>();
+    if (Context.Session.GetString("Notifications") != null)
+    {
+        var notificationString = Context.Session.GetString("Notifications");
+        notifications = JsonConvert.DeserializeObject<List<SystemNotification>>(notificationString);
+    }
+    var signedInUserId = Convert.ToInt64(new RedisDataAgent().GetStringValue("CamerackLoggedInUserId"));
+    var payments = new OrderFactory().GetAllPaymentsAsync(new AppConfig().FetchPaymentsUrl).Result.Where(n=>n.AppUserId == signedInUserId).ToList();
+}
+<header>
+    <div class="search-bar closed">
+    </div><a href="@Url.Action("Index", "Home")" class="brand pull-left">
+        <h2>
+            <img src="~/LandingPage/assets/img/icon-camerack-studio.png" alt="logo">
+        </h2>
+    </a><a href="javascript:;" role="button" class="hamburger-menu pull-left visible-xs">
+        <span></span>
+    </a>
+    <ul class="notification-bar list-inline pull-right">
+        <li class="visible-lg">
+            <a href="javascript:;" role="button" class="header-icon fullscreen-toggle">
+                <strong>
+                    Total Earnings : <del>N</del> @string.Format("{0:n0}", payments.Sum(n => n.Amount))
+                </strong>
+            </a>
+        </li>
+        <li class="visible-lg">
+            <a href="javascript:;" role="button" class="header-icon fullscreen-toggle">
+                <i class="ti-fullscreen"></i>
+            </a>
+        </li>
+        @{
+            <li class="dropdown" id="numberOfNotifications">
+
+
+                @Html.Partial("Partials/_NotificationPartial", notifications)
+
+
+            </li>
+        }
+        @*<li><a href="javascript:;" role="button" class="right-sidebar-toggle bubble header-icon"><i class="ti-layout-sidebar-right"></i><span class="dot bg-danger"></span></a></li>*@
+        <li>
+            <a href="@Url.Action("LogOut", "Account")" role="button" class="header-icon">
+                <i class="ti-power-off"></i>
+            </a>
+        </li>
+    </ul>
+</header>
+<script>
+    $(document)
+        .ready(function() {
+
+            $(function() {
+                setInterval(function() {
+                        $('#numberOfNotifications')
+                            .load('@Url.Action("RealoadNavigation", "Home")');
+
+                    },
+                    10000);
+
+            });
+        });
+</script>

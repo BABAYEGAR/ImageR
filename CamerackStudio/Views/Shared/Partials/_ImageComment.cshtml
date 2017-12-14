@@ -1,0 +1,47 @@
+﻿@using CamerackStudio.Models.Entities
+@using Microsoft.AspNetCore.Http
+@model List<CamerackStudio.Models.Entities.ImageComment>
+@{
+    List<AppUser> users = ViewBag.Users;
+    var signedInUserId = Context.Session.GetInt32("userId");
+}
+@foreach (var items in Model.Take(6))
+{
+    var singleOrDefault = users.SingleOrDefault(n => n.AppUserId == items.AppUserId);
+    <li class="media">
+        <div class="media-left avatar">
+            @if (singleOrDefault != null)
+            {
+                <img alt="" src="~/UploadedImage/ProfilePicture/@singleOrDefault.ProfilePicture"
+                     class="media-object img-circle"><span class="status bg-success"></span>
+            }
+    
+        </div>
+        <div class="media-body">
+        @if (singleOrDefault != null)
+        {
+            <h5 class="media-heading inline-block">@singleOrDefault.Name</h5>
+        }
+            <time datetime="2015-12-10T20:50:48+07:00" class="text-muted fs-12">
+                @items.DateCreated.ToString("D") <i class="ti-time"></i> @items.DateCreated.ToString("h:mm:ss tt")</time>
+            <p>@items.Comment</p>
+            @if (items.AppUserId == signedInUserId)
+            {
+                <form asp-controller="Image" asp-action="DeleteComment" data-ajax="true" data-ajax-method="POST" data-ajax-update="#content-@items.ImageId" data-ajax-complete="onFormComplete">
+                    <input type="hidden" value="@items.ImageCommentId" name="CommentId"/>
+                    <input type="hidden" value="@items.ImageId" name="ImageId"/>
+                    <button type="submit" class="btn btn-primary btn-sm pull-right" style="color: red; background: white">
+                        <i class="glyphicon glyphicon-trash"></i>
+                    </button>
+
+                </form>
+            }
+     
+        </div>
+     
+    </li>
+}
+@if (Model.Count > 6)
+{
+    <a href="@Url.Action("SingleImage","Account",new{id = Model.FirstOrDefault().ImageId})">View @(Model.Count - 6) comments</a>
+}

@@ -1,0 +1,125 @@
+﻿
+@using CamerackStudio.Models.Entities
+@model CamerackStudio.Models.Entities.AppUser
+@{
+    Layout = "Layout/Dashboard/_LayoutForm";
+    ViewBag.PageTitle = "Edit Profile";
+    ViewBag.PageHeader = "Edit Profile Information";
+    ViewBag.FormHeader = "Edit Profile (Make sure to fill all compulsory fields *)";
+}
+@section Css{ 
+    <link rel="stylesheet" type="text/css" href="~/Dashboard/plugins/bootstrap-markdown/css/bootstrap-markdown.min.css">
+    <!-- Bootstrap DateTimePicker-->
+    <link rel="stylesheet" type="text/css" href="~/Dashboard/plugins/eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.min.css">
+}
+@section Breadcrumbs
+{
+    <div class="pull-left">
+        <h4 class="mt-0 mb-5">@ViewBag.PageHeader</h4>
+        <ol class="breadcrumb mb-0">
+            <li><a href="@Url.Action("Dashboard","Home")">Dashboard</a></li>
+            <li><a href="@Url.Action("Profile")">Profile</a></li>
+            <li class="active">@ViewBag.PageHeader</li>
+        </ol>
+    </div>
+}
+@using (Html.BeginForm("EditProfile", "Account", FormMethod.Post, new {enctype = "multipart/form-data", role = "form"}))
+{
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(m=>m.AppUserId)
+    @Html.HiddenFor(m=>m.Email)
+    @Html.HiddenFor(m=>m.DateCreated)
+    @Html.HiddenFor(m=>m.CreatedBy)
+    @Html.HiddenFor(m=>m.ProfilePicture)
+    @Html.HiddenFor(m=>m.BackgroundPicture)
+    @Html.HiddenFor(m=>m.Status)
+    @Html.HiddenFor(m=>m.RoleId)
+    @Html.HiddenFor(m=>m.Password)
+    @Html.HiddenFor(m=>m.ConfirmPassword)
+    @Html.ValidationSummary(true, "", new {@class = "text-danger"})
+
+
+    <div class="form-body">
+        <div class="row">
+            <div class="form-group col-md-6">
+                @Html.LabelFor(model => model.Name, new { @class = "control-label" })<span class="required">*</span>
+                @Html.EditorFor(model => model.Name, new { htmlAttributes = new { @class = "form-control", placeholder = "Please enter your name" } })
+                @Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })
+            </div>
+            <div class="form-group col-md-6">
+                @Html.LabelFor(model => model.Username, new { @class = "control-label" })<span class="required">*</span>
+                @Html.EditorFor(model => model.Username, new { htmlAttributes = new { @class = "form-control", placeholder = "Please enter your username" } })
+                @Html.ValidationMessageFor(model => model.Username, "", new { @class = "text-danger" })
+            </div>
+            <div class="form-group col-md-6">
+                @Html.LabelFor(model => model.Email, new { @class = "control-label" })<span class="required">*</span>
+                @Html.EditorFor(model => model.Email, new { htmlAttributes = new { @class = "form-control", placeholder = "Please enter your Email Address", disabled = "disabled" } })
+                @Html.ValidationMessageFor(model => model.Email, "", new { @class = "text-danger" })
+            </div>
+            <div class="form-group col-md-6">
+                @Html.LabelFor(model => model.Mobile, new { @class = "control-label" })<span class="required">*</span>
+                @Html.EditorFor(model => model.Mobile, new { htmlAttributes = new { @class = "form-control", placeholder = "Please enter the mobile number" } })
+                @Html.ValidationMessageFor(model => model.Mobile, "", new { @class = "text-danger" })
+            </div>
+            <div class="form-group col-md-6">
+                @Html.LabelFor(model => model.DateOfBirth, new { @class = "control-label" })
+                @Html.TextBoxFor(model => model.DateOfBirth, new { @class = "form-control", id = "no-icon-dtpicker1", placeholder = "Please select the your Date Of Birth" })
+                @Html.ValidationMessageFor(model => model.DateOfBirth, "", new { @class = "text-danger" })
+            </div>
+            <div class="form-group col-md-6">
+                @Html.LabelFor(model => model.Address, new { @class = "control-label" })
+                @Html.EditorFor(model => model.Address, new { htmlAttributes = new { @class = "form-control", placeholder = "Please enter your address" } })
+                @Html.ValidationMessageFor(model => model.Address, "", new { @class = "text-danger" })
+            </div>
+            <div class="form-group col-md-6">
+                @Html.LabelFor(model => model.Website, new { @class = "control-label" })
+                @Html.EditorFor(model => model.Website, new { htmlAttributes = new { @class = "form-control", placeholder = "Please enter your website link" } })
+                @Html.ValidationMessageFor(model => model.Website, "", new { @class = "text-danger" })
+            </div>
+        </div>
+            <div class="row">
+            <div class="form-group col-md-12">
+                @Html.LabelFor(model => model.Biography, new {@class = "control-label"})
+                <textarea name="Biography" data-provide="markdown" rows="10"></textarea>
+                @Html.ValidationMessageFor(model => model.Biography, "", new {@class = "text-danger"})
+            </div>
+        </div>
+ 
+    <div class="row">
+        <div class="form-group">
+            <button type="submit" class="btn btn-primary">Submit</button>
+            <a href="@Url.Action("Profile","Account")"  class="btn btn-default">Cancel</a>
+        </div>
+    </div>
+    </div>
+}
+@section Scripts{ 
+    <!-- Bootstrap Markdown-->
+    <script type="text/javascript" src="~/Dashboard/plugins/bootstrap-markdown/js/bootstrap-markdown.js"></script>
+    <!-- MomentJS-->
+    <script type="text/javascript" src="~/Dashboard/plugins/moment/min/moment.min.js"></script>
+    <!-- Moment With Locales-->
+    <script type="text/javascript" src="~/Dashboard/plugins/moment/locale/fr.js"></script>
+    <script type="text/javascript" src="~/Dashboard/plugins/moment/locale/ru.js"></script>
+    <script type="text/javascript" src="~/Dashboard/plugins/moment/locale/ja.js"></script>
+    <script type="text/javascript" src="~/Dashboard/plugins/moment/locale/vi.js"></script>
+    <!-- Bootstrap DateTimePicker-->
+    <script type="text/javascript" src="~/Dashboard/plugins/eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js"></script>
+    <!-- Custom JS-->
+    <script type="text/javascript" src="~/Dashboard/build/js/second-layout/app.js"></script>
+    <script type="text/javascript" src="~/Dashboard/build/js/second-layout/demo.js"></script>
+    <script type="text/javascript" src="~/Dashboard/build/js/page-content/pickers/datetime-picker.js"></script>
+}
+@section Functions
+{
+    <script>
+        $(document).ready(function() {
+            $("#no-icon-dtpicker1")
+                .datetimepicker({
+                    locale: "en-gb",
+                    maxDate: new Date(),
+                    format: "DD/MM/YYYY HH:mm"
+                });
+        });
+    </script>
+}

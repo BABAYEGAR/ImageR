@@ -1,0 +1,42 @@
+﻿@using CamerackStudio.Models.Entities
+@using Microsoft.AspNetCore.Mvc.Rendering
+@model CamerackStudio.Models.Entities.ImageSubCategory
+@{
+    Layout = "Layout/Dashboard/_LayoutForm";
+    ViewBag.PageTitle = "Edit Image Sub-Category";
+    ViewBag.PageHeader = "Image Sub-Category";
+    ViewBag.FormHeader = "Edit the Image Sub- Category (Make sure to fill all compulsory fields *)";
+    Model.ImageCategoryId = ViewBag.CategoryId;
+}
+@section Breadcrumbs
+{
+    <div class="pull-left">
+        <h4 class="mt-0 mb-5">@ViewBag.PageHeader</h4>
+        <ol class="breadcrumb mb-0">
+            <li><a href="@Url.Action("Dashboard","Home")">Dashboard</a></li>
+            <li><a href="@Url.Action("Index")">Image Sub Categories</a></li>
+            <li class="active">@ViewBag.PageHeader</li>
+        </ol>
+    </div>
+}
+@using (Html.BeginForm("Edit", "ImageSubCategory", FormMethod.Post, new {enctype = "multipart/form-data", role = "form"}))
+{
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(m=>m.ImageSubCategoryId)
+    @Html.HiddenFor(m=>m.ImageCategoryId)
+    @Html.HiddenFor(m=>m.DateCreated)
+    @Html.HiddenFor(m=>m.CreatedBy)
+    @Html.ValidationSummary(true, "", new {@class = "text-danger"})
+
+    <div class="form-body">
+        <div class="form-group">
+            @Html.LabelFor(model => model.Name, new {@class = "control-label"})<span class="required">*</span>
+            @Html.EditorFor(model => model.Name, new {htmlAttributes = new {@class = "form-control", placeholder = "Please enter the category name"}})
+            @Html.ValidationMessageFor(model => model.Name, "", new {@class = "text-danger"})
+        </div>
+    </div>
+    <div class="form-group">
+        <button type="submit" class="btn btn-primary">Submit</button>
+        <a href="@Url.Action("Index")"  class="btn btn-default">Cancel</a>
+    </div>
+}
