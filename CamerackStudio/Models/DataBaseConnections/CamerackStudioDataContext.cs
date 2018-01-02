@@ -30,7 +30,6 @@ namespace CamerackStudio.Models.DataBaseConnections
         public virtual DbSet<PhotographerCategory> PhotographerCategories { get; set; }
         public virtual DbSet<Camera> Cameras { get; set; }
         public virtual DbSet<Location> Locations { get; set; }
-        public virtual DbSet<CompetitionCategory> CompetitionCategories { get; set; }
         public virtual DbSet<PhotographerCategoryMapping> PhotographerCategoryMappings { get; set; }
         public virtual DbSet<CompetitionUpload> CompetitionUploads { get; set; }
         public virtual DbSet<SystemNotification> SystemNotifications { get; set; }
@@ -39,10 +38,7 @@ namespace CamerackStudio.Models.DataBaseConnections
         public virtual DbSet<UserBank> UserBanks { get; set; }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            //optionsBuilder.UseSqlServer(@"Server=.;Database=CamerackStudio;Trusted_Connection=True;");
-            //optionsBuilder.UseMySql(@"Server=localhost;port=3306;Database=Image;User=CloudMab;Password=Brigada95#;");
-
-
+            optionsBuilder.UseSqlServer(@"Server=.;Database=CamerackStudio;Trusted_Connection=True;");
         }
     }
 }

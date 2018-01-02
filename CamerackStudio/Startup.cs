@@ -1,5 +1,6 @@
 ﻿using System;
 using CamerackStudio.Models.DataBaseConnections;
+using CamerackStudio.Models.SignaR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
@@ -38,15 +39,17 @@ namespace CamerackStudio
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+
             // Add framework services.
             services.AddDbContext<CamerackStudioDataContext>(options =>
-                options.UseMySql(Configuration.GetConnectionString("CamerackStudio")));
+                options.UseSqlServer(Configuration.GetConnectionString("CamerackStudio")));
 
             services.AddMvc(options => options.MaxModelValidationErrors = 50).AddJsonOptions(options => {
                 options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
                 options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
 
             });
+            services.AddSignalR();
             // Adds a default in-memory implementation of IDistributedCache.
             services.AddDistributedMemoryCache();
             services.AddDistributedRedisCache(option =>
@@ -66,7 +69,10 @@ namespace CamerackStudio
         {
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
-
+            app.UseSignalR(routes =>
+            {
+                routes.MapHub<NotificationHub>("chat");
+            });
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();

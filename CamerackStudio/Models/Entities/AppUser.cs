@@ -17,8 +17,8 @@ namespace CamerackStudio.Models.Entities
         [EmailAddress]
         public string Email { get; set; }
         [MaxLength(100, ErrorMessage = "This field is does not support more than 100 characters")]
-        [RegularExpression("^[0-9]*$")]
         public string Mobile { get; set; }
+        public string MobileExtension { get; set; }
         public string Address { get; set; }
         [Required]
         public string Password { get; set; }

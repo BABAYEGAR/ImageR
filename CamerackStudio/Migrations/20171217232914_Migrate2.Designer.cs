@@ -11,9 +11,10 @@ using System;
 namespace CamerackStudio.Migrations
 {
     [DbContext(typeof(CamerackStudioDataContext))]
-    partial class CamerackStudioDataContextModelSnapshot : ModelSnapshot
+    [Migration("20171217232914_Migrate2")]
+    partial class Migrate2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

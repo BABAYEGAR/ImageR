@@ -6,7 +6,7 @@ using CamerackStudio.Models.APIFactory;
 using CamerackStudio.Models.DataBaseConnections;
 using CamerackStudio.Models.Entities;
 using CamerackStudio.Models.Enum;
-using Microsoft.AspNetCore.Hosting;
+using CamerackStudio.Models.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -190,16 +190,107 @@ namespace CamerackStudio.Controllers
         [HttpPost]
         public JsonResult SaveImageData([FromBody] Image image)
         {
-            _databaseConnection.Add(image);
-            _databaseConnection.SaveChangesAsync();
-            return Json(image);
+            var tags = new List<string>();
+            var savedImageTags = new List<ImageTag>();
+            try
+            {
+                _databaseConnection.Add(image);
+                _databaseConnection.SaveChanges();
+
+                //iterate tags
+                if (!string.IsNullOrEmpty(image.Tags) && image.ImageId > 0)
+                {
+                    var values = image.Tags.Split(',');
+                    for (var i = 0; i < values.Length; i++)
+                    {
+                        values[i] = values[i].Trim();
+                        tags.Add(values[i]);
+                    }
+                    //save tags
+                    foreach (var item in tags)
+                    {
+                        var tag = new ImageTag
+                        {
+                            Name = item,
+                            ImageId = image.ImageId,
+                            DateCreated = DateTime.Now,
+                            DateLastModified = DateTime.Now,
+                            CreatedBy = image.CreatedBy,
+                            LastModifiedBy = image.CreatedBy
+                        };
+                        savedImageTags.Add(tag);
+                    }
+                    _databaseConnection.AddRange(savedImageTags);
+                    _databaseConnection.SaveChanges();
+                }
+                return Json(image);
+            }
+            catch (Exception)
+            {
+                return Json(image);
+            }
         }
+
         [HttpPost]
         public JsonResult SaveImageTags([FromBody] List<ImageTag> tags)
         {
-            _databaseConnection.AddRange(tags);
-            _databaseConnection.SaveChangesAsync();
-            return Json(tags);
+            try
+            {
+                _databaseConnection.AddRange(tags);
+                _databaseConnection.SaveChanges();
+                return Json(tags);
+            }
+            catch (Exception)
+            {
+                return Json(tags);
+            }
+        }
+
+        [HttpPost]
+        public JsonResult SaveUserNotification([FromBody] SystemNotification notification)
+        {
+            try
+            {
+                _databaseConnection.Add(notification);
+                _databaseConnection.SaveChanges();
+                return Json(notification);
+            }
+            catch (Exception)
+            {
+                return Json(notification);
+            }
+        }
+
+        [HttpPost]
+        public JsonResult SaveCompetitionUpload([FromBody] CompetitionUpload upload)
+        {
+            try
+            {
+                _databaseConnection.Add(upload);
+                _databaseConnection.SaveChanges();
+                if (upload.CompetitionUploadId > 0)
+                {
+                    var rating =
+                        new ImageCompetitionRating
+                        {
+                            DescriptionRating =
+                                new CompetitionCalculator().CalculateDescriptionRating(upload.Description,
+                                    upload.CameraId, upload.LocationId),
+                            CompetitionUploadId = upload.CompetitionUploadId,
+                            DateCreated = DateTime.Now,
+                            DateLastModified = DateTime.Now,
+                            CreatedBy = upload.AppUserId,
+                            LastModifiedBy = upload.AppUserId
+                        };
+                    _databaseConnection.ImageCompetitionRatings.Add(rating);
+                    _databaseConnection.SaveChanges();
+                }
+                return Json(upload);
+            }
+            catch (Exception)
+            {
+                return Json(upload);
+            }
         }
     }
 }

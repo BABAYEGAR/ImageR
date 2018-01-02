@@ -2,21 +2,12 @@
 @using CamerackStudio.Models.Entities
 @using Microsoft.AspNetCore.Http
 @using Newtonsoft.Json
-@model CamerackStudio.Models.Entities.AppUser
+@model CamerackStudio.Models.Entities.AppTransport
 @{
     Layout = "Layout/Dashboard/_LayoutDashboard";
     ViewBag.PageTitle = "Profile";
     ViewBag.PageHeader = "Profile Information";
 
-    List<Image> images = ViewBag.Images;
-    List<ImageComment> comments = ViewBag.ImageComments;
-    List<AppUser> users = ViewBag.Users;
-
-    List<ImageAction> ratings = ViewBag.Rating;
-
-    AppUser appUser = null;
-    var userString = Context.Session.GetString("CamerackLoggedInUser");
-    appUser = JsonConvert.DeserializeObject<AppUser>(userString);
 }
 @section Css
 {
@@ -39,20 +30,20 @@
         <div style="height: 260px; padding-top: 130px" class="pl-30 pr-30 clearfix overlay text-white">
             <div class="pull-left media">
                 <div class="media-left">
-                    <img src="~/UploadedImage/ProfileBackground/@Model.BackgroundPicture" alt="" style="opacity: 1; z-index: -1" class="img-main img-responsive"><a href="javascript:void(0)" style="background-color: #fff; border-radius: 50%; display: inline-block; padding: 3px;">
-                        <img src="~/UploadedImage/ProfilePicture/@Model.ProfilePicture" width="100" alt="" class="img-circle">
+                    <img src="~/UploadedImage/ProfileBackground/@Model.AppUser.BackgroundPicture" alt="" style="opacity: 1; z-index: -1" class="img-main img-responsive"><a href="javascript:void(0)" style="background-color: #fff; border-radius: 50%; display: inline-block; padding: 3px;">
+                        <img src="~/UploadedImage/ProfilePicture/@Model.AppUser.ProfilePicture" width="100" alt="" class="img-circle">
                     </a>
                 </div>
                 <div style="width: auto" class="media-body media-middle">
-                    <h2 class="media-heading">@Model.Username</h2>
-                    <div class="fs-20">@Model.Name</div>
+                    <h2 class="media-heading">@Model.AppUser.Username</h2>
+                    <div class="fs-20">@Model.AppUser.Name</div>
                 </div>
 
             </div>
             <div class="pull-right text-center">
                 <ul class="list-inline">
                     <li>
-                        <div class="fs-24 fw-500">@images.Count</div>
+                        <div class="fs-24 fw-500">@Model.Images.Count</div>
                         <p>Photos</p>
                     </li>
                 </ul>
@@ -74,9 +65,9 @@
                             <i class="ti-gift text-info"></i>
                         </div>
                         <div class="media-body">
-                            @if (Model.DateOfBirth != null)
+                            @if (Model.AppUser.DateOfBirth != null)
                             {
-                                <p>@Model.DateOfBirth.Value.ToString("D")</p>
+                                <p>@Model.AppUser.DateOfBirth.Value.ToString("D")</p>
                             }
 
                         </div>
@@ -86,7 +77,7 @@
                             <i class="ti-email text-info"></i>
                         </div>
                         <div class="media-body">
-                            <p>@Model.Email</p>
+                            <p>@Model.AppUser.Email</p>
                         </div>
                     </li>
                     <li class="media">
@@ -94,7 +85,7 @@
                             <i class="ti-home text-info"></i>
                         </div>
                         <div class="media-body">
-                            <p>@Model.Address</p>
+                            <p>@Model.AppUser.Address</p>
                         </div>
                     </li>
                     <li class="media">
@@ -102,7 +93,7 @@
                             <i class="ti-mobile text-info"></i>
                         </div>
                         <div class="media-body">
-                            <p>@Model.Mobile</p>
+                            <p>@Model.AppUser.Mobile</p>
                         </div>
                     </li>
                     <li class="media">
@@ -110,7 +101,7 @@
                             <i class="ti-world text-info"></i>
                         </div>
                         <div class="media-body">
-                            <p>@Model.Website</p>
+                            <p>@Model.AppUser.Website</p>
                         </div>
                     </li>
                 </ul>
@@ -121,16 +112,16 @@
                 <h3 class="widget-title">Biography</h3>
             </div>
             <div class="widget-body">
-                <p>@Model.Biography</p>
+                <p>@Model.AppUser.Biography</p>
             </div>
         </div>
     </div>
     <div class="col-md-6">
 
-        @foreach (var item in images.Where(n=>n.AppUserId == Model.AppUserId))
+        @foreach (var item in Model.Images.Where(n=>n.AppUserId == Model.AppUser.AppUserId))
         {
-            var singleOrDefault = users.SingleOrDefault(n => n.AppUserId == item.AppUserId);
-            var singleRating = ratings.SingleOrDefault(n => n.AppUserId == Model.AppUserId && n.ImageId == item.ImageId);
+            var singleOrDefault = Model.AppUsers.SingleOrDefault(n => n.AppUserId == item.AppUserId);
+            var singleRating = Model.ImageActions.SingleOrDefault(n => n.AppUserId == Model.AppUser.AppUserId && n.ImageId == item.ImageId);
             var pic = "https://res.cloudinary.com/" + item.FilePath;
             var otherPic = "https://res.cloudinary.com/" + item.FilePath.Replace("upload/", "upload/w_350,l_watermark/");
             <div class="widget clear">
@@ -163,7 +154,7 @@
                     </p>
                     <div class="thumbnail">
                         <a href="@Url.Action("SingleImage", new {id = item.ImageId})">
-                            @if (item.AppUserId == appUser.AppUserId)
+                            @if (item.AppUserId == Model.AppUser.AppUserId)
                             {
                                 <img class="lazy" data-src="@pic" alt=""> 
                             }
@@ -185,7 +176,7 @@
                                     }
                                     else
                                     {
-                                        if (Model.AppUserId != null)
+                                        if (Model.AppUser.AppUserId != null)
                                         {
                                             <form asp-controller="Image" asp-action="RateImage" data-ajax-begin="onBegin"
                                                   data-ajax="true" data-ajax-method="POST" data-ajax-update="#" id="hideRating">

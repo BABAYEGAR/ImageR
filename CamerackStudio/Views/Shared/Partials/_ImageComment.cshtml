@@ -1,13 +1,11 @@
 ﻿@using CamerackStudio.Models.Entities
 @using Microsoft.AspNetCore.Http
-@model List<CamerackStudio.Models.Entities.ImageComment>
+@model AppTransport
 @{
-    List<AppUser> users = ViewBag.Users;
-    var signedInUserId = Context.Session.GetInt32("userId");
 }
-@foreach (var items in Model.Take(6))
+@foreach (var items in Model.ImageComments.Where(n=>n.ImageId == Model.Image.ImageId).Take(6))
 {
-    var singleOrDefault = users.SingleOrDefault(n => n.AppUserId == items.AppUserId);
+    var singleOrDefault = Model.AppUsers.SingleOrDefault(n => n.AppUserId == items.AppUserId);
     <li class="media">
         <div class="media-left avatar">
             @if (singleOrDefault != null)
@@ -25,7 +23,7 @@
             <time datetime="2015-12-10T20:50:48+07:00" class="text-muted fs-12">
                 @items.DateCreated.ToString("D") <i class="ti-time"></i> @items.DateCreated.ToString("h:mm:ss tt")</time>
             <p>@items.Comment</p>
-            @if (items.AppUserId == signedInUserId)
+            @if (items.AppUserId == Model.AppUser.AppUserId)
             {
                 <form asp-controller="Image" asp-action="DeleteComment" data-ajax="true" data-ajax-method="POST" data-ajax-update="#content-@items.ImageId" data-ajax-complete="onFormComplete">
                     <input type="hidden" value="@items.ImageCommentId" name="CommentId"/>
@@ -41,7 +39,7 @@
      
     </li>
 }
-@if (Model.Count > 6)
+@if (Model.ImageComments.Count > 6)
 {
-    <a href="@Url.Action("SingleImage","Account",new{id = Model.FirstOrDefault().ImageId})">View @(Model.Count - 6) comments</a>
+    <a href="@Url.Action("SingleImage","Account",new{id = Model.ImageComments.FirstOrDefault().ImageId})">View @(Model.ImageComments.Count - 6) comments</a>
 }

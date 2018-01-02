@@ -4,7 +4,8 @@
     {
         Comment,
         Rating,
-        Competition
+        Competition,
+        ImageUpload
 
     }
 }

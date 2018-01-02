@@ -6,6 +6,7 @@ using CamerackStudio.Models.DataBaseConnections;
 using CamerackStudio.Models.Encryption;
 using CamerackStudio.Models.Entities;
 using CamerackStudio.Models.Enum;
+using CamerackStudio.Models.RabbitMq;
 using CamerackStudio.Models.Redis;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -69,7 +70,7 @@ namespace CamerackStudio.Controllers
             return View();
         }
 
-        public PartialViewResult RealoadNavigation()
+        public ActionResult RealoadNavigation()
         {
             var signedInUserId = Convert.ToInt64(new RedisDataAgent().GetStringValue("CamerackLoggedInUserId"));
             var notifications = _databaseConnection.SystemNotifications.Where(n => n.AppUserId == signedInUserId)
@@ -80,7 +81,7 @@ namespace CamerackStudio.Controllers
         public IActionResult Dashboard()
         {
             var signedInUserId = Convert.ToInt64(new RedisDataAgent().GetStringValue("CamerackLoggedInUserId"));
-
+            AppTransport appTransport = null;
             if (new RedisDataAgent().GetStringValue("CamerackLoggedInUser") != null)
             {
                 var userString = new RedisDataAgent().GetStringValue("CamerackLoggedInUser");
@@ -118,40 +119,65 @@ namespace CamerackStudio.Controllers
                     }
                 }
 
-            //var notifications = _databaseConnection.SystemNotifications.Where(n => n.AppUserId == _appUser.AppUserId)
-            //    .ToList();
-            ////convert object to json string and insert into session
-            //var notificationString = JsonConvert.SerializeObject(notifications);
-            //HttpContext.Session.SetString("Notifications", notificationString);
+            //check if user is new and send competition details to user
+            var competitionNotification = _databaseConnection.SystemNotifications
+                .Where(n => n.AppUserId == signedInUserId &&
+                            n.Category == SystemNotificationCategory.Competition.ToString()).ToList();
+            var competitions = _databaseConnection.Competition.ToList();
+            foreach (var item in competitions.Where(n=>n.EndDate > DateTime.Now))
+            {
+                if (competitionNotification.Any(n => n.ControllerId == item.CompetitionId) == false)
+                {
+                    var notification = new SystemNotification
+                    {
+                        AppUserId = signedInUserId,
+                        ControllerId = item.CompetitionId,
+                        Read = false,
+                        Message = item.Name + " Competition has already started, Dont mIss Out!",
+                        DateCreated = DateTime.Now,
+                        DateLastModified = DateTime.Now,
+                        LastModifiedBy = signedInUserId,
+                        CreatedBy = signedInUserId,
+                        Category = SystemNotificationCategory.Competition.ToString()
+                    };
+                    _databaseConnection.SystemNotifications.Add(notification);
+                    _databaseConnection.SaveChanges();
+                    new SendEmailMessage().SendCompetitionEmailMessage(item);
+                }
+            }
 
+            //store data temporarily, based on the user role
             if (_appUser != null && _appUser.Role.ManageImages)
             {
-                ViewBag.Images = _databaseConnection.Images.ToList();
-                ViewBag.Cameras = _databaseConnection.Cameras.ToList();
-                ViewBag.Locations = _databaseConnection.Locations.ToList();
-                ViewBag.Orders = new OrderFactory().GetAllOrdersAsync(new AppConfig().FetchOrdersUrl).Result.ToList();
-                ViewBag.Payments = new OrderFactory().GetAllPaymentsAsync(new AppConfig().FetchPaymentsUrl).Result
-                    .ToList();
+                appTransport = new AppTransport
+                {
+                    Images = _databaseConnection.Images.ToList(),
+                    Cameras = _databaseConnection.Cameras.ToList(),
+                    Locations = _databaseConnection.Locations.ToList(),
+                    Orders = new OrderFactory().GetAllOrdersAsync(new AppConfig().FetchOrdersUrl).Result.ToList(),
+                    Payments = new OrderFactory().GetAllPaymentsAsync(new AppConfig().FetchPaymentsUrl).Result
+                        .ToList()
+                };
             }
             if (_appUser != null && _appUser.Role.UploadImage)
             {
-                ViewBag.Images = _databaseConnection.Images.Where(n => n.AppUserId == signedInUserId).ToList();
-                ViewBag.Cameras = _databaseConnection.Cameras
-                    .Where(n => n.CreatedBy == signedInUserId).ToList();
-                ViewBag.Locations = _databaseConnection.Locations
-                    .Where(n => n.CreatedBy == signedInUserId).ToList();
-                var result = new OrderFactory().GetAllOrdersAsync(new AppConfig().FetchOrdersUrl).Result;
-                if (result != null)
-                    ViewBag.Orders = result
-                        .Where(n => n.CreatedBy == signedInUserId).ToList();
-                var payments = new OrderFactory().GetAllPaymentsAsync(new AppConfig().FetchPaymentsUrl).Result;
-                if (payments != null)
-                    ViewBag.Payments = new OrderFactory().GetAllPaymentsAsync(new AppConfig().FetchPaymentsUrl)
-                        .Result.Where(n => n.AppUserId == signedInUserId).ToList();
+                appTransport = new AppTransport
+                {
+                    Images = _databaseConnection.Images.Where(n => n.AppUserId == signedInUserId).ToList(),
+                    Cameras = _databaseConnection.Cameras
+                        .Where(n => n.CreatedBy == signedInUserId).ToList(),
+                    Locations = _databaseConnection.Locations
+                        .Where(n => n.CreatedBy == signedInUserId).ToList(),
+                    Orders = new OrderFactory().GetAllOrdersAsync(new AppConfig().FetchOrdersUrl)
+                        .Result.Where(n => n.CreatedBy == signedInUserId).ToList(),
+                    Payments = new OrderFactory().GetAllPaymentsAsync(new AppConfig().FetchPaymentsUrl).Result
+                        .Where(n => n.AppUserId == signedInUserId)
+                        .ToList()
+                };
             }
             //validate mapping
-            ViewBag.AppUsers = new AppUserFactory().GetAllUsers(new AppConfig().FetchUsersUrl).Result.ToList();
-
+            if (appTransport != null)
+                appTransport.AppUsers = new AppUserFactory().GetAllUsers(new AppConfig().FetchUsersUrl).Result.ToList();
             var mapping = _databaseConnection.PhotographerCategoryMappings.Where(n => n.AppUserId == signedInUserId)
                 .ToList();
 
@@ -163,7 +189,7 @@ namespace CamerackStudio.Controllers
                 TempData["notificationtype"] = NotificationType.Info.ToString();
                 return RedirectToAction("SelectCategories", "PhotographerCategory");
             }
-            return View();
+            return View(appTransport);
         }
     }
 }

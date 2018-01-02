@@ -5,8 +5,7 @@
 @using CamerackStudio.Models.Services
 @model List<SystemNotification>
 @{
-    var users = new List<AppUser>();
-    users = new AppUserFactory().GetAllUsers(new AppConfig().FetchUsersUrl).Result;
+    var users = new AppUserFactory().GetAllUsers(new AppConfig().FetchUsersUrl).Result;
 }
 <a id="dropdownMenu1" href="#" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false" class="dropdown-toggle bubble header-icon">
     <i class="ti-world"></i><span class="badge bg-danger">@Model.Where(n => n.Read == false).ToList().Count</span>

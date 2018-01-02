@@ -9,6 +9,7 @@ using CamerackStudio.Models.DataBaseConnections;
 using CamerackStudio.Models.Encryption;
 using CamerackStudio.Models.Entities;
 using CamerackStudio.Models.Enum;
+using CamerackStudio.Models.RabbitMq;
 using CamerackStudio.Models.Redis;
 using CamerackStudio.Models.Services;
 using Microsoft.AspNetCore.Authorization;
@@ -35,41 +36,50 @@ namespace CamerackStudio.Controllers
         [SessionExpireFilter]
         public ActionResult Profile()
         {
-            ViewBag.Users = _users;
             var signedInUserId = Convert.ToInt64(new RedisDataAgent().GetStringValue("CamerackLoggedInUserId"));
-            ViewBag.Images = _databaseConnection.Images.Include(n => n.ImageCategory)
-                .Include(n => n.ImageComments).Include(n => n.ImageTags)
-                .Include(n => n.Location).Include(n => n.ImageSubCategory).ToList();
-            ViewBag.ImageComments = _databaseConnection.ImageComments.Where(n => n.AppUserId == signedInUserId)
-                .ToList();
-            ViewBag.Rating = _databaseConnection.ImageActions.ToList();
-            return View();
+            var appTransport = new AppTransport
+            {
+                AppUsers = _users,
+                Images = _databaseConnection.Images.Include(n => n.ImageCategory)
+                    .Include(n => n.ImageComments).Include(n => n.ImageTags)
+                    .Include(n => n.Location).Include(n => n.ImageSubCategory).ToList(),
+                ImageComments = _databaseConnection.ImageComments.ToList(),
+                ImageActions = _databaseConnection.ImageActions.ToList(),
+                AppUser = _users.SingleOrDefault(n=>n.AppUserId ==signedInUserId )
+            };
+            return View(appTransport);
         }
         [SessionExpireFilter]
         public ActionResult UserProfile(long id)
         {
-            ViewBag.Users = _users;
-            var signedInUserId = Convert.ToInt64(new RedisDataAgent().GetStringValue("CamerackLoggedInUserId"));
-            ViewBag.Images = _databaseConnection.Images.Include(n => n.ImageCategory)
-                .Include(n => n.ImageComments).Include(n => n.ImageTags)
-                .Include(n => n.Location).Include(n => n.ImageSubCategory).ToList();
-            ViewBag.ImageComments = _databaseConnection.ImageComments.Where(n => n.AppUserId == signedInUserId)
-                .ToList();
-            ViewBag.Rating = _databaseConnection.ImageActions.ToList();
-            return View(_users.SingleOrDefault(n=>n.AppUserId == id));
+            var appTransport = new AppTransport
+            {
+                AppUsers = _users,
+                Images = _databaseConnection.Images.Include(n => n.ImageCategory)
+                    .Include(n => n.ImageComments).Include(n => n.ImageTags)
+                    .Include(n => n.Location).Include(n => n.ImageSubCategory).ToList(),
+                ImageComments = _databaseConnection.ImageComments.ToList(),
+                ImageActions = _databaseConnection.ImageActions.ToList(),
+                Image = _databaseConnection.Images.Find(id),
+                AppUser = _users.SingleOrDefault(n => n.AppUserId == id)
+            };
+            return View(appTransport);
         }
         [SessionExpireFilter]
         public ActionResult SingleImage(long id)
         {
-            ViewBag.Users = _users;
             var signedInUserId = Convert.ToInt64(new RedisDataAgent().GetStringValue("CamerackLoggedInUserId"));
-            ViewBag.Images = _databaseConnection.Images.Include(n => n.ImageCategory)
-                .Include(n => n.ImageComments).Include(n => n.ImageTags)
-                .Include(n => n.Location).Include(n => n.ImageSubCategory).ToList();
-            ViewBag.ImageComments = _databaseConnection.ImageComments.Where(n => n.AppUserId == signedInUserId)
-                .ToList();
-            ViewBag.Rating = _databaseConnection.ImageActions.ToList();
-            return View(_databaseConnection.Images.Find(id));
+            var appTransport = new AppTransport
+            {
+                AppUsers = _users,
+                Images = _databaseConnection.Images.Include(n => n.ImageCategory)
+                    .Include(n => n.ImageComments).Include(n => n.ImageTags)
+                    .Include(n => n.Location).Include(n => n.ImageSubCategory).ToList(),
+                ImageComments = _databaseConnection.ImageComments.ToList(),
+                ImageActions = _databaseConnection.ImageActions.ToList(),
+                Image = _databaseConnection.Images.Find(id)
+            };
+            return View(appTransport);
         }
         public ActionResult Notification()
         {
@@ -116,7 +126,6 @@ namespace CamerackStudio.Controllers
                     var ext = fileInfo.Extension.ToLower();
                     var name = DateTime.Now.ToFileTime().ToString();
                     var fileName = name + ext;
-                    //var uploadedImage = _hostingEnv.WebRootPath + $@"\UploadedImage\ProfileBackground\{fileName}";
                     var uploadedImage = new AppConfig().ProfilePicture + fileName;
 
                     using (var fs = System.IO.File.Create(uploadedImage))
@@ -346,13 +355,6 @@ namespace CamerackStudio.Controllers
                         await new AppUserFactory().ActivateUser(new AppConfig().ActivateAccountUrl, appUser.AppUserId);
                     if (response.AppUser != null)
                     {
-                        //update accessKeys
-                        await new AppUserFactory().UpdateAccountActivationAccessKey(
-                            new AppConfig().UpdateAccountActivationAccessKey,
-                            appUser.AppUserId);
-
-                        var userBank = 
-
                         //display notification
                         TempData["display"] =
                             "You have successfully verified your account, Login and Enjoy the Experience!";
@@ -393,11 +395,7 @@ namespace CamerackStudio.Controllers
         {
             model.ClientId = new AppConfig().ClientId;
             var response = new AppUserFactory().ForgetPasswordLink(new AppConfig().ForgotPasswordLinkUrl, model).Result;
-            var accessKey = new AppUserFactory().GetUsersAccessKey(new AppConfig().FetchUsersAccessKeys)
-                .Result.SingleOrDefault(n => n.AppUserId == response.AppUser.AppUserId);
 
-            var mail = new Mailer();
-            mail.SendForgotPasswordResetLink(new AppConfig().ForgotPasswordHtml, response.AppUser, accessKey);
             //display notification
             TempData["display"] = response.AccessLog.Message;
             TempData["notificationtype"] = NotificationType.Success.ToString();
@@ -500,30 +498,29 @@ namespace CamerackStudio.Controllers
                     TempData["notificationtype"] = NotificationType.Error.ToString();
                     return View(model);
                 }
-                appUser = response.AppUser;
-
-                //populate and save bank transaction
-                var userBank = new UserBank
+                if (response.AppUser != null)
                 {
-                    CreatedBy = appUser.AppUserId,
-                    LastModifiedBy = appUser.AppUserId,
-                    DateCreated = DateTime.Now,
-                    DateLastModified = DateTime.Now
-                };
-                _databaseConnection.UserBanks.Add(userBank);
-                _databaseConnection.SaveChanges();
+                    appUser = response.AppUser;
 
-                //get accesskey
-                var accessKey = new AppUserFactory().GetUsersAccessKey(new AppConfig().FetchUsersAccessKeys)
-                    .Result.SingleOrDefault(n=>n.AppUserId == appUser.AppUserId);
+                    //populate and save bank transaction
+                    var userBank = new UserBank
+                    {
+                        CreatedBy = appUser.AppUserId,
+                        LastModifiedBy = appUser.AppUserId,
+                        DateCreated = DateTime.Now,
+                        DateLastModified = DateTime.Now
+                    };
+                    _databaseConnection.UserBanks.Add(userBank);
+                    _databaseConnection.SaveChanges();
 
-                //send email
-                var mail = new Mailer();
-                mail.SendNewUserEmail(new AppConfig().NewUserHtml, appUser, appUser.Role, accessKey);
-
+                    //display notification
+                    TempData["display"] =
+                        response.AccessLog.Message;
+                    TempData["notificationtype"] = NotificationType.Success.ToString();
+                    return RedirectToAction("Login");
+                }
                 //display notification
-                TempData["display"] =
-                    response.AccessLog.Message;
+                TempData["display"] = "This Request is Unavailable, Try again Later";
                 TempData["notificationtype"] = NotificationType.Success.ToString();
                 return RedirectToAction("Login");
             }
@@ -542,10 +539,10 @@ namespace CamerackStudio.Controllers
         {
             _databaseConnection.Dispose();
             HttpContext.Session.Clear();
-            //if (new RedisDataAgent().GetStringValue("CamerackLoggedInUser") != null)
-            //{
-            //    return RedirectToAction("Dashboard", "Home");
-            //}
+            if (new RedisDataAgent().GetStringValue("CamerackLoggedInUser") != null)
+            {
+                return RedirectToAction("Dashboard", "Home");
+            }
             if (returnUrl != null)
             {
                 //display notification

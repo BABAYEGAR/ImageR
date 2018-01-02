@@ -22,12 +22,10 @@ namespace CamerackStudio.Controllers
         private readonly CamerackStudioDataContext _databaseConnection;
         AppUser _appUser;
         List<Image> _images = new List<Image>();
-        private readonly IHostingEnvironment _hostingEnv;
 
-        public ImageCategoryController(IHostingEnvironment env, CamerackStudioDataContext databaseConnection)
+        public ImageCategoryController(CamerackStudioDataContext databaseConnection)
         {
             _databaseConnection = databaseConnection;
-            _hostingEnv = env;
         }
         // GET: ImageCategory
         [SessionExpireFilter]

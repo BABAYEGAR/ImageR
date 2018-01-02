@@ -15,8 +15,8 @@
         #endregion
 
         #region SSO
-        //public string SSOBaseUrl => "http://localhost:53017/";
-        public string SSOBaseUrl => "http://sso.camerack.com/";
+        public string SSOBaseUrl => "http://localhost:53017/";
+        //public string SSOBaseUrl => "http://sso.camerack.com/";
         public string RegisterUsersUrl => SSOBaseUrl + "API/Register";
         public string LoginUrl => SSOBaseUrl + "API/Login";
         public string FetchUsersUrl => SSOBaseUrl + "API/AllUsers";
@@ -43,11 +43,16 @@
         public string ApprovePaymentsUrl => CamerackBaseUrl + "API/ApprovePayment/";
         #endregion
 
-        #region Camerack ImageUpload API URL
+        #region Camerack Task Manager API URL
 
         //public string CamerackImageUploadBaseUrl => "http://camerack.com/";
-        public string CamerackImageUploadBaseUrl => "http://localhost:61157/";
-        public string UploadImageUrl => CamerackImageUploadBaseUrl + "API/UploadImage";
+        public string CamerackTaskManagerBaseUrl => "http://localhost:61157/";
+        public string UploadImageUrl => CamerackTaskManagerBaseUrl + "API/UploadImage";
+        public string SendNewUserEmailMessageUrl => CamerackTaskManagerBaseUrl + "API/SendNewUserEmail";
+        public string SendForgotPasswordEmailMessageUrl => CamerackTaskManagerBaseUrl + "API/SendForgotPasswordEmail";
+        public string SendCompetitionEmailMessageUrl => CamerackTaskManagerBaseUrl + "API/SendCompetitionEmail";
+        public string ImageActionMessageUrl => CamerackTaskManagerBaseUrl + "API/ImageAction";
+        public string CompetitionUploadMessageUrl => CamerackTaskManagerBaseUrl + "API/CompetitionUpload";
         #endregion
         #region Mailer
 

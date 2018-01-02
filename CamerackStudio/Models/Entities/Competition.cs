@@ -24,7 +24,6 @@ namespace CamerackStudio.Models.Entities
         public string Status { get; set; }
         //winner
         public long? AppUserId { get; set; }
-        public IEnumerable<CompetitionCategory> CompetitionCategories { get; set; }
         public IEnumerable<CompetitionVote> CompetitionVotes { get; set; }
         public IEnumerable<CompetitionUpload> CompetitionUploads { get; set; }
     }

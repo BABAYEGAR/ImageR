@@ -89,7 +89,7 @@ namespace CamerackStudio.Controllers
         public PartialViewResult RateImage(IFormCollection collection, ImageAction action)
         {
             var signedInUserId = Convert.ToInt64(new RedisDataAgent().GetStringValue("CamerackLoggedInUserId"));
-            action.Action = "Rate";
+            action.Action = "Rating";
             action.ActionDate = DateTime.Now;
             action.AppUserId = signedInUserId;
             action.OwnerId = signedInUserId;
@@ -99,31 +99,9 @@ namespace CamerackStudio.Controllers
             if (_databaseConnection.ImageActions
                     .Where(n => n.ImageId == action.ImageId && n.AppUserId == action.AppUserId).ToList().Count <= 0)
             {
-                _databaseConnection.Add(action);
-                _databaseConnection.SaveChanges();
+               new SendImageMessage().SendImageActionMessage(action);
             }
             var image = _images.SingleOrDefault(n => n.ImageId == action.ImageId);
-            if (image != null)
-            {
-                var notification = new SystemNotification
-                {
-                    AppUserId = image.AppUserId,
-                    CreatedBy = signedInUserId,
-                    LastModifiedBy = signedInUserId,
-                    DateLastModified = DateTime.Now,
-                    DateCreated = DateTime.Now,
-                    Category = SystemNotificationCategory.Comment.ToString(),
-                    Read = false,
-                    ControllerId = Convert.ToInt64(collection["ImageId"])
-                };
-
-                var singleOrDefault = _users.SingleOrDefault(n => n.AppUserId == image.AppUserId);
-                if (singleOrDefault != null)
-                    notification.Message = singleOrDefault.Name +
-                                           " Rated your Image";
-                _databaseConnection.SystemNotifications.Add(notification);
-            }
-            _databaseConnection.SaveChanges();
             return PartialView("Partials/_PartialRating", image);
         }
 
@@ -205,13 +183,11 @@ namespace CamerackStudio.Controllers
         [ValidateAntiForgeryToken]
         [DisableFormValueModelBinding]
         [SessionExpireFilter]
-        public async Task<ActionResult> Create(Image image, IFormCollection collection, IFormFile file)
+        public ActionResult Create(Image image, IFormCollection collection, IFormFile file)
         {
             var signedInUserId = Convert.ToInt64(new RedisDataAgent().GetStringValue("CamerackLoggedInUserId"));
             try
             {
-                //var tags = new List<string>();
-
                 image.AppUserId = signedInUserId;
                 image.DateCreated = DateTime.Now;
                 image.DateLastModified = DateTime.Now;
@@ -276,72 +252,27 @@ namespace CamerackStudio.Controllers
                 image.A6 = Convert.ToBoolean(collection["A6"]);
 
                 //Append new upload object and send task to rabbit MQ API Via CamerackImageUploader API APPLICATION
-               // StreamReader reader = new StreamReader(file.OpenReadStream());
-                string s = null;
-                    if (file.Length > 0)
+                string stream = null;
+                if (file.Length > 0)
+                {
+                    using (var ms = new MemoryStream())
                     {
-                        using (var ms = new MemoryStream())
-                        {
-                            file.CopyTo(ms);
-                            var fileBytes = ms.ToArray();
-                             s = Convert.ToBase64String(fileBytes);
-                        }
+                        file.CopyTo(ms);
+                        var fileBytes = ms.ToArray();
+                        stream = Convert.ToBase64String(fileBytes);
                     }
-                
+                }
+
                 var upload = new ImageUpload
                 {
                     Image = image,
-                    File = s
+                    File = stream
                 };
+                //send message to rabbit queue to queue process
                 new SendImageMessage().SendImageCreationMessage(upload);
-                new ImageUploadFactory().UploadImage(new AppConfig().UploadImageUrl);  
-                //upload image via Cloudinary API Call
-                //var account = new Account(
-                //    new AppConfig().CloudinaryAccoutnName,
-                //    new AppConfig().CloudinaryApiKey,
-                //    new AppConfig().CloudinaryApiSecret);
 
-                //var cloudinary = new Cloudinary(account);
-                //var uploadParams = new ImageUploadParams
-                //{
-                //    File = new FileDescription(image.FileName, stream2),
-                //    Invalidate = true
-                //};
-                //var uploadResult = await cloudinary.UploadAsync(uploadParams);
-
-                //if (uploadResult.Format != null)
-                //{
-                //    image.FilePath = uploadResult.Uri.AbsolutePath;
-                //    _databaseConnection.Images.Add(image);
-                //    _databaseConnection.SaveChanges();
-                //}
-                ////get tags
-                //if (!string.IsNullOrEmpty(image.Tags))
-                //{
-                //    var values = image.Tags.Split(',');
-                //    for (var i = 0; i < values.Length; i++)
-                //    {
-                //        values[i] = values[i].Trim();
-                //        tags.Add(values[i]);
-                //    }
-                //    //save tags
-                //    foreach (var item in tags)
-                //    {
-                //        var tag = new ImageTag
-                //        {
-                //            Name = item,
-                //            ImageId = image.ImageId,
-                //            DateCreated = DateTime.Now,
-                //            DateLastModified = DateTime.Now,
-                //            CreatedBy = signedInUserId,
-                //            LastModifiedBy = signedInUserId
-                //        };
-                //        _databaseConnection.ImageTags.AddRange(tag);
-                //    }
-                //    _databaseConnection.SaveChanges();
-                //}
                 //display notification
-                TempData["display"] = "You have successfully uploaded a new image!";
+                TempData["display"] = "Your image is uploading in the background continue your work while it uploads!";
                 TempData["notificationtype"] = NotificationType.Success.ToString();
                 return RedirectToAction("Index");
             }
@@ -355,10 +286,10 @@ namespace CamerackStudio.Controllers
                     "Name", image.ImageCategoryId);
                 ViewBag.CameraId = new SelectList(
                     _databaseConnection.Cameras.Where(n => n.CreatedBy == signedInUserId).ToList(), "CameraId",
-                    "Name");
+                    "Name", image.CameraId);
                 ViewBag.LocationId = new SelectList(
                     _databaseConnection.Locations.Where(n => n.CreatedBy == signedInUserId).ToList(), "LocationId",
-                    "Name");
+                    "Name",image.LocationId);
                 return View(image);
             }
         }

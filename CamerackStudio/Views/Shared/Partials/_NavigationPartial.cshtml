@@ -45,7 +45,6 @@
 
             </li>
         }
-        @*<li><a href="javascript:;" role="button" class="right-sidebar-toggle bubble header-icon"><i class="ti-layout-sidebar-right"></i><span class="dot bg-danger"></span></a></li>*@
         <li>
             <a href="@Url.Action("LogOut", "Account")" role="button" class="header-icon">
                 <i class="ti-power-off"></i>
@@ -58,7 +57,8 @@
         .ready(function() {
 
             $(function() {
-                setInterval(function() {
+                setInterval(function (data) {
+                        console.log(data);
                         $('#numberOfNotifications')
                             .load('@Url.Action("RealoadNavigation", "Home")');
 
