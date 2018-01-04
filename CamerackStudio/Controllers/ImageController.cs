@@ -99,10 +99,22 @@ namespace CamerackStudio.Controllers
             if (_databaseConnection.ImageActions
                     .Where(n => n.ImageId == action.ImageId && n.AppUserId == action.AppUserId).ToList().Count <= 0)
             {
-               new SendImageMessage().SendImageActionMessage(action);
+                _databaseConnection.Add(action);
+                _databaseConnection.SaveChanges();
             }
             var image = _images.SingleOrDefault(n => n.ImageId == action.ImageId);
-            return PartialView("Partials/_PartialRating", image);
+            var appTransport = new AppTransport
+            {
+                AppUsers = _users,
+                Images = _databaseConnection.Images.Include(n => n.ImageCategory)
+                    .Include(n => n.ImageComments).Include(n => n.ImageTags)
+                    .Include(n => n.Location).Include(n => n.ImageSubCategory).ToList(),
+                ImageComments = _databaseConnection.ImageComments.ToList(),
+                ImageActions = _databaseConnection.ImageActions.ToList(),
+                Image = image,
+                AppUser = _users.SingleOrDefault(n => n.AppUserId == signedInUserId)
+            };
+            return PartialView("Partials/_PartialRating", appTransport);
         }
 
         // GET: Image/Details/5
@@ -161,7 +173,7 @@ namespace CamerackStudio.Controllers
 
         // GET: Image/Create
         [SessionExpireFilter]
-        public ActionResult Create()
+        public ActionResult Create(long? id)
         {
             var signedInUserId = Convert.ToInt64(new RedisDataAgent().GetStringValue("CamerackLoggedInUserId"));
             ViewBag.ImageCategoryId = new SelectList(_databaseConnection.ImageCategories.ToList(), "ImageCategoryId",
@@ -172,9 +184,18 @@ namespace CamerackStudio.Controllers
             ViewBag.LocationId = new SelectList(
                 _databaseConnection.Locations.Where(n => n.CreatedBy == signedInUserId).ToList(), "LocationId",
                 "Name");
-            var image = new Image();
-            image.SellingPrice = 0;
-            image.Discount = 0;
+            ViewBag.CompetitionId = new SelectList(
+                _databaseConnection.Competition.Where(n => n.Status == CompetitionStatus.Open.ToString()).ToList(), "CompetitionId",
+                "Name");
+            var image = new Image
+            {
+                SellingPrice = 0,
+                Discount = 0
+            };
+            if (id != null)
+            {
+                image.CompetitionId = id;
+            }
             return View(image);
         }
 
@@ -274,6 +295,10 @@ namespace CamerackStudio.Controllers
                 //display notification
                 TempData["display"] = "Your image is uploading in the background continue your work while it uploads!";
                 TempData["notificationtype"] = NotificationType.Success.ToString();
+                if (image.CompetitionId != null)
+                {
+                    return RedirectToAction("Uploads","Competition");
+                }
                 return RedirectToAction("Index");
             }
             catch (Exception ex)
@@ -298,12 +323,15 @@ namespace CamerackStudio.Controllers
         public ActionResult SetAsFeatured(long id)
         {
             var signedInUserId = Convert.ToInt64(new RedisDataAgent().GetStringValue("CamerackLoggedInUserId"));
+
             var image = _databaseConnection.Images.Find(id);
             image.Featured = true;
             image.DateLastModified = DateTime.Now;
             image.LastModifiedBy = signedInUserId;
+
             _databaseConnection.Entry(image).State = EntityState.Modified;
             _databaseConnection.SaveChanges();
+
             return RedirectToAction("Index");
         }
 
@@ -401,7 +429,7 @@ namespace CamerackStudio.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public PartialViewResult PostImageComment(ImageComment comment, IFormCollection collection)
+        public async Task<PartialViewResult> PostImageComment(ImageComment comment, IFormCollection collection)
         {
             long? imageId = Convert.ToInt64(collection["ImageId"]);
             var image = _databaseConnection.Images.Find(imageId);
@@ -419,7 +447,7 @@ namespace CamerackStudio.Controllers
             //send notification for owner of photo
             if (image.AppUserId != comment.CreatedBy)
             {
-                var notification = new SystemNotification
+                var notification = new PushNotification
                 {
                     AppUserId = image.AppUserId,
                     CreatedBy = signedInUserId,
@@ -434,32 +462,56 @@ namespace CamerackStudio.Controllers
                 if (singleOrDefault != null)
                     notification.Message = singleOrDefault.Name +
                                            " Commented on your Image";
-                _databaseConnection.SystemNotifications.Add(notification);
-                _databaseConnection.SaveChanges();
+                await new AppUserFactory().SavePushNotification(new AppConfig().SavePushNotifications, notification);
             }
             var newComments = _databaseConnection.ImageComments.Where(n => n.ImageId == imageId).ToList();
-            ViewBag.Users = _users;
-            return PartialView("Partials/_ImageComment", newComments);
+            var appTransport = new AppTransport
+            {
+                ImageComments = newComments,
+                AppUsers = _users,
+                Images = _databaseConnection.Images.Include(n => n.ImageCategory)
+                    .Include(n => n.ImageComments).Include(n => n.ImageTags)
+                    .Include(n => n.Location).Include(n => n.ImageSubCategory).ToList(),
+                ImageActions = _databaseConnection.ImageActions.ToList(),
+                Image = image,
+                AppUser = _users.SingleOrDefault(n => n.AppUserId == signedInUserId)
+            };
+            return PartialView("Partials/_ImageComment", appTransport);
         }
 
         public PartialViewResult DeleteComment(IFormCollection collection)
         {
             long? commentId = Convert.ToInt64(collection["CommentId"]);
             long? imageId = Convert.ToInt64(collection["ImageId"]);
+            var image = _databaseConnection.Images.Find(imageId);
             var comment = _databaseConnection.ImageComments.Find(commentId);
             _databaseConnection.ImageComments.Remove(comment);
             _databaseConnection.SaveChanges();
             var newComments = _databaseConnection.ImageComments.Where(n => n.ImageId == imageId).ToList();
-            ViewBag.Users = _users;
-            return PartialView("Partials/_ImageComment", newComments);
+            var appTransport = new AppTransport
+            {
+                ImageComments = newComments,
+                AppUsers = _users,
+                Images = _databaseConnection.Images.Include(n => n.ImageCategory)
+                    .Include(n => n.ImageComments).Include(n => n.ImageTags)
+                    .Include(n => n.Location).Include(n => n.ImageSubCategory).ToList(),
+                ImageActions = _databaseConnection.ImageActions.ToList(),
+                Image = image
+            };
+            return PartialView("Partials/_ImageComment", appTransport);
         }
 
         [HttpGet]
         public PartialViewResult ReloadImageComments(long? id)
         {
-            ViewBag.Users = _users;
             var imageComments = _databaseConnection.ImageComments.Where(n => n.ImageId == id).ToList();
-            return PartialView("Partials/_ImageComment", imageComments);
+
+            var appTransport = new AppTransport
+            {
+                ImageComments = imageComments,
+                AppUsers = _users
+            };
+            return PartialView("Partials/_ImageComment", appTransport);
         }
 
         // POST: Image/Delete/5

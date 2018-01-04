@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using CamerackStudio.Models;
 using CamerackStudio.Models.APIFactory;
@@ -16,14 +15,15 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 
 namespace CamerackStudio.Controllers
 {
     public class CompetitionController : Controller
     {
         private readonly CamerackStudioDataContext _databaseConnection;
-        private AppUser _appUser;
         private readonly List<AppUser> _users;
+        private AppUser _appUser;
 
         public CompetitionController(IHostingEnvironment env, CamerackStudioDataContext databaseConnection)
         {
@@ -37,28 +37,10 @@ namespace CamerackStudio.Controllers
         public ActionResult Index()
         {
          var competitions = _databaseConnection.Competition.Where(n=>n.Status == CompetitionStatus.Open.ToString()).ToList();
-            return View(competitions);
-        }
-        [SessionExpireFilter]
-        public ActionResult CompetitionUpload(long? id)
-        {
-            var signedInUserId = Convert.ToInt64(new RedisDataAgent().GetStringValue("CamerackLoggedInUserId"));
-            List<CompetitionUpload> competitionUploads = new List<CompetitionUpload>();
-            if (_appUser.Role.ManageCompetition)
-            {
-                competitionUploads = id != null ? _databaseConnection.CompetitionUploads.Include(n=>n.Competition).Include(n=>n.Location).Include(n=>n.Camera)
-                    .Where(n=>n.CompetitionId == id).ToList() : _databaseConnection.CompetitionUploads
-                    .Include(n => n.Competition).Include(n => n.Location).Include(n => n.Camera).ToList();
-            }
-            if (_appUser.Role.ParticipateCompetition)
-            {
-                competitionUploads = id != null ? _databaseConnection.CompetitionUploads.Include(n => n.Competition).Include(n => n.Location).Include(n => n.Camera)
-                    .Where(n => n.AppUserId == signedInUserId && n.CompetitionId == id).ToList() : 
-                    _databaseConnection.CompetitionUploads.Include(n => n.Competition).Include(n => n.Location).Include(n => n.Camera)
-                    .Where(n => n.AppUserId == signedInUserId)
-                    .ToList();
-            }
-            return View(competitionUploads);
+            var appTransport = new AppTransport();
+            appTransport.Images = _databaseConnection.Images.ToList();
+            appTransport.Competitions = competitions;
+            return View(appTransport);
         }
         // GET: Package/Create
         [SessionExpireFilter]
@@ -85,12 +67,9 @@ namespace CamerackStudio.Controllers
                 _databaseConnection.Competition.Add(competition);
                 _databaseConnection.SaveChanges();
 
-                foreach (var item in _users)
-                {
-
-                }
                 new SendEmailMessage().SendCompetitionEmailMessage(competition);
                 _databaseConnection.SaveChanges();
+
                 //display notification
                 TempData["display"] = "You have successfully added a new Competition, emails and notifications have been dispatched!";
                 TempData["notificationtype"] = NotificationType.Success.ToString();
@@ -136,6 +115,32 @@ namespace CamerackStudio.Controllers
                 return View();
             }
         }
+        [SessionExpireFilter]
+        public ActionResult Uploads(long? id)
+        {
+            var signedInUserId = Convert.ToInt64(new RedisDataAgent().GetStringValue("CamerackLoggedInUserId"));
+            List<Image> images = null;
+            if (new RedisDataAgent().GetStringValue("CamerackLoggedInUser") != null)
+            {
+                var userString = new RedisDataAgent().GetStringValue("CamerackLoggedInUser");
+                _appUser = JsonConvert.DeserializeObject<AppUser>(userString);
+            }
+            if (_appUser.Role.UploadImage)
+                if (id != null)
+                    images = _databaseConnection.Images.Include(n => n.Competition)
+                        .Where(n => n.AppUserId == signedInUserId && n.CompetitionId > 0).Where(n => n.CompetitionId == id).ToList();
+                else
+                    images = _databaseConnection.Images.Include(n => n.Competition).Where(n => n.AppUserId == signedInUserId && n.CompetitionId > 0).ToList();
+            if (_appUser.Role.ManageImages)
+                if (id != null)
+                    images = _databaseConnection.Images.Include(n => n.Competition).Where(n => n.CompetitionId == id && n.CompetitionId > 0)
+                        .ToList();
+                else
+                    images = _databaseConnection.Images.Include(n => n.Competition).Where(n=> n.CompetitionId > 0).ToList();
+
+
+            return View(images);
+        }
 
         // GET: Image/Create
         [SessionExpireFilter]
@@ -152,101 +157,57 @@ namespace CamerackStudio.Controllers
                 "Name");
             return View();
         }
-
-        // POST: Image/Create
-        [HttpPost]
-        [ValidateAntiForgeryToken]
         [SessionExpireFilter]
-        public ActionResult UploadImage(CompetitionUpload competitionUpload, IFormCollection collection, IFormFile file)
-        {
-            try
-            {
-                    var signedInUserId = Convert.ToInt64(new RedisDataAgent().GetStringValue("CamerackLoggedInUserId"));
-                    competitionUpload.AppUserId = signedInUserId;
-                    competitionUpload.CompetitionId = Convert.ToInt64(collection["CompetitionId"]);
-                    competitionUpload.DateCreated = DateTime.Now;
-                    competitionUpload.DateLastModified = DateTime.Now;
-                    competitionUpload.CreatedBy = signedInUserId;
-                    competitionUpload.LastModifiedBy = signedInUserId;
-                    competitionUpload.FileName = DateTime.Now.ToFileTime().ToString();
-
-                //Append new upload object and send task to rabbit MQ API Via CamerackImageUploader API APPLICATION
-                string stream = null;
-                if (file.Length > 0)
-                {
-                    using (var ms = new MemoryStream())
-                    {
-                        file.CopyTo(ms);
-                        var fileBytes = ms.ToArray();
-                        stream = Convert.ToBase64String(fileBytes);
-                    }
-                }
-                competitionUpload.FilePath = stream;
-                //send message to rabbit queue to queue process
-                new SendImageMessage().SendCompetitionImageUploadMessage(competitionUpload);
-             
-
-                    //display notification
-                    TempData["display"] = "You have successfully uploaded an image for the competition!";
-                    TempData["notificationtype"] = NotificationType.Success.ToString();
-                    return RedirectToAction("Index");
-
-            }
-            catch (Exception)
-            {
-                // TODO: Add insert logic here
-                var signedInUserId = Convert.ToInt64(new RedisDataAgent().GetStringValue("CamerackLoggedInUserId"));
-                ViewBag.CameraId = new SelectList(_databaseConnection.Cameras.Where(n => n.CreatedBy == signedInUserId).ToList(), "CameraId",
-                    "Name",competitionUpload.CameraId);
-                ViewBag.LocationId = new SelectList(_databaseConnection.Locations.Where(n => n.CreatedBy == signedInUserId).ToList(), "LocationId",
-                    "Name", competitionUpload.LocationId);
-                ViewBag.Competition = _databaseConnection.Competition.Find(competitionUpload.CompetitionId);
-                //display notification
-                TempData["display"] = "There was an issue uploading the image, Try Again!";
-                TempData["notificationtype"] = NotificationType.Error.ToString();
-                return View(competitionUpload);
-            }
-        }
-        [SessionExpireFilter]
-        public ActionResult AutoSelectWinner(long? competitionId, long userId)
+        public void AutoSelectWinner()
         {
             var signedInUserId = Convert.ToInt64(new RedisDataAgent().GetStringValue("CamerackLoggedInUserId"));
-            var competitionUploads = _databaseConnection.CompetitionUploads.Where(n=>n.CompetitionId == competitionId);
-            var competition = _databaseConnection.Competition.Find(competitionId);
-            foreach (var item in competitionUploads)
+
+            //get list of competitions
+            var competitions = _databaseConnection.Competition.ToList();
+
+            //get all competitions that end date is reached
+            foreach (var item in competitions.Where(n=>n.EndDate == DateTime.Now))
             {
+                //get image upload for the competitions
+                var competitionUploads = _databaseConnection.Images.Where(n => n.CompetitionId == item.CompetitionId);
+                
+                foreach (var items in competitionUploads)
+                {
+                    //get rating
+                    var rating =
+                        _databaseConnection.ImageCompetitionRatings.SingleOrDefault(n => n.AppUserId == item.AppUserId &&
+                        n.CompetitionId == item.CompetitionId);
 
-                //get rating
-                var rating =
-                    _databaseConnection.ImageCompetitionRatings.Include(n=>n.CompetitionUpload).SingleOrDefault(
-                        n => n.CompetitionUpload.AppUserId == item.AppUserId);
-                rating.AcceptanceRating = new CompetitionCalculator().CalculateUserAcceptanceRating(_users.Count,item.Vote);
-                rating.TotalRating = rating.AcceptanceRating + 
-                                     rating.DescriptionRating + rating.TimeDeliveryRating;
+                    //get image action
+                    var imageAction = _databaseConnection.ImageActions.Where(n => n.ImageId == items.ImageId).ToList();
+                    rating.AcceptanceRating = new CompetitionCalculator().CalculateUserAcceptanceRating(_users.Count, imageAction.Count);
+                    rating.TotalRating = rating.AcceptanceRating +
+                                         rating.DescriptionRating + rating.TimeDeliveryRating + rating.TagsRating;
 
-                //update rating
-                _databaseConnection.Entry(rating).State = EntityState.Modified;
-                _databaseConnection.SaveChanges();
 
-                //get winner
-                var winner =
-                    _databaseConnection.ImageCompetitionRatings.Include(n=>n.CompetitionUpload).Where(
-                        n => n.CompetitionUploadId == item.CompetitionUploadId).OrderByDescending(n => n.TotalRating).FirstOrDefault();
-                competition.AppUserId = winner.CompetitionUpload.AppUserId;
+                    //update rating and save transaction
+                    _databaseConnection.Entry(rating).State = EntityState.Modified;
+                    _databaseConnection.SaveChanges();
+
+                    //get winner
+                    var winner =
+                        _databaseConnection.ImageCompetitionRatings.Where(
+                            n => n.CompetitionId == item.CompetitionId).OrderByDescending(n => n.TotalRating).FirstOrDefault();
+
+                    //append and populate object
+                    var uploadCompetition = item;
+                    uploadCompetition.AppUserId = winner.AppUserId;
+                    uploadCompetition.Status = CompetitionStatus.Closed.ToString();
+                    uploadCompetition.DateLastModified = DateTime.Now;
+                    uploadCompetition.LastModifiedBy = signedInUserId;
+
+                    //save transaction to database
+                    _databaseConnection.Entry(item).State = EntityState.Modified;
+                    _databaseConnection.SaveChanges();
+                }
+         
             }
         
-         
-            competition.AppUserId = userId;
-            competition.Status = CompetitionStatus.Closed.ToString();
-            competition.DateLastModified = DateTime.Now;
-            competition.LastModifiedBy = signedInUserId;
-            _databaseConnection.Entry(competition).State = EntityState.Modified;
-            _databaseConnection.SaveChanges();
-
-            //display notification
-            TempData["display"] = "You have successfully selected the winner!";
-            TempData["notificationtype"] = NotificationType.Success.ToString();
-            return RedirectToAction("CompetitionUpload", new { id = competitionId });
         }
         [SessionExpireFilter]
         public ActionResult Delete(IFormCollection collection)

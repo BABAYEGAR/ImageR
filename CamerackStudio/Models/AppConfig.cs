@@ -29,6 +29,9 @@
         public string FetchUsersAccessKeys => SSOBaseUrl + "API/AllUsersAccessKeys";
         public string UpdatePasswordAccessKey => SSOBaseUrl + "API/UpdatePasswordAccessKey/";
         public string UpdateAccountActivationAccessKey => SSOBaseUrl + "API/UpdateAccountActivationAccessKey/";
+        public string SavePushNotifications => SSOBaseUrl + "API/SavePushNotifications";
+        public string UsersPushNotifications => SSOBaseUrl + "API/GetPushNotifications";
+        public string AllBanks => SSOBaseUrl + "API/AllBanks";
         public long ClientId => 3;
 
         #endregion

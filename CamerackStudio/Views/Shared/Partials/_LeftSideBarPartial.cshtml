@@ -12,13 +12,22 @@
     }
 
 }
+
 <aside data-mcs-theme="minimal-dark" class="main-sidebar mCustomScrollbar">
     <div class="user">
         <a href="@Url.Action("Profile", "Account")">
             <div id="esp-user-profile" data-percent="65" style="height: 104px; line-height: 80px; padding: 12px; width: 104px;" class="easy-pie-chart">
                 @if (appUser != null)
                 {
-                    <img src="~/UploadedImage/ProfilePicture/@appUser.ProfilePicture" alt="" class="avatar img-circle"><span class="status bg-success"></span>
+                    if (appUser.HasSocialMediaLogin)
+                    {
+                        <img src="@appUser.ProfilePicture" alt="" class="avatar img-circle"><span class="status bg-success"></span>
+                    }
+                    else
+                    {
+                        <img src="~/UploadedImage/ProfilePicture/@appUser.ProfilePicture" alt="" class="avatar img-circle"><span class="status bg-success"></span> 
+                    }
+                 
                 }
             
             </div>
@@ -143,7 +152,7 @@
                         <a href="@Url.Action("Index", "Competition")">Competitions </a>
                     </li>
                     <li>
-                        <a href="@Url.Action("CompetitionUpload", "Competition")">Competition Uploads</a>
+                        <a href="@Url.Action("Uploads", "Competition")">Competition Uploads</a>
                     </li>
                 </ul>
             </li>

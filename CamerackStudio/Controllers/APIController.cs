@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using CamerackStudio.Models;
 using CamerackStudio.Models.APIFactory;
 using CamerackStudio.Models.DataBaseConnections;
@@ -103,16 +104,6 @@ namespace CamerackStudio.Controllers
         {
             return Json(_databaseConnection.Competition.ToList());
         }
-
-        /// <summary>
-        ///     The method returns all images from photo studio via json object
-        /// </summary>
-        /// <returns></returns>
-        public JsonResult GetAllCpmpetitionUploads()
-        {
-            return Json(_databaseConnection.CompetitionUploads.ToList());
-        }
-
         /// <summary>
         ///     The method returns all images from photo studio via json object
         /// </summary>
@@ -135,7 +126,7 @@ namespace CamerackStudio.Controllers
         }
 
         [HttpPost]
-        public JsonResult SaveImageAction([FromBody] ImageAction action)
+        public async Task<JsonResult> SaveImageAction([FromBody] ImageAction action)
         {
             var actionExist =
                 _databaseConnection.ImageActions.Where(
@@ -147,7 +138,7 @@ namespace CamerackStudio.Controllers
                 var image = _databaseConnection.Images.SingleOrDefault(n => n.ImageId == action.ImageId);
                 if (image != null)
                 {
-                    var notification = new SystemNotification
+                    var notification = new PushNotification
                     {
                         AppUserId = image.AppUserId,
                         CreatedBy = image.AppUserId,
@@ -165,7 +156,7 @@ namespace CamerackStudio.Controllers
                     if (singleOrDefault != null)
                         notification.Message = singleOrDefault.Name +
                                                " Rated your Image";
-                    _databaseConnection.SystemNotifications.Add(notification);
+                    await new AppUserFactory().SavePushNotification(new AppConfig().SavePushNotifications, notification);
                 }
             }
             return Json(action);
@@ -220,7 +211,34 @@ namespace CamerackStudio.Controllers
                         };
                         savedImageTags.Add(tag);
                     }
+                    //save transaction
                     _databaseConnection.AddRange(savedImageTags);
+                    _databaseConnection.SaveChanges();
+                }
+
+                //if upload is for a challenge
+                if (image.CompetitionId > 0)
+                {
+                    //get current competition
+                    var competition = _databaseConnection.Competition.Find(image.CompetitionId);
+
+                    //get image rating
+                    var rating = new ImageCompetitionRating
+                    {
+                        AppUserId = image.AppUserId,
+                        CreatedBy = image.AppUserId,
+                        LastModifiedBy = image.AppUserId,
+                        DateCreated = DateTime.Now,
+                        DateLastModified = DateTime.Now,
+                        CompetitionId = image.CompetitionId
+                    };
+                    //appending rating values
+                    rating.TimeDeliveryRating = new CompetitionCalculator().CalculateTimeRating(competition.EndDate, rating.DateCreated);
+                    rating.DescriptionRating = new CompetitionCalculator().CalculateDescriptionRating(image.Description, image.LocationId, image.CameraId);
+                    rating.TagsRating = new CompetitionCalculator().CalculateTagsRating(savedImageTags.Count);
+
+                    //save transaction
+                    _databaseConnection.Add(rating);
                     _databaseConnection.SaveChanges();
                 }
                 return Json(image);
@@ -247,7 +265,7 @@ namespace CamerackStudio.Controllers
         }
 
         [HttpPost]
-        public JsonResult SaveUserNotification([FromBody] SystemNotification notification)
+        public JsonResult SaveUserNotification([FromBody] PushNotification notification)
         {
             try
             {
@@ -261,36 +279,5 @@ namespace CamerackStudio.Controllers
             }
         }
 
-        [HttpPost]
-        public JsonResult SaveCompetitionUpload([FromBody] CompetitionUpload upload)
-        {
-            try
-            {
-                _databaseConnection.Add(upload);
-                _databaseConnection.SaveChanges();
-                if (upload.CompetitionUploadId > 0)
-                {
-                    var rating =
-                        new ImageCompetitionRating
-                        {
-                            DescriptionRating =
-                                new CompetitionCalculator().CalculateDescriptionRating(upload.Description,
-                                    upload.CameraId, upload.LocationId),
-                            CompetitionUploadId = upload.CompetitionUploadId,
-                            DateCreated = DateTime.Now,
-                            DateLastModified = DateTime.Now,
-                            CreatedBy = upload.AppUserId,
-                            LastModifiedBy = upload.AppUserId
-                        };
-                    _databaseConnection.ImageCompetitionRatings.Add(rating);
-                    _databaseConnection.SaveChanges();
-                }
-                return Json(upload);
-            }
-            catch (Exception)
-            {
-                return Json(upload);
-            }
-        }
     }
 }

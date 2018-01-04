@@ -33,33 +33,6 @@ namespace CamerackStudio.Models.RabbitMq
                     body: body);
             }
         }
-        public void SendCompetitionImageUploadMessage(CompetitionUpload upload)
-        {
-            var factory = new ConnectionFactory
-            {
-                HostName = "localhost",
-                RequestedHeartbeat = 5
-            };
-            using (var connection = factory.CreateConnection())
-            using (var channel = connection.CreateModel())
-            {
-                channel.QueueDeclare(queue: "CamerackTaskScheduler",
-                    durable: true,
-                    exclusive: false,
-                    autoDelete: false,
-                    arguments: null);
-
-                string message = JsonConvert.SerializeObject(upload);
-                var body = Encoding.UTF8.GetBytes(message);
-
-                var properties = channel.CreateBasicProperties();
-                properties.Persistent = true;
-                channel.BasicPublish(exchange: "",
-                    routingKey: "CamerackTaskScheduler",
-                    basicProperties: properties,
-                    body: body);
-            }
-        }
         public void SendImageActionMessage(ImageAction action)
         {
             var factory = new ConnectionFactory

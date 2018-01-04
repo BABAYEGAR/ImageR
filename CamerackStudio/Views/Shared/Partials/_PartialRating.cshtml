@@ -1,12 +1,11 @@
 ﻿@using CamerackStudio.Models.Entities
-@model CamerackStudio.Models.Entities.Image
+@model AppTransport
 @{
-    List<ImageAction> ratings = ViewBag.Rating;
     long? rating = 0;
-    if (ratings != null)
+    if (Model.ImageActions != null)
     {
-        long? count = ratings.Where(n => n.Rating != null && n.ImageId == Model.ImageId).ToList().Count;
-        var value = ratings.Where(n => n.Rating != null && n.ImageId == Model.ImageId).Sum(n => n.Rating);
+        long? count = Model.ImageActions.Where(n => n.Rating != null && n.ImageId == Model.Image.ImageId).ToList().Count;
+        var value = Model.ImageActions.Where(n => n.Rating != null && n.ImageId == Model.Image.ImageId).Sum(n => n.Rating);
         if (count > 0)
         {
             value = value / count;

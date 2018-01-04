@@ -48,7 +48,8 @@ namespace CamerackStudio.Models.Entities
         public ImageCategory ImageCategory { get; set; }
         public long? AppUserId { get; set; }
         public string Status { get; set; }
-        public long? Rating { get; set; }
+        [Display(Name = "Upload Category")]
+        public string UploadCategory { get; set; }
         public string Tags { get; set; }
         [Display(Name = "A1")]
         public bool A1 { get; set; }
@@ -62,6 +63,10 @@ namespace CamerackStudio.Models.Entities
         public bool A5 { get; set; }
         [Display(Name = "A6")]
         public bool A6 { get; set; }
+        [Display(Name = "Competition")]
+        public long? CompetitionId { get; set; }
+        [ForeignKey("CompetitionId")]
+        public Competition Competition { get; set; }
         public IEnumerable<ImageTag> ImageTags { get; set; }
         public IEnumerable<ImageComment> ImageComments { get; set; }
         public IEnumerable<ImageAction> ImageActions { get; set; }

@@ -1,7 +1,7 @@
 ﻿@using CamerackStudio.Models.Entities
 @using CamerackStudio.Models.Redis
 @using Newtonsoft.Json
-@model List<CamerackStudio.Models.Entities.Competition>
+@model AppTransport
 @{
     Layout = "Layout/Dashboard/_LayoutTable";
     ViewBag.PageTitle = "List of Competitions";
@@ -74,8 +74,9 @@
     </tr>
     </thead>
     <tbody>
-    @foreach (var item in Model)
+    @foreach (var item in Model.Competitions)
     {
+        var uploads = Model.Images.Where(n => n.CompetitionId == item.CompetitionId).ToList();
         <tr>
             <td>@item.Name</td>
             <td>
@@ -94,31 +95,32 @@
                                 </a>
                             </li>
                             <li>
-                                <a href="@Url.Action("SelectCategories", "Competition", new {id = item.CompetitionId})" data-toggle="tooltip" title="Select the Competition Categories">
-                                    <i class="icon-pencil"></i> Select Categories
-                                </a>
-                            </li>
-                            <li>
                                 <a href="#" data-toggle="tooltip" title="Delete the Competition" data-id="@item.CompetitionId" data-toggle="modal" class="loadModal3">
                                     <i class="icon-trash"></i> Delete
                                 </a>
                             </li>
+                            if (uploads.Count > 0)
+                             {
+                                 <li>
+                                     <a href="@Url.Action("Uploads", "Competition",new{id = item.CompetitionId})">Competition Uploads</a>
+                                 </li>
+                             }
                         }
                     @if (appUser != null && appUser.Role.ParticipateCompetition)
                     {
-
+                        if (uploads.Count < 0)
+                        {
+                            <li>
+                                <a href="@Url.Action("Create", "Image",new{id = item.CompetitionId})">Competition Uploads</a>
+                            </li>
+                        }
                         <li>
                             <a href="@Url.Action("UploadImage", "Competition", new {id = item.CompetitionId})" data-toggle="tooltip" title="View Details and Upload Competition Image">
                                 <i class="icon-pencil"></i> View Details & Upload
                             </a>
                         </li>
                     }
-                    @if (item.CompetitionUploads != null && item.CompetitionUploads.ToList().Count > 0)
-                    {
-                        <li>
-                            <a href="@Url.Action("CompetitionUpload", "Competition",new{id = item.CompetitionId})">Competition Uploads</a>
-                        </li>
-                    }
+            
                      
                     </ul>
                 </div>

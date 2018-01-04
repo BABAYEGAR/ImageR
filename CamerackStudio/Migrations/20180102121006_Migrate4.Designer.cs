@@ -11,14 +11,27 @@ using System;
 namespace CamerackStudio.Migrations
 {
     [DbContext(typeof(CamerackStudioDataContext))]
-    partial class CamerackStudioDataContextModelSnapshot : ModelSnapshot
+    [Migration("20180102121006_Migrate4")]
+    partial class Migrate4
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("ProductVersion", "2.0.1-rtm-125")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+            modelBuilder.Entity("CamerackStudio.Models.Entities.Bank", b =>
+                {
+                    b.Property<long>("BankId")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("Name");
+
+                    b.HasKey("BankId");
+
+                    b.ToTable("Banks");
+                });
 
             modelBuilder.Entity("CamerackStudio.Models.Entities.Camera", b =>
                 {
@@ -256,8 +269,6 @@ namespace CamerackStudio.Migrations
 
                     b.Property<long?>("LastModifiedBy");
 
-                    b.Property<long?>("TagsRating");
-
                     b.Property<long?>("TimeDeliveryRating");
 
                     b.Property<long?>("TotalRating");
@@ -411,6 +422,34 @@ namespace CamerackStudio.Migrations
                     b.ToTable("PhotographerCategoryMappings");
                 });
 
+            modelBuilder.Entity("CamerackStudio.Models.Entities.SystemNotification", b =>
+                {
+                    b.Property<long>("SystemNotificationId")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<long?>("AppUserId");
+
+                    b.Property<string>("Category");
+
+                    b.Property<long?>("ControllerId");
+
+                    b.Property<long?>("CreatedBy");
+
+                    b.Property<DateTime>("DateCreated");
+
+                    b.Property<DateTime>("DateLastModified");
+
+                    b.Property<long?>("LastModifiedBy");
+
+                    b.Property<string>("Message");
+
+                    b.Property<bool?>("Read");
+
+                    b.HasKey("SystemNotificationId");
+
+                    b.ToTable("SystemNotifications");
+                });
+
             modelBuilder.Entity("CamerackStudio.Models.Entities.UserBank", b =>
                 {
                     b.Property<long>("UserBankId")
@@ -435,6 +474,8 @@ namespace CamerackStudio.Migrations
                     b.Property<string>("Tin");
 
                     b.HasKey("UserBankId");
+
+                    b.HasIndex("BankId");
 
                     b.ToTable("UserBanks");
                 });
@@ -506,6 +547,13 @@ namespace CamerackStudio.Migrations
                         .WithMany("PhotographerCategoryMappings")
                         .HasForeignKey("PhotographerCategoryId")
                         .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("CamerackStudio.Models.Entities.UserBank", b =>
+                {
+                    b.HasOne("CamerackStudio.Models.Entities.Bank", "Bank")
+                        .WithMany("UserBanks")
+                        .HasForeignKey("BankId");
                 });
 #pragma warning restore 612, 618
         }

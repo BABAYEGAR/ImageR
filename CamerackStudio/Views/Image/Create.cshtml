@@ -1,5 +1,4 @@
-﻿@using CamerackStudio.Models.Entities
-@model CamerackStudio.Models.Entities.Image
+﻿@model CamerackStudio.Models.Entities.Image
 @{
     Layout = "Layout/Dashboard/_LayoutForm";
     ViewBag.PageTitle = "Upload Image";
@@ -151,6 +150,36 @@
                                 @Html.DropDownListFor(m => m.ImageSubCategoryId, new SelectList(string.Empty, "Value", "Text"), "--Please select a Sub-Category/ Sub-Genre--", new {@class = "form-control", id = "sub"})
                                 @Html.ValidationMessageFor(model => model.ImageSubCategoryId, "", new {@class = "text-danger"})
                             </div>
+                            @if (Model.CompetitionId != null)
+                            {
+                                <div class="form-group col-md-6">
+                                    <label for="state">Upload Category</label><span class="required">*</span>
+                                    <select name="state" class="form-control" id="statecategory" disabled="disabled">
+                                        <option value="0">General Upload</option>
+                                        <option value="1" selected>Competition Upload</option>
+                                    </select>
+                                </div>
+                                <div class="form-group col-md-6" id="competition">
+                                    @Html.LabelFor(model => model.CompetitionId, new {@class = "control-label"})<span class="required">*</span>
+                                    @Html.DropDownListFor(model => model.CompetitionId, null, "Select an Image Category/Genre", new {@class = "form-control", placeholder = "",disabled = "disabled" })
+                                    @Html.ValidationMessageFor(model => model.CompetitionId, "", new {@class = "text-danger"})
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="form-group col-md-6">
+                                    <label for="state">Upload Category</label><span class="required">*</span>
+                                    <select name="state" class="form-control" id="statecategory">
+                                        <option value="0">General Upload</option>
+                                        <option value="1">Competition Upload</option>
+                                    </select>
+                                </div>
+                                <div class="form-group col-md-6" id="competition">
+                                    @Html.LabelFor(model => model.CompetitionId, new {@class = "control-label"})<span class="required">*</span>
+                                    @Html.DropDownListFor(model => model.CompetitionId, null, "Select an Image Category/Genre", new {@class = "form-control", placeholder = ""})
+                                    @Html.ValidationMessageFor(model => model.CompetitionId, "", new {@class = "text-danger"})
+                                </div>
+                            }
                             <div class="form-group col-md-6" id="reloadLocationPartial">
 
                                 @{
@@ -317,6 +346,19 @@
                         $discount.attr('disabled', 'disabled').val('');
                         $price.val(0);
                         $discount.val(0);
+                    }
+                }).trigger('change'); // added trigger to calculate initial state
+
+                //determine image upload type
+                var statecategory = $('#statecategory'),
+                    competition = $('#competition');
+                competition.hide();
+                statecategory.change(function () {
+                    console.log(statecategory.val());
+                    if (statecategory.val() == '0') {
+                        competition.fadeOut(1000);
+                    } if (statecategory.val() == '1') {
+                        competition.fadeIn(1000);
                     }
                 }).trigger('change'); // added trigger to calculate initial state
 

@@ -31,20 +31,44 @@
         <div style="height: 260px; padding-top: 130px" class="pl-30 pr-30 clearfix overlay text-white">
             <div class="pull-left media">
                 <div class="media-left">
-                    <img src="~/UploadedImage/ProfileBackground/@Model.AppUser.BackgroundPicture" alt="" style="opacity: 1; z-index: -1" class="img-main img-responsive"><a href="javascript:void(0)" style="background-color: #fff; border-radius: 50%; display: inline-block; padding: 3px;">
-                        <img src="~/UploadedImage/ProfilePicture/@Model.AppUser.ProfilePicture" width="100" alt="" class="img-circle">
+                    
+                    <img src="~/UploadedImage/ProfileBackground/@if (Model.AppUser != null && Model.AppUser.ProfilePicture != null)
+                                                                {
+                                                                    @Model.AppUser.BackgroundPicture
+                                                                }" alt="" style="opacity: 1; z-index: -1" class="img-main img-responsive"><a href="javascript:void(0)" style="background-color: #fff; border-radius: 50%; display: inline-block; padding: 3px;">
+                @if (Model.AppUser != null && Model.AppUser.HasSocialMediaLogin)
+                {
+                    <img src="@Model.AppUser.ProfilePicture" width="100" alt="" class="img-circle">
+                }
+                else
+                {
+                    <img src="~/UploadedImage/ProfilePicture/@if (Model.AppUser != null &&Model.AppUser.ProfilePicture != null)
+                                                             {
+                                                                 @Model.AppUser.ProfilePicture
+                                                             }" width="100" alt="" class="img-circle">
+                }
                     </a>
                 </div>
                 <div style="width: auto" class="media-body media-middle">
-                    <h2 class="media-heading">@Model.AppUser.Username</h2>
-                    <div class="fs-20">@Model.AppUser.Name</div>
+                    <h2 class="media-heading">@if (Model.AppUser != null)
+                                              {
+                                                  @Model.AppUser.Username
+                                              }</h2>
+                    <div class="fs-20">@if (Model.AppUser != null)
+                                       {
+                                           @Model.AppUser.Name
+                                               
+                                       }</div>
                 </div>
 
             </div>
             <div class="pull-right text-center">
                 <ul class="list-inline">
                     <li>
-                        <div class="fs-24 fw-500">@Model.Images.Where(n=>n.AppUserId == Model.AppUser.AppUserId).ToList().Count</div>
+                        <div class="fs-24 fw-500">      @if (Model.AppUser != null)
+                                                        {
+                                                            @Model.Images.Where(n => n.AppUserId == Model.AppUser.AppUserId).ToList().Count
+                                                        }</div>
                         <p>Photos</p>
                     </li>
                 </ul>
@@ -59,8 +83,15 @@
             <div class="widget-heading">
                 <h3 class="widget-title">About me</h3>
                 <a href="@Url.Action("EditProfile")">Edit Information<i style="font-size: 20px; font-weight: bolder;" class="ti-pencil"></i></a>
-                <a href="@Url.Action("ChangePassword")">Change Password<i style="font-size: 20px; font-weight: bolder;" class="ti-lock"></i></a><br/>
+                @if (Model.AppUser != null && !Model.AppUser.HasSocialMediaLogin)
+                {
+                    <a href="@Url.Action("ChangePassword")">Change Password<i style="font-size: 20px; font-weight: bolder;" class="ti-lock"></i></a>
+                    <br/>
+                }
+            @if (Model.AppUser != null && !Model.AppUser.HasSocialMediaLogin)
+            {
                 <a href="@Url.Action("ChangeProfileImage")">Change Profile Images<i style="font-size: 20px; font-weight: bolder;" class="ti-image"></i></a>
+            }
                 <br />
                 <a href="@Url.Action("UserBank")">Bank Information<i style="font-size: 20px; font-weight: bolder;" class="ti-money"></i></a>
             </div>
@@ -71,7 +102,7 @@
                             <i class="ti-gift text-info"></i>
                         </div>
                         <div class="media-body">
-                            @if (Model.AppUser.DateOfBirth != null)
+                            @if (Model.AppUser != null && Model.AppUser.DateOfBirth != null)
                             {
                                 <p>@Model.AppUser.DateOfBirth.Value.ToString("D")</p>
                             }
@@ -83,7 +114,8 @@
                             <i class="ti-email text-info"></i>
                         </div>
                         <div class="media-body">
-                            <p>@Model.AppUser.Email</p>
+                            <p>   @if (Model.AppUser != null)
+                                  {@Model.AppUser.Email}</p>
                         </div>
                     </li>
                     <li class="media">
@@ -91,7 +123,8 @@
                             <i class="ti-home text-info"></i>
                         </div>
                         <div class="media-body">
-                            <p>@Model.AppUser.Address</p>
+                            <p>   @if (Model.AppUser != null)
+                                  {@Model.AppUser.Address}</p>
                         </div>
                     </li>
                     <li class="media">
@@ -99,7 +132,8 @@
                             <i class="ti-mobile text-info"></i>
                         </div>
                         <div class="media-body">
-                            <p>@Model.AppUser.Mobile</p>
+                            <p>   @if (Model.AppUser != null)
+                                  {@Model.AppUser.Mobile}</p>
                         </div>
                     </li>
                     <li class="media">
@@ -107,7 +141,8 @@
                             <i class="ti-world text-info"></i>
                         </div>
                         <div class="media-body">
-                            <p>@Model.AppUser.Website</p>
+                            <p>   @if (Model.AppUser != null)
+                                  {@Model.AppUser.Website}</p>
                         </div>
                     </li>
                 </ul>
@@ -118,7 +153,8 @@
                 <h3 class="widget-title">Biography</h3>
             </div>
             <div class="widget-body">
-                <p>@Model.AppUser.Biography</p>
+                <p>   @if (Model.AppUser != null)
+                      {@Model.AppUser.Biography}</p>
             </div>
         </div>
     </div>
@@ -127,7 +163,7 @@
         @foreach (var item in Model.Images)
         {
             var singleOrDefault = Model.AppUsers.SingleOrDefault(n => n.AppUserId == item.AppUserId);
-            var singleRating = Model.ImageActions.SingleOrDefault(n => n.AppUserId == Model.AppUser.AppUserId && n.ImageId == item.ImageId);
+            var singleRating = Model.ImageActions.SingleOrDefault(n => { return Model.AppUser != null && (n.AppUserId == Model.AppUser.AppUserId && n.ImageId == item.ImageId); });
             var pic = "https://res.cloudinary.com/" + item.FilePath;
             var otherPic = "https://res.cloudinary.com/" + item.FilePath.Replace("upload/", "upload/w_350,l_watermark/");
             <div class="widget clear">
@@ -160,7 +196,7 @@
                     </p>
                     <div class="thumbnail">
                         <a href="@Url.Action("SingleImage", new {id = item.ImageId})">
-                            @if (item.AppUserId == Model.AppUser.AppUserId)
+                            @if (Model.AppUser != null && item.AppUserId == Model.AppUser.AppUserId)
                             {
                                 <img class="lazy" data-src="@pic" alt=""> 
                             }
@@ -171,7 +207,8 @@
                       
                             <div class="text-left caption">
                                 @{
-                                    Html.RenderPartial("Partials/_PartialRating", item);
+                                    Model.Image = item;
+                                    Html.RenderPartial("Partials/_PartialRating", Model);
                                 }
                             </div>
                             <div class="text-right caption">
@@ -183,7 +220,7 @@
                                     }
                                     else
                                     {
-                                        if (Model.AppUser.AppUserId != null)
+                                        if (Model.AppUser != null && Model.AppUser.AppUserId != null)
                                         {
                                             <form asp-controller="Image" asp-action="RateImage" data-ajax-begin="onBegin"
                                                   data-ajax="true" data-ajax-method="POST" data-ajax-update="#" id="hideRating">

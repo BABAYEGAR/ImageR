@@ -1,8 +1,8 @@
 ﻿namespace CamerackStudio.Models.Entities
 {
-    public class SystemNotification : Transport
+    public class PushNotification : Transport
     {
-        public long SystemNotificationId { get; set; }
+        public long PushNotificationId { get; set; }
         public string Message { get; set; }
         public long? ControllerId { get; set; }
         public long? AppUserId { get; set; }

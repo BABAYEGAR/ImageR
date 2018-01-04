@@ -3,7 +3,7 @@
 @using CamerackStudio.Models.Entities
 @using CamerackStudio.Models.Enum
 @using CamerackStudio.Models.Services
-@model List<SystemNotification>
+@model List<PushNotification>
 @{
     var users = new AppUserFactory().GetAllUsers(new AppConfig().FetchUsersUrl).Result;
 }

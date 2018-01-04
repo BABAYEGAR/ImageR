@@ -83,9 +83,30 @@ namespace CamerackStudio.Models.Services
             long rating = 0;
             if (uploadLikes > 0)
             {
-                rating = (uploadLikes / usersCount) * 50;
+                rating = (uploadLikes / usersCount) * 45;
             }
            
+            return rating;
+        }
+        public long CalculateTagsRating(long tagsCount)
+        {
+            long rating = 0;
+            if (tagsCount > 0 && tagsCount <= 5)
+            {
+                rating = 5;
+            }
+            if (tagsCount > 5 && tagsCount <= 10)
+            {
+                rating = 10;
+            }
+            if (tagsCount > 10 && tagsCount <= 15)
+            {
+                rating = 15;
+            }
+            if (tagsCount > 15 && tagsCount <= 20)
+            {
+                rating = 20;
+            }
             return rating;
         }
         public long CalculateDescriptionRating(string description,long? locationId, long? cameraId)
@@ -95,21 +116,21 @@ namespace CamerackStudio.Models.Services
             {
                 rating = 0;
             }
-            if (description.Length > 0 && description.Length <= 20)
+            if (description.Length > 0 && description.Length <= 100)
             {
-                rating = 5;
+                rating = 3;
             }
-            if (description.Length > 20 && description.Length <= 41)
+            if (description.Length > 100 && description.Length <= 200)
             {
-                rating = 10;
+                rating = 6;
             }
-            if (description.Length > 41 && description.Length <= 60)
+            if (description.Length > 200 && description.Length <= 300)
+            {
+                rating = 9;
+            }
+            if (description.Length > 300)
             {
                 rating = 15;
-            }
-            if (description.Length > 61 && description.Length <= 100)
-            {
-                rating = 20;
             }
             if (locationId > 0)
             {

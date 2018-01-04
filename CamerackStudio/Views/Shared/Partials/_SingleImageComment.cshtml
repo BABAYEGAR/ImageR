@@ -3,7 +3,7 @@
 @model AppTransport
 @{
 }
-@foreach (var items in Model.ImageComments.Where(n=>n.ImageId == Model.Image.ImageId).Take(6))
+@foreach (var items in Model.ImageComments.Where(n=>n.ImageId == Model.Image.ImageId))
 {
     var singleOrDefault = Model.AppUsers.SingleOrDefault(n => n.AppUserId == items.AppUserId);
     <li class="media">
@@ -42,8 +42,4 @@
         </div>
      
     </li>
-}
-@if (Model.ImageComments.Count > 6)
-{
-    <a href="@Url.Action("SingleImage","Account",new{id = Model.ImageComments.FirstOrDefault().ImageId})">View @(Model.ImageComments.Count - 6) comments</a>
 }

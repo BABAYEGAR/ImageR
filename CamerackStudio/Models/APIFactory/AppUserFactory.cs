@@ -35,6 +35,85 @@ namespace CamerackStudio.Models.APIFactory
                 return users.ToList();
             }
         }
+        public async Task<PushNotification> SavePushNotification(string baseAddress, PushNotification model)
+        {
+            var response = new PushNotification();
+            try
+            {
+                // Serialize our concrete class into a JSON String
+                var stringPayload = await Task.Run(() => JsonConvert.SerializeObject(model));
+
+                // Wrap our JSON inside a StringContent which then can be used by the HttpClient class
+                var httpContent = new StringContent(stringPayload, Encoding.UTF8, "application/json");
+
+                using (var httpClient = new HttpClient())
+                {
+                    // Do the actual request and await the response
+                    var httpResponse = await httpClient.PostAsync(baseAddress, httpContent);
+                    if (httpResponse != null)
+                        if (httpResponse.IsSuccessStatusCode)
+                        {
+                            var stringData = httpResponse.Content.ReadAsStringAsync().Result;
+
+                            //fetch logged in user
+                            response = await Task.Run(() => JsonConvert.DeserializeObject<PushNotification>(stringData));
+                        }
+                }
+                return response;
+            }
+            catch (Exception)
+            {
+                return response;
+            }
+        }
+        public async Task<List<PushNotification>> GetAllPushNotifications(string baseAddress)
+        {
+            if (baseAddress == null) throw new ArgumentNullException(nameof(baseAddress));
+            IEnumerable<PushNotification> notifications = new List<PushNotification>();
+            try
+            {
+                using (var httpClient = new HttpClient())
+                {
+                    // Do the actual request and await the response
+                    var httpResponse = await httpClient.GetAsync(baseAddress);
+                    if (httpResponse != null)
+                        if (httpResponse.IsSuccessStatusCode)
+                        {
+                            var stringData = httpResponse.Content.ReadAsStringAsync().Result;
+                            notifications = await Task.Run(() => JsonConvert.DeserializeObject<List<PushNotification>>(stringData));
+                        }
+                }
+                return notifications.ToList();
+            }
+            catch (Exception)
+            {
+                return notifications.ToList();
+            }
+        }
+        public async Task<List<Bank>> GetAllBanks(string baseAddress)
+        {
+            if (baseAddress == null) throw new ArgumentNullException(nameof(baseAddress));
+            IEnumerable<Bank> banks = new List<Bank>();
+            try
+            {
+                using (var httpClient = new HttpClient())
+                {
+                    // Do the actual request and await the response
+                    var httpResponse = await httpClient.GetAsync(baseAddress);
+                    if (httpResponse != null)
+                        if (httpResponse.IsSuccessStatusCode)
+                        {
+                            var stringData = httpResponse.Content.ReadAsStringAsync().Result;
+                            banks = await Task.Run(() => JsonConvert.DeserializeObject<List<Bank>>(stringData));
+                        }
+                }
+                return banks.ToList();
+            }
+            catch (Exception)
+            {
+                return banks.ToList();
+            }
+        }
         public async Task<List<AppUserAccessKey>> GetUsersAccessKey(string baseAddress)
         {
             if (baseAddress == null) throw new ArgumentNullException(nameof(baseAddress));

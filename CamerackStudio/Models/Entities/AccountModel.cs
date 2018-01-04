@@ -21,5 +21,7 @@ namespace CamerackStudio.Models.Entities
         public string ConfirmPassword { get; set; }
         public long? ClientId { get; set; }
         public long? RoleId { get; set; }
+        public string LoginType { get; set; }
+        public string ProfilePicture { get; set; }
     }
 }

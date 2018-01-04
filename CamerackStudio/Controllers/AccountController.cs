@@ -9,9 +9,7 @@ using CamerackStudio.Models.DataBaseConnections;
 using CamerackStudio.Models.Encryption;
 using CamerackStudio.Models.Entities;
 using CamerackStudio.Models.Enum;
-using CamerackStudio.Models.RabbitMq;
 using CamerackStudio.Models.Redis;
-using CamerackStudio.Models.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -26,11 +24,12 @@ namespace CamerackStudio.Controllers
     {
         private readonly CamerackStudioDataContext _databaseConnection;
         private readonly List<AppUser> _users;
-
+        private List<PushNotification> pushNotifications;
         public AccountController(IHostingEnvironment env, CamerackStudioDataContext databaseConnection)
         {
             _databaseConnection = databaseConnection;
             _users = new AppUserFactory().GetAllUsers(new AppConfig().FetchUsersUrl).Result;
+            pushNotifications = new AppUserFactory().GetAllPushNotifications(new AppConfig().UsersPushNotifications).Result;
         }
 
         [SessionExpireFilter]
@@ -77,25 +76,29 @@ namespace CamerackStudio.Controllers
                     .Include(n => n.Location).Include(n => n.ImageSubCategory).ToList(),
                 ImageComments = _databaseConnection.ImageComments.ToList(),
                 ImageActions = _databaseConnection.ImageActions.ToList(),
-                Image = _databaseConnection.Images.Find(id)
+                Image = _databaseConnection.Images.Find(id),
+                AppUser = _users.SingleOrDefault(n=>n.AppUserId == signedInUserId)
             };
             return View(appTransport);
         }
         public ActionResult Notification()
         {
             var signedInUserId = Convert.ToInt64(new RedisDataAgent().GetStringValue("CamerackLoggedInUserId"));
-            return View(_databaseConnection.SystemNotifications.Where(n=>n.AppUserId == signedInUserId).ToList());
+            return View(pushNotifications.Where(n=>n.AppUserId == signedInUserId).ToList());
         }
 
         public ActionResult MarkNotificationAsRead(long id)
         {
             var signedInUserId = Convert.ToInt64(new RedisDataAgent().GetStringValue("CamerackLoggedInUserId"));
-            var notification = _databaseConnection.SystemNotifications.Find(id);
-            notification.DateLastModified = DateTime.Now;
-            notification.LastModifiedBy = signedInUserId;
-            notification.Read = true;
+            var notification = pushNotifications.SingleOrDefault(n=>n.PushNotificationId == id);
+            if (notification != null)
+            {
+                notification.DateLastModified = DateTime.Now;
+                notification.LastModifiedBy = signedInUserId;
+                notification.Read = true;
 
-            _databaseConnection.Entry(notification).State = EntityState.Modified;
+                _databaseConnection.Entry(notification).State = EntityState.Modified;
+            }
             _databaseConnection.SaveChanges();
 
             //display notification
@@ -192,13 +195,14 @@ namespace CamerackStudio.Controllers
         {
             var signedInUserId = Convert.ToInt64(new RedisDataAgent().GetStringValue("CamerackLoggedInUserId"));
             var userBank = _databaseConnection.UserBanks.SingleOrDefault(n => n.CreatedBy == signedInUserId);
+            var banks = new AppUserFactory().GetAllBanks(new AppConfig().AllBanks).Result;
             if (userBank.BankId != null)
                 ViewBag.BankId = new SelectList(
-                    _databaseConnection.Banks.ToList(), "BankId",
+                    banks, "BankId",
                     "Name", userBank.BankId);
             else
                 ViewBag.BankId = new SelectList(
-                    _databaseConnection.Banks.ToList(), "BankId",
+                    banks, "BankId",
                     "Name");
             return View(userBank);
         }

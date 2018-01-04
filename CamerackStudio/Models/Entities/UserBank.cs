@@ -16,7 +16,5 @@ namespace CamerackStudio.Models.Entities
         public string AccountType { get; set; }
         [Display(Name = "Bank")]
         public long? BankId { get; set; }
-        [ForeignKey("BankId")]
-        public Bank Bank { get; set; }
     }
 }

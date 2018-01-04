@@ -29,6 +29,7 @@ namespace CamerackStudio.Models.Entities
         [Required]
         public long? RoleId { get; set; }
         public Role Role { get; set; }
+        public string AccountType { get; set; }
         public string Status { get; set; }
 
         [DisplayName("Profile Picture")]
@@ -41,5 +42,7 @@ namespace CamerackStudio.Models.Entities
         [Required]
         public string Username { get; set; }
         public long ClientId { get; set; }
+        public string LoginType { get; set; }
+        public bool HasSocialMediaLogin { get; set; }
     }
 }

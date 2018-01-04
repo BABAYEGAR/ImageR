@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using CamerackStudio.Models;
 using CamerackStudio.Models.APIFactory;
 using CamerackStudio.Models.DataBaseConnections;
@@ -19,11 +21,13 @@ namespace CamerackStudio.Controllers
     {
         private readonly CamerackStudioDataContext _databaseConnection;
         private AppUser _appUser;
+        private List<PushNotification> pushNotifications;
 
         public HomeController(CamerackStudioDataContext databaseConnection)
         {
             _databaseConnection = databaseConnection;
             _databaseConnection.Database.EnsureCreated();
+            pushNotifications = new AppUserFactory().GetAllPushNotifications(new AppConfig().UsersPushNotifications).Result;
         }
 
         public IActionResult Index()
@@ -73,12 +77,11 @@ namespace CamerackStudio.Controllers
         public ActionResult RealoadNavigation()
         {
             var signedInUserId = Convert.ToInt64(new RedisDataAgent().GetStringValue("CamerackLoggedInUserId"));
-            var notifications = _databaseConnection.SystemNotifications.Where(n => n.AppUserId == signedInUserId)
-                .ToList();
+            var notifications = new AppUserFactory().GetAllPushNotifications(new AppConfig().UsersPushNotifications).Result.Where(n=>n.AppUserId == signedInUserId).ToList();
             return PartialView("Partials/_NotificationPartial", notifications);
         }
         [SessionExpireFilter]
-        public IActionResult Dashboard()
+        public async Task<IActionResult> Dashboard()
         {
             var signedInUserId = Convert.ToInt64(new RedisDataAgent().GetStringValue("CamerackLoggedInUserId"));
             AppTransport appTransport = null;
@@ -120,15 +123,14 @@ namespace CamerackStudio.Controllers
                 }
 
             //check if user is new and send competition details to user
-            var competitionNotification = _databaseConnection.SystemNotifications
-                .Where(n => n.AppUserId == signedInUserId &&
+            var competitionNotification = pushNotifications.Where(n => n.AppUserId == signedInUserId &&
                             n.Category == SystemNotificationCategory.Competition.ToString()).ToList();
             var competitions = _databaseConnection.Competition.ToList();
             foreach (var item in competitions.Where(n=>n.EndDate > DateTime.Now))
             {
                 if (competitionNotification.Any(n => n.ControllerId == item.CompetitionId) == false)
                 {
-                    var notification = new SystemNotification
+                    var notification = new PushNotification
                     {
                         AppUserId = signedInUserId,
                         ControllerId = item.CompetitionId,
@@ -140,8 +142,7 @@ namespace CamerackStudio.Controllers
                         CreatedBy = signedInUserId,
                         Category = SystemNotificationCategory.Competition.ToString()
                     };
-                    _databaseConnection.SystemNotifications.Add(notification);
-                    _databaseConnection.SaveChanges();
+                    await new AppUserFactory().SavePushNotification(new AppConfig().SavePushNotifications, notification);
                     new SendEmailMessage().SendCompetitionEmailMessage(item);
                 }
             }
@@ -178,17 +179,6 @@ namespace CamerackStudio.Controllers
             //validate mapping
             if (appTransport != null)
                 appTransport.AppUsers = new AppUserFactory().GetAllUsers(new AppConfig().FetchUsersUrl).Result.ToList();
-            var mapping = _databaseConnection.PhotographerCategoryMappings.Where(n => n.AppUserId == signedInUserId)
-                .ToList();
-
-            if (mapping.Count <= 0 && _appUser != null && _appUser.Role.UploadImage)
-            {
-                //display notification
-                TempData["display"] = "You have succesfully logged in," +
-                                      "It is always adviced that you select the photographer categories you are involved with to fully setup your account!";
-                TempData["notificationtype"] = NotificationType.Info.ToString();
-                return RedirectToAction("SelectCategories", "PhotographerCategory");
-            }
             return View(appTransport);
         }
     }

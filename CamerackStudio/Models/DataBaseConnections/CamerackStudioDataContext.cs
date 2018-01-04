@@ -31,9 +31,6 @@ namespace CamerackStudio.Models.DataBaseConnections
         public virtual DbSet<Camera> Cameras { get; set; }
         public virtual DbSet<Location> Locations { get; set; }
         public virtual DbSet<PhotographerCategoryMapping> PhotographerCategoryMappings { get; set; }
-        public virtual DbSet<CompetitionUpload> CompetitionUploads { get; set; }
-        public virtual DbSet<SystemNotification> SystemNotifications { get; set; }
-        public virtual DbSet<Bank> Banks { get; set; }
         public virtual DbSet<ImageReport> ImageReports { get; set; }
         public virtual DbSet<UserBank> UserBanks { get; set; }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
