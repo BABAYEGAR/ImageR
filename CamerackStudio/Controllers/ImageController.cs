@@ -184,24 +184,17 @@ namespace CamerackStudio.Controllers
             ViewBag.LocationId = new SelectList(
                 _databaseConnection.Locations.Where(n => n.CreatedBy == signedInUserId).ToList(), "LocationId",
                 "Name");
-            ViewBag.CompetitionId = new SelectList(
-                _databaseConnection.Competition.Where(n => n.Status == CompetitionStatus.Open.ToString()).ToList(), "CompetitionId",
-                "Name");
             var image = new Image
             {
                 SellingPrice = 0,
                 Discount = 0
             };
-            if (id != null)
-            {
-                image.CompetitionId = id;
-            }
             return View(image);
         }
 
         // POST: Image/Create
         [HttpPost]
-        [ValidateAntiForgeryToken]
+        //[ValidateAntiForgeryToken]
         [DisableFormValueModelBinding]
         [SessionExpireFilter]
         public ActionResult Create(Image image, IFormCollection collection, IFormFile file)
@@ -295,10 +288,6 @@ namespace CamerackStudio.Controllers
                 //display notification
                 TempData["display"] = "Your image is uploading in the background continue your work while it uploads!";
                 TempData["notificationtype"] = NotificationType.Success.ToString();
-                if (image.CompetitionId != null)
-                {
-                    return RedirectToAction("Uploads","Competition");
-                }
                 return RedirectToAction("Index");
             }
             catch (Exception ex)

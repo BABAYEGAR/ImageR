@@ -26,7 +26,6 @@ namespace CamerackStudio.Models.DataBaseConnections
         public virtual DbSet<ImageCategory> ImageCategories { get; set; }
         public virtual DbSet<ImageAction> ImageActions { get; set; }
         public virtual DbSet<ImageSubCategory> ImageSubCategories { get; set; }
-        public virtual DbSet<Competition> Competition { get; set; }
         public virtual DbSet<PhotographerCategory> PhotographerCategories { get; set; }
         public virtual DbSet<Camera> Cameras { get; set; }
         public virtual DbSet<Location> Locations { get; set; }

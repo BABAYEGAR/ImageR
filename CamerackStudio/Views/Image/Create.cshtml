@@ -125,7 +125,7 @@
             <div class="tab-content">
 
                 <div id="home5" role="tabpanel" aria-labelledby="home-tab5" class="tab-pane fade active in">
-                    @Html.AntiForgeryToken()
+                    @*@Html.AntiForgeryToken()*@
                     @Html.ValidationSummary(true, "", new {@class = "text-danger"})
 
                     <div class="form-body">
@@ -150,36 +150,6 @@
                                 @Html.DropDownListFor(m => m.ImageSubCategoryId, new SelectList(string.Empty, "Value", "Text"), "--Please select a Sub-Category/ Sub-Genre--", new {@class = "form-control", id = "sub"})
                                 @Html.ValidationMessageFor(model => model.ImageSubCategoryId, "", new {@class = "text-danger"})
                             </div>
-                            @if (Model.CompetitionId != null)
-                            {
-                                <div class="form-group col-md-6">
-                                    <label for="state">Upload Category</label><span class="required">*</span>
-                                    <select name="state" class="form-control" id="statecategory" disabled="disabled">
-                                        <option value="0">General Upload</option>
-                                        <option value="1" selected>Competition Upload</option>
-                                    </select>
-                                </div>
-                                <div class="form-group col-md-6" id="competition">
-                                    @Html.LabelFor(model => model.CompetitionId, new {@class = "control-label"})<span class="required">*</span>
-                                    @Html.DropDownListFor(model => model.CompetitionId, null, "Select an Image Category/Genre", new {@class = "form-control", placeholder = "",disabled = "disabled" })
-                                    @Html.ValidationMessageFor(model => model.CompetitionId, "", new {@class = "text-danger"})
-                                </div>
-                            }
-                            else
-                            {
-                                <div class="form-group col-md-6">
-                                    <label for="state">Upload Category</label><span class="required">*</span>
-                                    <select name="state" class="form-control" id="statecategory">
-                                        <option value="0">General Upload</option>
-                                        <option value="1">Competition Upload</option>
-                                    </select>
-                                </div>
-                                <div class="form-group col-md-6" id="competition">
-                                    @Html.LabelFor(model => model.CompetitionId, new {@class = "control-label"})<span class="required">*</span>
-                                    @Html.DropDownListFor(model => model.CompetitionId, null, "Select an Image Category/Genre", new {@class = "form-control", placeholder = ""})
-                                    @Html.ValidationMessageFor(model => model.CompetitionId, "", new {@class = "text-danger"})
-                                </div>
-                            }
                             <div class="form-group col-md-6" id="reloadLocationPartial">
 
                                 @{

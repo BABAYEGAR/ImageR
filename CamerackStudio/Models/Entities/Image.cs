@@ -63,10 +63,6 @@ namespace CamerackStudio.Models.Entities
         public bool A5 { get; set; }
         [Display(Name = "A6")]
         public bool A6 { get; set; }
-        [Display(Name = "Competition")]
-        public long? CompetitionId { get; set; }
-        [ForeignKey("CompetitionId")]
-        public Competition Competition { get; set; }
         public IEnumerable<ImageTag> ImageTags { get; set; }
         public IEnumerable<ImageComment> ImageComments { get; set; }
         public IEnumerable<ImageAction> ImageActions { get; set; }

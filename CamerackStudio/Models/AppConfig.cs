@@ -38,8 +38,8 @@
 
         #region Camerack API URL
 
-        public string CamerackBaseUrl => "http://camerack.com/";
-        //public string CamerackBaseUrl => "http://localhost:51851/";
+        //public string CamerackBaseUrl => "http://camerack.com/";
+        public string CamerackBaseUrl => "http://localhost:51851/";
         public string FetchOrdersUrl => CamerackBaseUrl + "API/GetAllOrders";
         public string FetchPaymentsUrl => CamerackBaseUrl + "API/GetAllPayments";
         public string FetchInvoiceUrl => CamerackBaseUrl + "API/GetAllInvoices";

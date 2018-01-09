@@ -7,13 +7,12 @@
 @{
     var users = new AppUserFactory().GetAllUsers(new AppConfig().FetchUsersUrl).Result;
 }
-<a id="dropdownMenu1" href="#" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false" class="dropdown-toggle bubble header-icon">
-    <i class="ti-world"></i><span class="badge bg-danger">@Model.Where(n => n.Read == false).ToList().Count</span>
-</a>
-<div aria-labelledby="dropdownMenu1" class="dropdown-menu dropdown-menu-right dm-medium fs-12 animated fadeInDown">
-    <h5 class="dropdown-header">You have @(Model.Where(n => n.Read == false).ToList().Count) unread notifications</h5>
+
+
+<h5 class="dropdown-header">You have @(Model.Where(n => n.Read == false).ToList().Count) unread notifications</h5>
+<br/>
     <ul data-mcs-theme="minimal-dark" class="media-list mCustomScrollbar">
-        @foreach (var item in Model.OrderBy(n=>n.DateCreated).Take(5))
+        @foreach (var item in Model.OrderBy(n=>n.DateCreated).Take(10))
         {
             var user = users.SingleOrDefault(n => n.AppUserId == item.AppUserId);
             <li class="media">
@@ -21,10 +20,20 @@
                 {
                     <a href="@Url.Action("SingleImage","Account",new{id = item.ControllerId})">
                         <div class="media-left avatar">
+                       
                             <img src="~/UploadedImage/ProfilePicture/@if (user != null)
                                                                      {
                                                                          @user.ProfilePicture
-                                                                     }" alt="" class="media-object img-circle"><span class="status bg-warning"></span>
+                                                                     }" alt="" class="media-object img-circle">
+                            @if (item.Read == true)
+                            {
+                                <span class="status bg-default"></span> 
+                            }
+                            @if (item.Read == false)
+                            {
+                                <span class="status bg-success"></span>
+                            }
+                          
                         </div>
                         <div class="media-body">
                             <h6 class="media-heading">
@@ -46,7 +55,15 @@
                             <img src="~/UploadedImage/ProfilePicture/@if (user != null)
                                                                      {
                                                                          @user.ProfilePicture
-                                                                     }" alt="" class="media-object img-circle"><span class="status bg-warning"></span>
+                                                                     }" alt="" class="media-object img-circle">
+                            @if (item.Read == true)
+                            {
+                                <span class="status bg-default"></span> 
+                            }
+                            @if (item.Read == false)
+                            {
+                                <span class="status bg-success"></span>
+                            }
                         </div>
                         <div class="media-body">
                             <h6 class="media-heading">
@@ -90,6 +107,6 @@
     <div class="dropdown-footer text-center p-10">
         <a href="@Url.Action("Notification", "Account")" class="fw-500 text-muted">See all notifications</a>
     </div>
-</div>
+
 <!-- jQuery-->
 <script type="text/javascript" src="~/Dashboard/plugins/jquery/dist/jquery.min.js"></script>

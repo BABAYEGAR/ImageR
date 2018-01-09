@@ -1,18 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using CamerackStudio.Models;
 using CamerackStudio.Models.APIFactory;
 using CamerackStudio.Models.DataBaseConnections;
 using CamerackStudio.Models.Encryption;
 using CamerackStudio.Models.Entities;
-using CamerackStudio.Models.Enum;
-using CamerackStudio.Models.RabbitMq;
 using CamerackStudio.Models.Redis;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 
 namespace CamerackStudio.Controllers
@@ -77,11 +72,19 @@ namespace CamerackStudio.Controllers
         public ActionResult RealoadNavigation()
         {
             var signedInUserId = Convert.ToInt64(new RedisDataAgent().GetStringValue("CamerackLoggedInUserId"));
-            var notifications = new AppUserFactory().GetAllPushNotifications(new AppConfig().UsersPushNotifications).Result.Where(n=>n.AppUserId == signedInUserId).ToList();
+            var notifications = new AppUserFactory().GetAllPushNotifications(new AppConfig().UsersPushNotifications)
+                .Result.Where(n=>n.AppUserId == signedInUserId).ToList();
             return PartialView("Partials/_NotificationPartial", notifications);
         }
+        public int RealoadNavigationAndCount()
+        {
+            var signedInUserId = Convert.ToInt64(new RedisDataAgent().GetStringValue("CamerackLoggedInUserId"));
+            var notifications = new AppUserFactory().GetAllPushNotifications(new AppConfig().UsersPushNotifications)
+                .Result.Where(n => n.AppUserId == signedInUserId).Take(5).ToList();
+            return notifications.Count;
+        }
         [SessionExpireFilter]
-        public async Task<IActionResult> Dashboard()
+        public IActionResult Dashboard()
         {
             var signedInUserId = Convert.ToInt64(new RedisDataAgent().GetStringValue("CamerackLoggedInUserId"));
             AppTransport appTransport = null;
@@ -121,32 +124,6 @@ namespace CamerackStudio.Controllers
                         new RedisDataAgent().DeleteStringValue("UserBank");
                     }
                 }
-
-            //check if user is new and send competition details to user
-            var competitionNotification = pushNotifications.Where(n => n.AppUserId == signedInUserId &&
-                            n.Category == SystemNotificationCategory.Competition.ToString()).ToList();
-            var competitions = _databaseConnection.Competition.ToList();
-            foreach (var item in competitions.Where(n=>n.EndDate > DateTime.Now))
-            {
-                if (competitionNotification.Any(n => n.ControllerId == item.CompetitionId) == false)
-                {
-                    var notification = new PushNotification
-                    {
-                        AppUserId = signedInUserId,
-                        ControllerId = item.CompetitionId,
-                        Read = false,
-                        Message = item.Name + " Competition has already started, Dont mIss Out!",
-                        DateCreated = DateTime.Now,
-                        DateLastModified = DateTime.Now,
-                        LastModifiedBy = signedInUserId,
-                        CreatedBy = signedInUserId,
-                        Category = SystemNotificationCategory.Competition.ToString()
-                    };
-                    await new AppUserFactory().SavePushNotification(new AppConfig().SavePushNotifications, notification);
-                    new SendEmailMessage().SendCompetitionEmailMessage(item);
-                }
-            }
-
             //store data temporarily, based on the user role
             if (_appUser != null && _appUser.Role.ManageImages)
             {

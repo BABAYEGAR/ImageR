@@ -258,7 +258,7 @@ namespace CamerackStudio.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [SessionExpireFilter]
-        public ActionResult EditProfile(AppUser appUser)
+        public ActionResult EditProfile(AppUser appUser, FormCollection collection)
         {
             try
             {
@@ -267,6 +267,7 @@ namespace CamerackStudio.Controllers
                 appUser.LastModifiedBy = signedInUserId;
                 appUser.DateLastModified = DateTime.Now;
                 appUser.ClientId = new AppConfig().ClientId;
+                appUser.Biography = collection["Biography"];
                 var resonse = new AppUserFactory().EditProfile(new AppConfig().EditProfileUrl, appUser);
 
 

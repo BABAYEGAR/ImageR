@@ -96,14 +96,7 @@ namespace CamerackStudio.Controllers
             return Json(_databaseConnection.Locations.ToList());
         }
 
-        /// <summary>
-        ///     The method returns all images from photo studio via json object
-        /// </summary>
-        /// <returns></returns>
-        public JsonResult GetAllCompetitions()
-        {
-            return Json(_databaseConnection.Competition.ToList());
-        }
+
         /// <summary>
         ///     The method returns all images from photo studio via json object
         /// </summary>
@@ -213,32 +206,6 @@ namespace CamerackStudio.Controllers
                     }
                     //save transaction
                     _databaseConnection.AddRange(savedImageTags);
-                    _databaseConnection.SaveChanges();
-                }
-
-                //if upload is for a challenge
-                if (image.CompetitionId > 0)
-                {
-                    //get current competition
-                    var competition = _databaseConnection.Competition.Find(image.CompetitionId);
-
-                    //get image rating
-                    var rating = new ImageCompetitionRating
-                    {
-                        AppUserId = image.AppUserId,
-                        CreatedBy = image.AppUserId,
-                        LastModifiedBy = image.AppUserId,
-                        DateCreated = DateTime.Now,
-                        DateLastModified = DateTime.Now,
-                        CompetitionId = image.CompetitionId
-                    };
-                    //appending rating values
-                    rating.TimeDeliveryRating = new CompetitionCalculator().CalculateTimeRating(competition.EndDate, rating.DateCreated);
-                    rating.DescriptionRating = new CompetitionCalculator().CalculateDescriptionRating(image.Description, image.LocationId, image.CameraId);
-                    rating.TagsRating = new CompetitionCalculator().CalculateTagsRating(savedImageTags.Count);
-
-                    //save transaction
-                    _databaseConnection.Add(rating);
                     _databaseConnection.SaveChanges();
                 }
                 return Json(image);

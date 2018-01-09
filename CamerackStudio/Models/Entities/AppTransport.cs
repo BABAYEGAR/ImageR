@@ -17,8 +17,6 @@ namespace CamerackStudio.Models.Entities
         public List<ImageAction> ImageActions { get; set; }
         public Image Image { get; set; }
         public AppUser AppUser { get; set; }
-        public List<Competition> Competitions { get; set; }
-        public Competition Competition { get; set; }
         public string Status { get; set; }
         public Role Role { get; set; }
     }

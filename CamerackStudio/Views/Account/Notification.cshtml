@@ -1,5 +1,5 @@
 ﻿@using CamerackStudio.Models.Entities
-@model List<CamerackStudio.Models.Entities.SystemNotification>
+@model List<CamerackStudio.Models.Entities.PushNotification>
 @{
     Layout = "Layout/Dashboard/_LayoutTable";
     ViewBag.PageTitle = "List of Push Notifications";
@@ -42,7 +42,7 @@
                     </button>
                     <ul class="dropdown-menu pull-right" role="menu">
                         <li>
-                            <a href="@Url.Action("MarkNotificationAsRead", "Account", new {id = item.SystemNotificationId})" data-toggle="tooltip" title="Mark as Read">
+                            <a href="@Url.Action("MarkNotificationAsRead", "Account", new {id = item.PushNotificationId})" data-toggle="tooltip" title="Mark as Read">
                                 <i class="icon-pencil"></i> Mark as Read
                             </a>
                         </li>

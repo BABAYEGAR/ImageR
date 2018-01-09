@@ -101,22 +101,6 @@
             </li>
         }
 
-        @if (appUser != null && appUser.Role != null && appUser.Role.ManageCompetition)
-        {
-            <li class="panel">
-                <a role="button" data-toggle="collapse" data-parent=".navigation" href="#collapse4" aria-expanded="false" aria-controls="collapse4" class="collapsed"><i class="ti-crown"></i> Competition Management</a>
-                <ul id="collapse4" class="list-unstyled collapse">
-                    <li>
-                        <a href="@Url.Action("Index", "Competition")">Competitions</a>
-                    </li>
-                    <li>
-                        <a href="@Url.Action("CompetitionUpload", "Competition")">Competition Uploads</a>
-                    </li>
-                </ul>
-            </li>
-        }
-  
-
         @if (appUser != null && appUser.Role != null && appUser.Role.ManageOrders)
         {
             <li class="panel">
@@ -140,20 +124,6 @@
                         <a href="@Url.Action("SelectCategories", "PhotographerCategory")">Categories </a>
                     </li>
 
-                </ul>
-            </li>
-        }
-        @if (appUser != null && appUser.Role != null && appUser.Role.ParticipateCompetition)
-        {
-            <li class="panel">
-                <a role="button" data-toggle="collapse" data-parent=".navigation" href="#collapse10" aria-expanded="false" aria-controls="collapse10" class="collapsed"><i class="ti-crown"></i> My Competitions @*<span class="label label-outline label-success">New</span>*@</a>
-                <ul id="collapse10" class="list-unstyled collapse">
-                    <li>
-                        <a href="@Url.Action("Index", "Competition")">Competitions </a>
-                    </li>
-                    <li>
-                        <a href="@Url.Action("Uploads", "Competition")">Competition Uploads</a>
-                    </li>
                 </ul>
             </li>
         }
