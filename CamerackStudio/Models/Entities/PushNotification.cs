@@ -8,5 +8,6 @@
         public long? AppUserId { get; set; }
         public bool? Read { get; set; }
         public string Category { get; set; }
+        public long? ClientId { get; set; }
     }
 }

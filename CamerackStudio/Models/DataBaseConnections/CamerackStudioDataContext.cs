@@ -34,7 +34,7 @@ namespace CamerackStudio.Models.DataBaseConnections
         public virtual DbSet<UserBank> UserBanks { get; set; }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlServer(@"Server=.;Database=CamerackStudio;Trusted_Connection=True;");
+            //optionsBuilder.UseSqlServer(@"Server=.;Database=CamerackStudio;Trusted_Connection=True;");
         }
     }
 }

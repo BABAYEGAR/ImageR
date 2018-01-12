@@ -31,6 +31,7 @@
         public string UpdateAccountActivationAccessKey => SSOBaseUrl + "API/UpdateAccountActivationAccessKey/";
         public string SavePushNotifications => SSOBaseUrl + "API/SavePushNotifications";
         public string UsersPushNotifications => SSOBaseUrl + "API/GetPushNotifications";
+        public string UpdatePushNotifications => SSOBaseUrl + "API/UpdatePushNotifications";
         public string AllBanks => SSOBaseUrl + "API/AllBanks";
         public long ClientId => 3;
 
@@ -46,17 +47,6 @@
         public string ApprovePaymentsUrl => CamerackBaseUrl + "API/ApprovePayment/";
         #endregion
 
-        #region Camerack Task Manager API URL
-
-        //public string CamerackImageUploadBaseUrl => "http://camerack.com/";
-        public string CamerackTaskManagerBaseUrl => "http://localhost:61157/";
-        public string UploadImageUrl => CamerackTaskManagerBaseUrl + "API/UploadImage";
-        public string SendNewUserEmailMessageUrl => CamerackTaskManagerBaseUrl + "API/SendNewUserEmail";
-        public string SendForgotPasswordEmailMessageUrl => CamerackTaskManagerBaseUrl + "API/SendForgotPasswordEmail";
-        public string SendCompetitionEmailMessageUrl => CamerackTaskManagerBaseUrl + "API/SendCompetitionEmail";
-        public string ImageActionMessageUrl => CamerackTaskManagerBaseUrl + "API/ImageAction";
-        public string CompetitionUploadMessageUrl => CamerackTaskManagerBaseUrl + "API/CompetitionUpload";
-        #endregion
         #region Mailer
 
         public string EmailServer => "smtp.gmail.com";

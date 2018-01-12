@@ -42,7 +42,7 @@ namespace CamerackStudio
 
             // Add framework services.
             services.AddDbContext<CamerackStudioDataContext>(options =>
-                options.UseSqlServer(Configuration.GetConnectionString("CamerackStudio")));
+                options.UseMySql(Configuration.GetConnectionString("CamerackStudio")));
 
             services.AddMvc(options => options.MaxModelValidationErrors = 50).AddJsonOptions(options => {
                 options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();

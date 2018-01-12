@@ -89,7 +89,7 @@
     @foreach (var item in Model)
     {
         var displayImage = "https://res.cloudinary.com/" + item.FilePath.Replace("upload/", new AppConfig().GeneralImage);
-        var image = "https://res.cloudinary.com/" + item.FilePath.Replace("upload/", "upload/w_50,l_watermark/");
+        var image = "https://res.cloudinary.com/" + item.FilePath.Replace("upload/", "upload/q_auto:best/w_50,l_watermark/");
         <tr>
             @if (item.Status != null && item.Status != ImageStatus.Rejected.ToString())
             {

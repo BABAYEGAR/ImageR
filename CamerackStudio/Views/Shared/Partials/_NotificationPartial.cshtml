@@ -16,9 +16,9 @@
         {
             var user = users.SingleOrDefault(n => n.AppUserId == item.AppUserId);
             <li class="media">
-                @if (item.Category == SystemNotificationCategory.Comment.ToString())
+                @if (item.Category == SystemNotificationCategory.Comment.ToString() || item.Category == SystemNotificationCategory.Rating.ToString())
                 {
-                    <a href="@Url.Action("SingleImage","Account",new{id = item.ControllerId})">
+                    <a href="@Url.Action("SingleImage","Account",new{id = item.ControllerId,notificationId = item.PushNotificationId})">
                         <div class="media-left avatar">
                        
                             <img src="~/UploadedImage/ProfilePicture/@if (user != null)
@@ -48,39 +48,9 @@
                         </div>
                     </a>
                 }
-                @if (item.Category == SystemNotificationCategory.Competition.ToString())
-                {
-                    <a href="@Url.Action("Index","Competition")">
-                        <div class="media-left avatar">
-                            <img src="~/UploadedImage/ProfilePicture/@if (user != null)
-                                                                     {
-                                                                         @user.ProfilePicture
-                                                                     }" alt="" class="media-object img-circle">
-                            @if (item.Read == true)
-                            {
-                                <span class="status bg-default"></span> 
-                            }
-                            @if (item.Read == false)
-                            {
-                                <span class="status bg-success"></span>
-                            }
-                        </div>
-                        <div class="media-body">
-                            <h6 class="media-heading">
-                                @if (user != null)
-                                {
-                                    @user.Name
-                                }</h6>
-                            <p class="text-muted mb-0">@item.Message</p>
-                        </div>
-                        <div class="media-right text-nowrap">
-                            <time datetime="2015-12-10T20:27:48+07:00" class="fs-11">@(new DateTimeCalculator().TimeAgo(item.DateCreated))</time>
-                        </div>
-                    </a>
-                }
                 @if (item.Category == SystemNotificationCategory.Rating.ToString())
                 {
-                    <a href="@Url.Action("SingleImage","Account",new{id = item.ControllerId})">
+                    <a href="@Url.Action("SingleImage","Account",new{id = item.ControllerId,notificationId = item.PushNotificationId})">
                         <div class="media-left avatar">
                             <img src="~/UploadedImage/ProfilePicture/@if (user != null)
                                                                      {
@@ -94,6 +64,48 @@
                                     @user.Name
                                 }</h6>
                             <p class="text-muted mb-0">Rated your post</p>
+                        </div>
+                        <div class="media-right text-nowrap">
+                            <time datetime="2015-12-10T20:27:48+07:00" class="fs-11">@(new DateTimeCalculator().TimeAgo(item.DateCreated))</time>
+                        </div>
+                    </a>
+                }
+                @if (item.Category == SystemNotificationCategory.Order.ToString())
+                {
+                    <a href="@Url.Action("Index","Order",new{notificationId = item.PushNotificationId})">
+                        <div class="media-left avatar">
+                            <img src="~/UploadedImage/ProfilePicture/@if (user != null)
+                                                                     {
+                                                                         @user.ProfilePicture
+                                                                     }" alt="" class="media-object img-circle"><span class="status bg-warning"></span>
+                        </div>
+                        <div class="media-body">
+                            <h6 class="media-heading">
+                                @if (user != null)
+                                {
+                                    @user.Name
+                                }</h6>
+                            <p class="text-muted mb-0">Has just Placed an order for your image</p>
+                        </div>
+                        <div class="media-right text-nowrap">
+                            <time datetime="2015-12-10T20:27:48+07:00" class="fs-11">@(new DateTimeCalculator().TimeAgo(item.DateCreated))</time>
+                        </div>
+                    </a>
+                }
+                @if (item.Category == SystemNotificationCategory.Payment.ToString())
+                {
+                    <a href="@Url.Action("Index","Payment",new{notificationId = item.PushNotificationId})">
+                        <div class="media-left avatar">
+                            <img src="~/UploadedImage/ProfilePicture/@if (user != null)
+                                                                     {
+                                                                         @user.ProfilePicture
+                                                                     }" alt="" class="media-object img-circle"><span class="status bg-warning"></span>
+                        </div>
+                        <div class="media-body">
+                            <h6 class="media-heading">
+                                Camerack
+                            </h6>
+                            <p class="text-muted mb-0">has just credited your bank Account</p>
                         </div>
                         <div class="media-right text-nowrap">
                             <time datetime="2015-12-10T20:27:48+07:00" class="fs-11">@(new DateTimeCalculator().TimeAgo(item.DateCreated))</time>

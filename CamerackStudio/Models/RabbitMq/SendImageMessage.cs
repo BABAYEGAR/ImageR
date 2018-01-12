@@ -10,9 +10,14 @@ namespace CamerackStudio.Models.RabbitMq
     {
         public void SendImageCreationMessage(ImageUpload upload)
         {
+            //open Rabbit MQ Connection
             var factory = new ConnectionFactory
             {
-                HostName = "localhost", RequestedHeartbeat = 5
+                HostName = "localhost",
+                UserName = "guest",
+                Password = "guest",
+                Port = AmqpTcpEndpoint.UseDefaultPort,
+                VirtualHost = "/"
             };
             string message = JsonConvert.SerializeObject(upload);
             using (var connection = factory.CreateConnection())
@@ -35,10 +40,14 @@ namespace CamerackStudio.Models.RabbitMq
         }
         public void SendImageActionMessage(ImageAction action)
         {
+            //open Rabbit MQ Connection
             var factory = new ConnectionFactory
             {
                 HostName = "localhost",
-                RequestedHeartbeat = 5
+                UserName = "guest",
+                Password = "guest",
+                Port = AmqpTcpEndpoint.UseDefaultPort,
+                VirtualHost = "/"
             };
             using (var connection = factory.CreateConnection())
             using (var channel = connection.CreateModel())

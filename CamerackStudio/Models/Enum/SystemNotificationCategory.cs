@@ -5,7 +5,9 @@
         Comment,
         Rating,
         Competition,
-        ImageUpload
+        ImageUpload,
+        Order,
+        Payment
 
     }
 }

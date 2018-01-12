@@ -66,6 +66,37 @@ namespace CamerackStudio.Models.APIFactory
                 return response;
             }
         }
+        public async Task<PushNotification> UpdatePushNotification(string baseAddress, PushNotification model)
+        {
+            var response = new PushNotification();
+            try
+            {
+                // Serialize our concrete class into a JSON String
+                var stringPayload = await Task.Run(() => JsonConvert.SerializeObject(model));
+
+                // Wrap our JSON inside a StringContent which then can be used by the HttpClient class
+                var httpContent = new StringContent(stringPayload, Encoding.UTF8, "application/json");
+
+                using (var httpClient = new HttpClient())
+                {
+                    // Do the actual request and await the response
+                    var httpResponse = await httpClient.PostAsync(baseAddress, httpContent);
+                    if (httpResponse != null)
+                        if (httpResponse.IsSuccessStatusCode)
+                        {
+                            var stringData = httpResponse.Content.ReadAsStringAsync().Result;
+
+                            //fetch logged in user
+                            response = await Task.Run(() => JsonConvert.DeserializeObject<PushNotification>(stringData));
+                        }
+                }
+                return response;
+            }
+            catch (Exception)
+            {
+                return response;
+            }
+        }
         public async Task<List<PushNotification>> GetAllPushNotifications(string baseAddress)
         {
             if (baseAddress == null) throw new ArgumentNullException(nameof(baseAddress));

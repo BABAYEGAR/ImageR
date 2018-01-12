@@ -19,17 +19,36 @@ namespace CamerackStudio.Controllers
     {
         private readonly CamerackStudioDataContext _databaseConnection;
         private AppUser _appUser;
+        private List<PushNotification> pushNotifications;
 
         public PaymentController(CamerackStudioDataContext databaseConnection)
         {
             _databaseConnection = databaseConnection;
+            pushNotifications = new AppUserFactory().GetAllPushNotifications(new AppConfig()
+                .UsersPushNotifications).Result.Where(n=>n.ClientId == new AppConfig().ClientId).ToList();
         }
         [SessionExpireFilter]
-        public IActionResult Index()
+        public async Task<IActionResult> Index(long? notificationId)
         {
             try
             {
                 var signedInUserId = Convert.ToInt64(new RedisDataAgent().GetStringValue("CamerackLoggedInUserId"));
+
+
+                //update notification to read
+                if (notificationId != null)
+                {
+                    var notification = pushNotifications.SingleOrDefault(n => n.PushNotificationId == notificationId);
+
+                    if (notification != null)
+                    {
+                        notification.Read = true;
+                        notification.DateLastModified = DateTime.Now;
+                        notification.LastModifiedBy = signedInUserId;
+                        await new AppUserFactory().UpdatePushNotification(new AppConfig().UpdatePushNotifications, notification);
+                    }
+                }
+
                 if (new RedisDataAgent().GetStringValue("CamerackLoggedInUser") != null)
                 {
                     var userString = new RedisDataAgent().GetStringValue("CamerackLoggedInUser");

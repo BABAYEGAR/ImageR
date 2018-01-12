@@ -267,10 +267,12 @@ namespace CamerackStudio.Controllers
 
                 //Append new upload object and send task to rabbit MQ API Via CamerackImageUploader API APPLICATION
                 string stream = null;
+                MemoryStream imageStream = null;
                 if (file.Length > 0)
                 {
                     using (var ms = new MemoryStream())
                     {
+                        imageStream = ms;
                         file.CopyTo(ms);
                         var fileBytes = ms.ToArray();
                         stream = Convert.ToBase64String(fileBytes);
@@ -282,12 +284,27 @@ namespace CamerackStudio.Controllers
                     Image = image,
                     File = stream
                 };
-                //send message to rabbit queue to queue process
-                new SendImageMessage().SendImageCreationMessage(upload);
 
-                //display notification
-                TempData["display"] = "Your image is uploading in the background continue your work while it uploads!";
-                TempData["notificationtype"] = NotificationType.Success.ToString();
+                System.Drawing.Image newImage = System.Drawing.Image.FromStream(file.OpenReadStream());
+                var horizontal = newImage.HorizontalResolution;
+                var vertical = newImage.VerticalResolution;
+                if (horizontal >= 300 && vertical >= 300)
+                {
+                    //send message to rabbit queue to queue process
+                    new SendImageMessage().SendImageCreationMessage(upload);
+
+                    //display notification
+                    TempData["display"] =
+                        "Your image is uploading in the background continue your work while it uploads!";
+                    TempData["notificationtype"] = NotificationType.Success.ToString();
+                }
+                else
+                {
+                    //display notification
+                    TempData["display"] =
+                        "Sorry, Camerack does not support Low quality Images, we only support images above 300DPI!";
+                    TempData["notificationtype"] = NotificationType.Error.ToString();
+                }
                 return RedirectToAction("Index");
             }
             catch (Exception ex)

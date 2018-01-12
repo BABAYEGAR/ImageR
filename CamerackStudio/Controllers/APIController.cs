@@ -140,7 +140,8 @@ namespace CamerackStudio.Controllers
                         DateCreated = DateTime.Now,
                         Category = SystemNotificationCategory.Comment.ToString(),
                         Read = false,
-                        ControllerId = image.ImageId
+                        ControllerId = image.ImageId,
+                        ClientId = 4
                     };
 
                     var singleOrDefault = new AppUserFactory()
