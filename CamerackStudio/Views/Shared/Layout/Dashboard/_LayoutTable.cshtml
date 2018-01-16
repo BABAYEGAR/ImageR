@@ -5,9 +5,9 @@
 @using Newtonsoft.Json
 @{
     UserBank userBank = null;
-    if (new RedisDataAgent().GetStringValue("UserBank") != null)
+    if (Context.Session.GetString("UserBank") != null)
     {
-        var userString = new RedisDataAgent().GetStringValue("UserBank");
+        var userString = Context.Session.GetString("UserBank");
         userBank = JsonConvert.DeserializeObject<UserBank>(userString);
     }
 }

@@ -5,9 +5,9 @@
 @using Newtonsoft.Json
 @{
     AppUser appUser = null;
-    if (new RedisDataAgent().GetStringValue("CamerackLoggedInUser") != null)
+    if (Context.Session.GetString("CamerackLoggedInUser") != null)
     {
-        var userString = new RedisDataAgent().GetStringValue("CamerackLoggedInUser");
+        var userString = Context.Session.GetString("CamerackLoggedInUser");
         appUser = JsonConvert.DeserializeObject<AppUser>(userString);
     }
 

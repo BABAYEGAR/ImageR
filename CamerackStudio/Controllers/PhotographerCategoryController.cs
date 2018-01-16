@@ -49,7 +49,7 @@ namespace CamerackStudio.Controllers
         {
             try
             {
-                var signedInUserId = Convert.ToInt64(new RedisDataAgent().GetStringValue("CamerackLoggedInUserId"));
+                var signedInUserId = Convert.ToInt64(HttpContext.Session.GetString("CamerackLoggedInUserId"));
                 photographerCategory.DateCreated = DateTime.Now;
                 photographerCategory.DateLastModified = DateTime.Now;
                 photographerCategory.CreatedBy = signedInUserId;
@@ -89,7 +89,7 @@ namespace CamerackStudio.Controllers
         public void MapAndUnmapPhotographyCategory(long id)
         {
             var allMappings = _databaseConnection.PhotographerCategoryMappings.ToList();
-            var signedInUserId = Convert.ToInt64(new RedisDataAgent().GetStringValue("CamerackLoggedInUserId"));
+            var signedInUserId = Convert.ToInt64(HttpContext.Session.GetString("CamerackLoggedInUserId"));
             var userMapping =
                 allMappings.SingleOrDefault(n => n.AppUserId == signedInUserId && n.PhotographerCategoryId == id);
             if (userMapping != null)
@@ -128,7 +128,7 @@ namespace CamerackStudio.Controllers
         public ActionResult MapPhotographyCategory(int[] table_records, IFormCollection collection)
         {
             var allMappings = _databaseConnection.PhotographerCategoryMappings.ToList();
-            var signedInUserId = Convert.ToInt64(new RedisDataAgent().GetStringValue("CamerackLoggedInUserId"));
+            var signedInUserId = Convert.ToInt64(HttpContext.Session.GetString("CamerackLoggedInUserId"));
             if (table_records != null)
             {
                 var length = table_records.Length;
@@ -185,7 +185,7 @@ namespace CamerackStudio.Controllers
             try
             {
                 // TODO: Add update logic here
-                var signedInUserId = Convert.ToInt64(new RedisDataAgent().GetStringValue("CamerackLoggedInUserId"));
+                var signedInUserId = Convert.ToInt64(HttpContext.Session.GetString("CamerackLoggedInUserId"));
                 photographerCategory.DateLastModified = DateTime.Now;
                 photographerCategory.LastModifiedBy = signedInUserId;
                 if (image.Count > 0)
@@ -225,7 +225,7 @@ namespace CamerackStudio.Controllers
         {
             try
             {
-                var signedInUserId = Convert.ToInt64(new RedisDataAgent().GetStringValue("CamerackLoggedInUserId"));
+                var signedInUserId = Convert.ToInt64(HttpContext.Session.GetString("CamerackLoggedInUserId"));
                 var categoryId = Convert.ToInt64(collection["PhtographerCategoryId"]);
                 var mapping =
                     _databaseConnection.PhotographerCategoryMappings.SingleOrDefault(

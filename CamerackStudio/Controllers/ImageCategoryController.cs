@@ -37,10 +37,10 @@ namespace CamerackStudio.Controllers
         [SessionExpireFilter]
         public ActionResult Images(long id)
         {
-            var signedInUserId = Convert.ToInt64(new RedisDataAgent().GetStringValue("CamerackLoggedInUserId"));
-            if (new RedisDataAgent().GetStringValue("CamerackLoggedInUser") != null)
+            var signedInUserId = Convert.ToInt64(HttpContext.Session.GetString("CamerackLoggedInUserId"));
+            if (HttpContext.Session.GetString("CamerackLoggedInUser") != null)
             {
-                var userString = new RedisDataAgent().GetStringValue("CamerackLoggedInUser");
+                var userString = HttpContext.Session.GetString("CamerackLoggedInUser");
                 _appUser = JsonConvert.DeserializeObject<AppUser>(userString);
             }
             if (_appUser.Role.ManageImages)
@@ -76,7 +76,7 @@ namespace CamerackStudio.Controllers
         {
             try
             {
-                var signedInUserId = Convert.ToInt64(new RedisDataAgent().GetStringValue("CamerackLoggedInUserId"));
+                var signedInUserId = Convert.ToInt64(HttpContext.Session.GetString("CamerackLoggedInUserId"));
                 imageCategory.DateCreated = DateTime.Now;
                 imageCategory.DateLastModified = DateTime.Now;
                 imageCategory.CreatedBy = signedInUserId;
@@ -131,7 +131,7 @@ namespace CamerackStudio.Controllers
             try
             {
                 // TODO: Add update logic here
-                var signedInUserId = Convert.ToInt64(new RedisDataAgent().GetStringValue("CamerackLoggedInUserId"));
+                var signedInUserId = Convert.ToInt64(HttpContext.Session.GetString("CamerackLoggedInUserId"));
                 imageCategory.DateLastModified = DateTime.Now;
                 imageCategory.LastModifiedBy = signedInUserId;
                 if (image.Count > 0)

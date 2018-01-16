@@ -1,10 +1,17 @@
 ﻿using System;
 using CamerackStudio.Models.DataBaseConnections;
 using CamerackStudio.Models.SignaR;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.DataProtection.AuthenticatedEncryption;
+using Microsoft.AspNetCore.DataProtection.AuthenticatedEncryption.ConfigurationModel;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.Caching.Redis;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -43,25 +50,35 @@ namespace CamerackStudio
             // Add framework services.
             services.AddDbContext<CamerackStudioDataContext>(options =>
                 options.UseMySql(Configuration.GetConnectionString("CamerackStudio")));
+            services.AddDataProtection()
+                .UseCryptographicAlgorithms(
+                    new AuthenticatedEncryptorConfiguration()
+                    {
+                        EncryptionAlgorithm = EncryptionAlgorithm.AES_256_CBC,
+                        ValidationAlgorithm = ValidationAlgorithm.HMACSHA256
+                    });
+
+            services.AddSignalR();
+            // Adds a default in-memory implementation of IDistributedCache.
+            services.AddDistributedMemoryCache();
+            services.AddDistributedRedisCache(option =>
+            {
+                option.Configuration = "localhost";
+                option.InstanceName = "Camerack";
+            });
+            services.AddSession(options =>
+            {
+                options.IdleTimeout = TimeSpan.FromDays(2);
+            });
 
             services.AddMvc(options => options.MaxModelValidationErrors = 50).AddJsonOptions(options => {
                 options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
                 options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
 
             });
-            services.AddSignalR();
-            // Adds a default in-memory implementation of IDistributedCache.
-            services.AddDistributedMemoryCache();
-            services.AddDistributedRedisCache(option =>
-            {
-                option.Configuration = "Localhost";
-                option.InstanceName = "Camerack";
-            });
-            services.AddSession(options =>
-            {
-                // Set a short timeout for easy testing.
-                options.IdleTimeout = TimeSpan.FromMinutes(30);
-            });
+            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie();
+
+            services.AddSingleton<IDistributedCache, RedisCache>();
             services.AddSingleton<ITempDataProvider, CookieTempDataProvider>();
         }
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -5,13 +5,13 @@
 @using Microsoft.AspNetCore.Http
 @using Newtonsoft.Json
 @{
-    var signedInUserId = Convert.ToInt64(new RedisDataAgent().GetStringValue("CamerackLoggedInUserId"));
+    var signedInUserId = Convert.ToInt64(Context.Session.GetString("CamerackLoggedInUserId"));
     var notifications = new AppUserFactory().GetAllPushNotifications(new AppConfig().UsersPushNotifications).Result.Where(n=>n.AppUserId == signedInUserId).ToList();
     var payments = new OrderFactory().GetAllPaymentsAsync(new AppConfig().FetchPaymentsUrl).Result.Where(n=>n.AppUserId == signedInUserId).ToList();
 }
 <header>
     <div class="search-bar closed">
-    </div><a href="@Url.Action("Index", "Home")" class="brand pull-left">
+    </div><a href="http://camerack.com/" class="brand pull-left">
         <h2>
             <img src="~/LandingPage/assets/img/icon-camerack-studio.png" alt="logo">
         </h2>
@@ -45,11 +45,11 @@
                     </li>
                 }
             </div>
-            <li>
+            @*<li>
                 <a href="@Url.Action("LogOut", "Account")" role="button" class="header-icon">
                     <i class="ti-power-off"></i>
                 </a>
-            </li>
+            </li>*@
         
         </ul>
 </header>

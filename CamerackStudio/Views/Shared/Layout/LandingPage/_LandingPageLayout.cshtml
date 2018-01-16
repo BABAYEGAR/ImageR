@@ -3,7 +3,7 @@
 @using Microsoft.AspNetCore.Http
 @using Newtonsoft.Json
 @{
-    var userId = Convert.ToInt64(new RedisDataAgent().GetStringValue("CamerackLoggedInUserId"));
+    var userId = Convert.ToInt64(Context.Session.GetString("CamerackLoggedInUserId"));
 }
 <!DOCTYPE html>
 <html lang="en">

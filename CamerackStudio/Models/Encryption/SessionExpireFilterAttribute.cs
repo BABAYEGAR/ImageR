@@ -10,16 +10,18 @@ namespace CamerackStudio.Models.Encryption
     {
         public override void OnActionExecuting(ActionExecutingContext filterContext)
         {
-            if (new RedisDataAgent().GetStringValue("CamerackLoggedInUser") == null || new RedisDataAgent().GetStringValue("CamerackLoggedInUserId") == null)
-                {
-                    filterContext.Result =
-                        new RedirectToRouteResult(
-                            new RouteValueDictionary{{ "controller", "Account" },
-                                { "action", "Login" },{"returnUrl","sessionExpired"}
+            if (filterContext.HttpContext.Session.GetString("CamerackLoggedInUser") == null
+                || filterContext.HttpContext.Session.GetString("CamerackLoggedInUserId") == null)
+            {
+                filterContext.Result =
+                    new RedirectToRouteResult(
+                       
+                        new RouteValueDictionary{{ "controller", "Home" },
+                            { "action", "Dashboard" },{"returnUrl","sessionExpired"}
 
-                            });
-                }
-            
+                        });
+            }
+
 
             base.OnActionExecuting(filterContext);
         }

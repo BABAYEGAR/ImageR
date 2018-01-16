@@ -15,8 +15,8 @@
         #endregion
 
         #region SSO
-        public string SSOBaseUrl => "http://localhost:53017/";
-        //public string SSOBaseUrl => "http://sso.camerack.com/";
+        //public string SSOBaseUrl => "http://localhost:53017/";
+        public string SSOBaseUrl => "http://sso.camerack.com/";
         public string RegisterUsersUrl => SSOBaseUrl + "API/Register";
         public string LoginUrl => SSOBaseUrl + "API/Login";
         public string FetchUsersUrl => SSOBaseUrl + "API/AllUsers";
@@ -39,8 +39,8 @@
 
         #region Camerack API URL
 
-        //public string CamerackBaseUrl => "http://camerack.com/";
-        public string CamerackBaseUrl => "http://localhost:51851/";
+        public string CamerackBaseUrl => "http://camerack.com/";
+        //public string CamerackBaseUrl => "http://localhost:51851/";
         public string FetchOrdersUrl => CamerackBaseUrl + "API/GetAllOrders";
         public string FetchPaymentsUrl => CamerackBaseUrl + "API/GetAllPayments";
         public string FetchInvoiceUrl => CamerackBaseUrl + "API/GetAllInvoices";

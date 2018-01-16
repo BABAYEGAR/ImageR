@@ -38,10 +38,10 @@ namespace CamerackStudio.Controllers
         [SessionExpireFilter]
         public ActionResult Index(string status)
         {
-            var signedInUserId = Convert.ToInt64(new RedisDataAgent().GetStringValue("CamerackLoggedInUserId"));
-            if (new RedisDataAgent().GetStringValue("CamerackLoggedInUser") != null)
+            var signedInUserId = Convert.ToInt64(HttpContext.Session.GetString("CamerackLoggedInUserId"));
+            if (HttpContext.Session.GetString("CamerackLoggedInUser") != null)
             {
-                var userString = new RedisDataAgent().GetStringValue("CamerackLoggedInUser");
+                var userString = HttpContext.Session.GetString("CamerackLoggedInUser");
                 _appUser = JsonConvert.DeserializeObject<AppUser>(userString);
             }
             if (_appUser.Role.UploadImage)
@@ -88,7 +88,7 @@ namespace CamerackStudio.Controllers
         [ValidateAntiForgeryToken]
         public PartialViewResult RateImage(IFormCollection collection, ImageAction action)
         {
-            var signedInUserId = Convert.ToInt64(new RedisDataAgent().GetStringValue("CamerackLoggedInUserId"));
+            var signedInUserId = Convert.ToInt64(HttpContext.Session.GetString("CamerackLoggedInUserId"));
             action.Action = "Rating";
             action.ActionDate = DateTime.Now;
             action.AppUserId = signedInUserId;
@@ -175,7 +175,7 @@ namespace CamerackStudio.Controllers
         [SessionExpireFilter]
         public ActionResult Create(long? id)
         {
-            var signedInUserId = Convert.ToInt64(new RedisDataAgent().GetStringValue("CamerackLoggedInUserId"));
+            var signedInUserId = Convert.ToInt64(HttpContext.Session.GetString("CamerackLoggedInUserId"));
             ViewBag.ImageCategoryId = new SelectList(_databaseConnection.ImageCategories.ToList(), "ImageCategoryId",
                 "Name");
             ViewBag.CameraId = new SelectList(
@@ -199,7 +199,7 @@ namespace CamerackStudio.Controllers
         [SessionExpireFilter]
         public ActionResult Create(Image image, IFormCollection collection, IFormFile file)
         {
-            var signedInUserId = Convert.ToInt64(new RedisDataAgent().GetStringValue("CamerackLoggedInUserId"));
+            var signedInUserId = Convert.ToInt64(HttpContext.Session.GetString("CamerackLoggedInUserId"));
             try
             {
                 image.AppUserId = signedInUserId;
@@ -328,7 +328,7 @@ namespace CamerackStudio.Controllers
         [SessionExpireFilter]
         public ActionResult SetAsFeatured(long id)
         {
-            var signedInUserId = Convert.ToInt64(new RedisDataAgent().GetStringValue("CamerackLoggedInUserId"));
+            var signedInUserId = Convert.ToInt64(HttpContext.Session.GetString("CamerackLoggedInUserId"));
 
             var image = _databaseConnection.Images.Find(id);
             image.Featured = true;
@@ -345,7 +345,7 @@ namespace CamerackStudio.Controllers
         [SessionExpireFilter]
         public ActionResult Edit(long id)
         {
-            var signedInUserId = Convert.ToInt64(new RedisDataAgent().GetStringValue("CamerackLoggedInUserId"));
+            var signedInUserId = Convert.ToInt64(HttpContext.Session.GetString("CamerackLoggedInUserId"));
             var image = _databaseConnection.Images.Find(id);
             ViewBag.ImageCategoryId = new SelectList(_databaseConnection.ImageCategories.ToList(), "ImageCategoryId",
                 "Name", image.ImageCategoryId);
@@ -367,7 +367,7 @@ namespace CamerackStudio.Controllers
             try
             {
                 // TODO: Add update logic here
-                var signedInUserId = Convert.ToInt64(new RedisDataAgent().GetStringValue("CamerackLoggedInUserId"));
+                var signedInUserId = Convert.ToInt64(HttpContext.Session.GetString("CamerackLoggedInUserId"));
                 image.DateLastModified = DateTime.Now;
                 image.LastModifiedBy = signedInUserId;
 
@@ -439,7 +439,7 @@ namespace CamerackStudio.Controllers
         {
             long? imageId = Convert.ToInt64(collection["ImageId"]);
             var image = _databaseConnection.Images.Find(imageId);
-            var signedInUserId = Convert.ToInt64(new RedisDataAgent().GetStringValue("CamerackLoggedInUserId"));
+            var signedInUserId = Convert.ToInt64(HttpContext.Session.GetString("CamerackLoggedInUserId"));
             comment.DateCreated = DateTime.Now;
             comment.AppUserId = signedInUserId;
             comment.ImageId = imageId;

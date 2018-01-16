@@ -7,6 +7,8 @@ using CamerackStudio.Models.DataBaseConnections;
 using CamerackStudio.Models.Encryption;
 using CamerackStudio.Models.Entities;
 using CamerackStudio.Models.Redis;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Internal;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 
@@ -24,29 +26,19 @@ namespace CamerackStudio.Controllers
             _databaseConnection.Database.EnsureCreated();
             pushNotifications = new AppUserFactory().GetAllPushNotifications(new AppConfig().UsersPushNotifications).Result;
         }
-
-        public IActionResult Index()
+        [SessionExpireFilter]
+        public IActionResult Index(string id)
         {
-            if (new RedisDataAgent().GetStringValue("CamerackLoggedInUser") != null)
-            {
-                var userString = new RedisDataAgent().GetStringValue("CamerackLoggedInUser");
-                _appUser = JsonConvert.DeserializeObject<AppUser>(userString);
-            }
-            if (_appUser != null)
-                if (_databaseConnection.UserBanks.Where(n => n.CreatedBy == _appUser.AppUserId).ToList().Count <= 0)
-                {
-                    //populate and save bank transaction
-                    var userBank = new UserBank
-                    {
-                        CreatedBy = _appUser.AppUserId,
-                        LastModifiedBy = _appUser.AppUserId,
-                        DateCreated = DateTime.Now,
-                        DateLastModified = DateTime.Now
-                    };
-                    _databaseConnection.UserBanks.Add(userBank);
-                    _databaseConnection.SaveChanges();
-                }
 
+
+            if (HttpContext.Session.GetString("CamerackLoggedInUser") != null)
+            {
+                RedirectToAction("Dashboard");
+            }
+            else
+            {
+                HttpContext.Response.Redirect("http://camerack.com/" + "error");
+            }
             return View();
         }
 
@@ -71,26 +63,49 @@ namespace CamerackStudio.Controllers
 
         public ActionResult RealoadNavigation()
         {
-            var signedInUserId = Convert.ToInt64(new RedisDataAgent().GetStringValue("CamerackLoggedInUserId"));
+            var signedInUserId = Convert.ToInt64(HttpContext.Session.GetString("CamerackLoggedInUserId"));
             var notifications = new AppUserFactory().GetAllPushNotifications(new AppConfig().UsersPushNotifications)
                 .Result.Where(n=>n.AppUserId == signedInUserId).ToList();
             return PartialView("Partials/_NotificationPartial", notifications);
         }
         public int RealoadNavigationAndCount()
         {
-            var signedInUserId = Convert.ToInt64(new RedisDataAgent().GetStringValue("CamerackLoggedInUserId"));
+            var signedInUserId = Convert.ToInt64(HttpContext.Session.GetString("CamerackLoggedInUserId"));
             var notifications = new AppUserFactory().GetAllPushNotifications(new AppConfig().UsersPushNotifications)
                 .Result.Where(n => n.AppUserId == signedInUserId).Take(5).ToList();
             return notifications.Count;
         }
-        [SessionExpireFilter]
-        public IActionResult Dashboard()
+        //[SessionExpireFilter]
+        public IActionResult Dashboard(string id)
         {
-            var signedInUserId = Convert.ToInt64(new RedisDataAgent().GetStringValue("CamerackLoggedInUserId"));
-            AppTransport appTransport = null;
-            if (new RedisDataAgent().GetStringValue("CamerackLoggedInUser") != null)
+            if (!String.IsNullOrEmpty(id))
             {
-                var userString = new RedisDataAgent().GetStringValue("CamerackLoggedInUser");
+                var userSessionString = new Md5Ecryption().Decrypt(id);
+                var userId = Convert.ToInt64(userSessionString);
+
+                var user = new AppUserFactory().GetAllUsers(new AppConfig().FetchUsersUrl).Result
+                    .SingleOrDefault(n => n.AppUserId == userId);
+                if (user != null)
+                {
+                    var userSession = JsonConvert.SerializeObject(user);
+                    HttpContext.Session.SetString("CamerackLoggedInUserId", userId.ToString());
+                    HttpContext.Session.SetString("CamerackLoggedInUser", userSession);
+                }
+                else
+                {
+                    return Redirect("http://camerack.com/Home/Index/" + "error");
+                }
+            }
+            else
+            {
+                return Redirect("http://camerack.com/Home/Index/" + "error");
+            }
+
+            var signedInUserId = Convert.ToInt64(HttpContext.Session.GetString("CamerackLoggedInUserId"));
+            AppTransport appTransport = null;
+            if (HttpContext.Session.GetString("CamerackLoggedInUser") != null)
+            {
+                var userString = HttpContext.Session.GetString("CamerackLoggedInUser");
                 _appUser = JsonConvert.DeserializeObject<AppUser>(userString);
             }
 
@@ -114,14 +129,14 @@ namespace CamerackStudio.Controllers
                     var userBank =
                         _databaseConnection.UserBanks.SingleOrDefault(n => n.CreatedBy == _appUser.AppUserId);
                     if (string.IsNullOrEmpty(userBank.AccountName) || userBank.BankId <= 0
-                        || string.IsNullOrEmpty(userBank.AccountName) && new RedisDataAgent().GetStringValue("UserBank") == null)
+                        || string.IsNullOrEmpty(userBank.AccountName) && HttpContext.Session.GetString("UserBank") == null)
                     {
                         var bankString = JsonConvert.SerializeObject(userBank);
-                        new RedisDataAgent().SetStringValue("UserBank", bankString);
+                        HttpContext.Session.SetString("UserBank", bankString);
                     }
                     else
                     {
-                        new RedisDataAgent().DeleteStringValue("UserBank");
+                        HttpContext.Session.Remove("UserBank");
                     }
                 }
             //store data temporarily, based on the user role

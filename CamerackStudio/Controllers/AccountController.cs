@@ -37,7 +37,7 @@ namespace CamerackStudio.Controllers
         [SessionExpireFilter]
         public ActionResult Profile()
         {
-            var signedInUserId = Convert.ToInt64(new RedisDataAgent().GetStringValue("CamerackLoggedInUserId"));
+            var signedInUserId = Convert.ToInt64(HttpContext.Session.GetString("CamerackLoggedInUserId"));
             var appTransport = new AppTransport
             {
                 AppUsers = _users,
@@ -69,7 +69,7 @@ namespace CamerackStudio.Controllers
         [SessionExpireFilter]
         public async Task<ActionResult> SingleImage(long id,long? notificationId)
         {
-            var signedInUserId = Convert.ToInt64(new RedisDataAgent().GetStringValue("CamerackLoggedInUserId"));
+            var signedInUserId = Convert.ToInt64(HttpContext.Session.GetString("CamerackLoggedInUserId"));
 
             //update notification to read
             if (notificationId != null)
@@ -105,13 +105,13 @@ namespace CamerackStudio.Controllers
         /// <returns></returns>
         public ActionResult Notification()
         {
-            var signedInUserId = Convert.ToInt64(new RedisDataAgent().GetStringValue("CamerackLoggedInUserId"));
+            var signedInUserId = Convert.ToInt64(HttpContext.Session.GetString("CamerackLoggedInUserId"));
             return View(pushNotifications.Where(n=>n.AppUserId == signedInUserId).ToList());
         }
 
         public async Task<ActionResult> MarkNotificationAsRead(long id)
         {
-            var signedInUserId = Convert.ToInt64(new RedisDataAgent().GetStringValue("CamerackLoggedInUserId"));
+            var signedInUserId = Convert.ToInt64(HttpContext.Session.GetString("CamerackLoggedInUserId"));
             var notification = pushNotifications.SingleOrDefault(n=>n.PushNotificationId == id);
             if (notification != null)
             {
@@ -138,7 +138,7 @@ namespace CamerackStudio.Controllers
         public ActionResult ChangeProfileImage(IList<IFormFile> profile, IList<IFormFile> background)
         {
             ViewBag.Users = _users;
-            var signedInUserId = Convert.ToInt64(new RedisDataAgent().GetStringValue("CamerackLoggedInUserId"));
+            var signedInUserId = Convert.ToInt64(HttpContext.Session.GetString("CamerackLoggedInUserId"));
             var userString = HttpContext.Session.GetString("CamerackLoggedInUser");
             var appUser = JsonConvert.DeserializeObject<AppUser>(userString);
 
@@ -165,7 +165,7 @@ namespace CamerackStudio.Controllers
                             if (response.AppUser != null)
                             {
                                 var newUserString = JsonConvert.SerializeObject(appUser);
-                                new RedisDataAgent().SetStringValue("CamerackLoggedInUser",newUserString);
+                                HttpContext.Session.SetString("CamerackLoggedInUser",newUserString);
                             }
                         }
                     }
@@ -193,7 +193,7 @@ namespace CamerackStudio.Controllers
                             if (response.AppUser != null)
                             {
                                 var newerUserString = JsonConvert.SerializeObject(appUser);
-                                new RedisDataAgent().SetStringValue("CamerackLoggedInUser", newerUserString);
+                                HttpContext.Session.SetString("CamerackLoggedInUser", newerUserString);
                             }
                         }
                     }
@@ -214,7 +214,7 @@ namespace CamerackStudio.Controllers
         [SessionExpireFilter]
         public ActionResult UserBank()
         {
-            var signedInUserId = Convert.ToInt64(new RedisDataAgent().GetStringValue("CamerackLoggedInUserId"));
+            var signedInUserId = Convert.ToInt64(HttpContext.Session.GetString("CamerackLoggedInUserId"));
             var userBank = _databaseConnection.UserBanks.SingleOrDefault(n => n.CreatedBy == signedInUserId);
             var banks = new AppUserFactory().GetAllBanks(new AppConfig().AllBanks).Result;
             if (userBank != null && userBank.BankId != null)
@@ -236,7 +236,7 @@ namespace CamerackStudio.Controllers
             try
             {
                 //populate object and save transaction
-                var signedInUserId = Convert.ToInt64(new RedisDataAgent().GetStringValue("CamerackLoggedInUserId"));
+                var signedInUserId = Convert.ToInt64(HttpContext.Session.GetString("CamerackLoggedInUserId"));
                 userBank.LastModifiedBy = signedInUserId;
                 userBank.DateLastModified = DateTime.Now;
 
@@ -245,14 +245,14 @@ namespace CamerackStudio.Controllers
 
                 if (string.IsNullOrEmpty(userBank.AccountName) || userBank.BankId <= 0
                     || string.IsNullOrEmpty(userBank.AccountName) &&
-                    new RedisDataAgent().GetStringValue("UserBank") == null)
+                    HttpContext.Session.GetString("UserBank") == null)
                 {
                     var bankString = JsonConvert.SerializeObject(userBank);
-                    new RedisDataAgent().SetStringValue("UserBank", bankString);
+                    HttpContext.Session.SetString("UserBank", bankString);
                 }
                 else
                 {
-                    new RedisDataAgent().DeleteStringValue("UserBank");
+                    HttpContext.Session.Remove("UserBank");
                 }
                 //display notification
                 TempData["display"] = "You have successfully updated your bank information";
@@ -271,7 +271,7 @@ namespace CamerackStudio.Controllers
         [SessionExpireFilter]
         public ActionResult EditProfile()
         {
-            var userString = new RedisDataAgent().GetStringValue("CamerackLoggedInUser");
+            var userString = HttpContext.Session.GetString("CamerackLoggedInUser");
             var appUser = JsonConvert.DeserializeObject<AppUser>(userString);
             return View(appUser);
         }
@@ -284,7 +284,7 @@ namespace CamerackStudio.Controllers
             try
             {
                 //populate object and save transaction
-                var signedInUserId = Convert.ToInt64(new RedisDataAgent().GetStringValue("CamerackLoggedInUserId"));
+                var signedInUserId = Convert.ToInt64(HttpContext.Session.GetString("CamerackLoggedInUserId"));
                 appUser.LastModifiedBy = signedInUserId;
                 appUser.DateLastModified = DateTime.Now;
                 appUser.ClientId = new AppConfig().ClientId;
@@ -300,7 +300,7 @@ namespace CamerackStudio.Controllers
                     return View(appUser);
                 }
                 var userString = JsonConvert.SerializeObject(resonse.Result.AppUser);
-                new RedisDataAgent().SetStringValue("CamerackLoggedInUser",userString);
+                HttpContext.Session.SetString("CamerackLoggedInUser",userString);
 
                 //display notification
                 TempData["display"] = resonse.Result.AccessLog.Message;
@@ -329,8 +329,8 @@ namespace CamerackStudio.Controllers
         {
             try
             {
-                var signedInUserId = Convert.ToInt64(new RedisDataAgent().GetStringValue("CamerackLoggedInUserId"));
-                var userString = new RedisDataAgent().GetStringValue("CamerackLoggedInUser");
+                var signedInUserId = Convert.ToInt64(HttpContext.Session.GetString("CamerackLoggedInUserId"));
+                var userString = HttpContext.Session.GetString("CamerackLoggedInUser");
                 var appUser = JsonConvert.DeserializeObject<AppUser>(userString);
                 if (appUser != null)
                 {
@@ -351,7 +351,7 @@ namespace CamerackStudio.Controllers
                     return View(model);
                 }
                 var newUserString = JsonConvert.SerializeObject(resonse.Result.AppUser);
-                new RedisDataAgent().SetStringValue("CamerackLoggedInUser",newUserString);
+                HttpContext.Session.SetString("CamerackLoggedInUser",newUserString);
 
                 //display notification
                 TempData["display"] = resonse.Result.AccessLog.Message;
@@ -565,7 +565,7 @@ namespace CamerackStudio.Controllers
         {
             _databaseConnection.Dispose();
             HttpContext.Session.Clear();
-            if (new RedisDataAgent().GetStringValue("CamerackLoggedInUser") != null)
+            if (HttpContext.Session.GetString("CamerackLoggedInUser") != null)
             {
                 return RedirectToAction("Dashboard", "Home");
             }
@@ -598,22 +598,22 @@ namespace CamerackStudio.Controllers
                 var userExist = response.Result.AppUser;
                 //convert object to json string and insert into session
                 var userString = JsonConvert.SerializeObject(userExist);
-                new RedisDataAgent().SetStringValue("CamerackLoggedInUser",userString);
+                HttpContext.Session.SetString("CamerackLoggedInUser",userString);
 
                 var userBank = _databaseConnection.UserBanks.SingleOrDefault(n => n.CreatedBy == userExist.AppUserId);
                 if(userBank != null && (string.IsNullOrEmpty(userBank.AccountName) || userBank.BankId <= 0
-                                        || string.IsNullOrEmpty(userBank.AccountName) && new RedisDataAgent().GetStringValue("UserBank") == null))
+                                        || string.IsNullOrEmpty(userBank.AccountName) && HttpContext.Session.GetString("UserBank") == null))
                 {
                     var bankString = JsonConvert.SerializeObject(userBank);
-                    new RedisDataAgent().SetStringValue("UserBank", bankString);
+                    HttpContext.Session.SetString("UserBank", bankString);
                 }
                 else
                 {
-                    new RedisDataAgent().DeleteStringValue("UserBank");
+                    HttpContext.Session.Remove("UserBank");
                 }
                 //set user id into session string
-                new RedisDataAgent().SetStringValue("CamerackLoggedInUserId",userExist.AppUserId.ToString());
-                var signedInUserId = Convert.ToInt64(new RedisDataAgent().GetStringValue("CamerackLoggedInUserId"));
+                HttpContext.Session.SetString("CamerackLoggedInUserId",userExist.AppUserId.ToString());
+                var signedInUserId = Convert.ToInt64(HttpContext.Session.GetString("CamerackLoggedInUserId"));
                 var mapping = _databaseConnection.PhotographerCategoryMappings.Where(n => n.AppUserId == signedInUserId)
                     .ToList();
 
@@ -638,13 +638,13 @@ namespace CamerackStudio.Controllers
         [HttpGet]
         public IActionResult LogOut()
         {
+            HttpContext.Session.Remove("CamerackLoggedInUser");
+            HttpContext.Session.Remove("CamerackLoggedInUserId");
+            HttpContext.Session.Remove("Cart");
             HttpContext.Session.Clear();
             _databaseConnection.Dispose();
             HttpContext.SignOutAsync();
-            new RedisDataAgent().DeleteStringValue("CamerackLoggedInUser");
-            new RedisDataAgent().DeleteStringValue("CamerackLoggedInUserId");
-            new RedisDataAgent().DeleteStringValue("Cart");
-            return RedirectToAction("Login", "Account");
+            return Redirect("http://camerack.com/Account/Login");
         }
     }
 }

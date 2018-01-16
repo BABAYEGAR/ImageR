@@ -32,7 +32,7 @@ namespace CamerackStudio.Controllers
         {
             try
             {
-                var signedInUserId = Convert.ToInt64(new RedisDataAgent().GetStringValue("CamerackLoggedInUserId"));
+                var signedInUserId = Convert.ToInt64(HttpContext.Session.GetString("CamerackLoggedInUserId"));
 
 
                 //update notification to read
@@ -49,9 +49,9 @@ namespace CamerackStudio.Controllers
                     }
                 }
 
-                if (new RedisDataAgent().GetStringValue("CamerackLoggedInUser") != null)
+                if (HttpContext.Session.GetString("CamerackLoggedInUser") != null)
                 {
-                    var userString = new RedisDataAgent().GetStringValue("CamerackLoggedInUser");
+                    var userString = HttpContext.Session.GetString("CamerackLoggedInUser");
                     _appUser = JsonConvert.DeserializeObject<AppUser>(userString);
                 }
                 var payments = new List<Payment>();

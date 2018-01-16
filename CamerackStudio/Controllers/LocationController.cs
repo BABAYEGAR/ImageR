@@ -28,17 +28,17 @@ namespace CamerackStudio.Controllers
         [SessionExpireFilter]
         public ActionResult Index()
         {
-            var signedInUserId = Convert.ToInt64(new RedisDataAgent().GetStringValue("CamerackLoggedInUserId"));
+            var signedInUserId = Convert.ToInt64(HttpContext.Session.GetString("CamerackLoggedInUserId"));
             return View(_databaseConnection.Locations.Where(n=>n.CreatedBy == signedInUserId).ToList());
         }
         // GET: Image
         [SessionExpireFilter]
         public ActionResult Images(long id)
         {
-            var signedInUserId = Convert.ToInt64(new RedisDataAgent().GetStringValue("CamerackLoggedInUserId"));
-            if (new RedisDataAgent().GetStringValue("CamerackLoggedInUser") != null)
+            var signedInUserId = Convert.ToInt64(HttpContext.Session.GetString("CamerackLoggedInUserId"));
+            if (HttpContext.Session.GetString("CamerackLoggedInUser") != null)
             {
-                var userString = new RedisDataAgent().GetStringValue("CamerackLoggedInUser");
+                var userString = HttpContext.Session.GetString("CamerackLoggedInUser");
                 _appUser = JsonConvert.DeserializeObject<AppUser>(userString);
             }
             if (_appUser.Role.ManageImages)
@@ -75,7 +75,7 @@ namespace CamerackStudio.Controllers
         {
             try
             {
-                var signedInUserId = Convert.ToInt64(new RedisDataAgent().GetStringValue("CamerackLoggedInUserId"));
+                var signedInUserId = Convert.ToInt64(HttpContext.Session.GetString("CamerackLoggedInUserId"));
                 location.DateCreated = DateTime.Now;
                 location.DateLastModified = DateTime.Now;
                 location.CreatedBy = signedInUserId;
@@ -119,7 +119,7 @@ namespace CamerackStudio.Controllers
             try
             {
                 // TODO: Add update logic here
-                var signedInUserId = Convert.ToInt64(new RedisDataAgent().GetStringValue("CamerackLoggedInUserId"));
+                var signedInUserId = Convert.ToInt64(HttpContext.Session.GetString("CamerackLoggedInUserId"));
                 location.DateLastModified = DateTime.Now;
                 location.LastModifiedBy = signedInUserId;
 
