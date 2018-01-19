@@ -11,7 +11,7 @@
         <div class="widget text-center">
             <div class="widget-body">
                 <h5 class="mb-5">Uploaded Images</h5>
-                <div class="fs-36 fw-600 mb-20 counter">@if (Model.Images != null)
+                <div class="fs-36 fw-600 mb-20 counter">@if (Model != null && Model.Images != null)
                                                         {
                                                             @Model.Images.Count
                                                         }</div>
@@ -25,8 +25,8 @@
         <div class="widget text-center">
             <div class="widget-body">
                 <h5 class="mb-5">Accepted Images</h5>
-                <div class="fs-36 fw-600 mb-20 counter">@if (Model.Images != null)
-                                                        {
+                <div class="fs-36 fw-600 mb-20 counter">@if (Model != null && Model.Images != null)
+                {
                                                             @Model.Images.Where(n => n.Status == ImageStatus.Accepted.ToString()).ToList().Count
                                                         }</div>
                 <div id="esp-feedback" data-percent="20" style="height: 10px; line-height: 20px; padding: 5px; width: 140px;" class="easy-pie-chart fs-36">
@@ -38,8 +38,8 @@
         <div class="widget text-center">
             <div class="widget-body">
                 <h5 class="mb-5">Rejected Images</h5>
-                <div class="fs-36 fw-600 mb-20 counter">@if (Model.Images != null)
-                                                        {
+                <div class="fs-36 fw-600 mb-20 counter">@if (Model != null && Model.Images != null)
+                {
                                                             @Model.Images.Where(n => n.Status == ImageStatus.Rejected.ToString()).ToList().Count
                                                         }</div>
                 <div id="esp-feedback" data-percent="20" style="height: 10px; line-height: 20px; padding: 5px; width: 140px;" class="easy-pie-chart fs-36">
@@ -52,7 +52,10 @@
         <div class="widget text-center">
             <div class="widget-body">
                 <h5 class="mb-5">Orders</h5>
-                <div class="fs-36 fw-600 mb-20 counter">@Model.Orders.Count</div>
+                <div class="fs-36 fw-600 mb-20 counter">@if (Model != null && Model.Orders != null) { 
+                                 @Model.Orders.Count
+                    }
+                </div>
                 <div id="esp-feedback" data-percent="20" style="height: 10px; line-height: 20px; padding: 5px; width: 140px;" class="easy-pie-chart fs-36">
                     <i class="ti-shopping-cart text-muted"></i>
                 </div>
@@ -63,7 +66,10 @@
         <div class="widget text-center">
             <div class="widget-body">
                 <h5 class="mb-5">Pending Payments</h5>
-                <div class="fs-36 fw-600 mb-20 counter">@Model.Payments.Where(n => n.Status == PaymentStatus.Pending.ToString()).ToList().Count</div>
+                <div class="fs-36 fw-600 mb-20 counter">@if (Model != null && Model.Orders != null)
+                                                        {
+                                                            @Model.Payments.Where(n => n.Status == PaymentStatus.Pending.ToString()).ToList().Count
+                                                        }</div>
                 <div id="esp-feedback" data-percent="20" style="height: 10px; line-height: 20px; padding: 5px; width: 140px;" class="easy-pie-chart fs-36">
                     <i class="ti-money text-muted"></i>
                 </div>
@@ -74,7 +80,10 @@
         <div class="widget text-center">
             <div class="widget-body">
                 <h5 class="mb-5">Approved Payments</h5>
-                <div class="fs-36 fw-600 mb-20 counter">@Model.Payments.Where(n=>n.Status == PaymentStatus.Paid.ToString()).ToList().Count</div>
+                <div class="fs-36 fw-600 mb-20 counter">@if (Model != null && Model.Orders != null)
+                                                        {
+                                                            @Model.Payments.Where(n => n.Status == PaymentStatus.Paid.ToString()).ToList().Count
+                                                        }</div>
                 <div id="esp-feedback" data-percent="20" style="height: 10px; line-height: 20px; padding: 5px; width: 140px;" class="easy-pie-chart fs-36">
                     <i class="ti-money text-muted"></i>
                 </div>
@@ -94,56 +103,58 @@
                 </tr>
                 </thead>
                 <tbody>
-                @if (Model.Orders.Count > 0)
+                @if (Model != null && Model.Orders != null)
                 {
-                    foreach (var item in Model.Orders)
+                    @if (Model.Orders.Count > 0)
                      {
-                         <tr>
-                             <td>@item.OrderNumber</td>
-                             <td>
-                                 <div class="media">
-                                     <div class="media-left avatar">
-                                         <img src="~/UploadedImage/ProfilePicture/Avatar.jpg" alt="" class="media-object img-circle"><span class="status bg-success"></span>
-                                     </div>
-                                     <div class="media-body">
-                                         <h5 class="media-heading">
+                         foreach (var item in Model.Orders)
+                         {
+                             <tr>
+                                 <td>@item.OrderNumber</td>
+                                 <td>
+                                     <div class="media">
+                                         <div class="media-left avatar">
+                                             <img src="~/UploadedImage/ProfilePicture/Avatar.jpg" alt="" class="media-object img-circle"><span class="status bg-success"></span>
+                                         </div>
+                                         <div class="media-body">
+                                             <h5 class="media-heading">
 
 
-                                             @if (Model.AppUsers != null)
-                                             {
-                                                 var singleOrDefault = Model.AppUsers.SingleOrDefault(n => n.AppUserId == item.AppUserId);
-
-                                                 if (singleOrDefault != null)
+                                                 @if (Model.AppUsers != null)
                                                  {
-                                                     @singleOrDefault.Name
+                                                     var singleOrDefault = Model.AppUsers.SingleOrDefault(n => n.AppUserId == item.AppUserId);
+
+                                                     if (singleOrDefault != null)
+                                                     {
+                                                         @singleOrDefault.Name
+                                                     }
                                                  }
-                                             }
-                                         </h5>
+                                             </h5>
+                                         </div>
                                      </div>
-                                 </div>
-                             </td>
-                             <td>@item.DateCreated.ToString("f")</td>
-                             <td>
+                                 </td>
+                                 <td>@item.DateCreated.ToString("f")</td>
+                                 <td>
 
 
-                                 @if (Model.Images != null)
-                                 {
-                                     var orDefault = Model.Images.SingleOrDefault(n => n.ImageId == item.ImageId);
-
-                                     if (orDefault != null)
+                                     @if (Model.Images != null)
                                      {
-                                         @orDefault.SellingPrice
-                                     }
-                                 }
-                             </td>
-                             <td class="text-center text-success">
-                                 <i class="ti-check"></i>
-                             </td>
-                         </tr>
-                     }  
-                }
-         
+                                         var orDefault = Model.Images.SingleOrDefault(n => n.ImageId == item.ImageId);
 
+                                         if (orDefault != null)
+                                         {
+                                             @orDefault.SellingPrice
+                                         }
+                                     }
+                                 </td>
+                                 <td class="text-center text-success">
+                                     <i class="ti-check"></i>
+                                 </td>
+                             </tr>
+                         }
+                     }
+
+                }
                 </tbody>
             </table>
         </div>

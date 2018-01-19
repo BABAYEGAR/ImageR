@@ -43,6 +43,23 @@
         <li>
             <a href="@Url.Action("Dashboard", "Home")" class="active bubble"><i class="ti-home"></i> Dashboard<span class="badge bg-success">Active</span></a>
         </li>
+        @if (appUser != null && appUser.Role != null && appUser.Role.ManageApplicationUser)
+        {
+            <li class="panel">
+                <a role="button" data-toggle="collapse" data-parent=".navigation" href="#collapse5" aria-expanded="false" aria-controls="collapse5" class="collapsed"><i class="ti-user"></i>Users @*<span class="label label-outline label-success">New</span>*@</a>
+                <ul id="collapse5" class="list-unstyled collapse">
+                    <li>
+                        <a href="@Url.Action("AllUsers", "AppUser")">All Users </a>
+                    </li>
+                    <li>
+                        <a href="@Url.Action("Customers", "AppUser")">All Customers </a>
+                    </li>
+                    <li>
+                        <a href="@Url.Action("Photographers", "AppUser")">All Photographers </a>
+                    </li>
+                </ul>
+            </li>
+        }
         @if (appUser != null && appUser.Role != null && appUser.Role.ManageImages)
         {
             <li class="panel">

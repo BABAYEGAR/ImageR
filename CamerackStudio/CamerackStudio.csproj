@@ -14,16 +14,12 @@
 
   <ItemGroup>
     <Compile Remove="Views\Location - Copy\**" />
-    <Compile Remove="Views\NewFolder\**" />
     <Compile Remove="wwwroot\images\**" />
     <Content Remove="Views\Location - Copy\**" />
-    <Content Remove="Views\NewFolder\**" />
     <Content Remove="wwwroot\images\**" />
     <EmbeddedResource Remove="Views\Location - Copy\**" />
-    <EmbeddedResource Remove="Views\NewFolder\**" />
     <EmbeddedResource Remove="wwwroot\images\**" />
     <None Remove="Views\Location - Copy\**" />
-    <None Remove="Views\NewFolder\**" />
     <None Remove="wwwroot\images\**" />
   </ItemGroup>
 
