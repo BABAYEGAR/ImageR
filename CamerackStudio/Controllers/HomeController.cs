@@ -1,14 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using CamerackStudio.Models;
 using CamerackStudio.Models.APIFactory;
 using CamerackStudio.Models.DataBaseConnections;
-using CamerackStudio.Models.Encryption;
 using CamerackStudio.Models.Entities;
-using CamerackStudio.Models.Redis;
+using CamerackStudio.Models.Enum;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.Internal;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 
@@ -18,28 +17,39 @@ namespace CamerackStudio.Controllers
     {
         private readonly CamerackStudioDataContext _databaseConnection;
         private AppUser _appUser;
-        private List<PushNotification> pushNotifications;
+        private readonly List<PushNotification> _pushNotifications;
 
         public HomeController(CamerackStudioDataContext databaseConnection)
         {
             _databaseConnection = databaseConnection;
             _databaseConnection.Database.EnsureCreated();
-            pushNotifications = new AppUserFactory().GetAllPushNotifications(new AppConfig().UsersPushNotifications).Result;
+            _pushNotifications = new AppUserFactory().GetAllPushNotifications(new AppConfig().UsersPushNotifications).Result;
         }
-        [SessionExpireFilter]
         public IActionResult Index(string id)
         {
-
-
-            if (HttpContext.Session.GetString("CamerackLoggedInUser") != null)
+            if (!String.IsNullOrEmpty(id))
             {
-                RedirectToAction("Dashboard");
+                var appUserKeys = new AppUserFactory().GetUsersAccessKey(new AppConfig().FetchUsersAccessKeys);
+                var userKey = appUserKeys.Result.SingleOrDefault(n => n.AccountActivationAccessCode == id);
+                if (userKey != null)
+                {
+                    var user = new AppUserFactory().GetAllUsers(new AppConfig().FetchUsersUrl).Result
+                        .SingleOrDefault(n => n.AppUserId == userKey.AppUserId);
+                    if (user != null)
+                    {
+                        var userSession = JsonConvert.SerializeObject(user);
+                        HttpContext.Session.SetString("StudioLoggedInUserId", userKey.AppUserId.ToString());
+                        HttpContext.Session.SetString("StudioLoggedInUser", userSession);
+                        return RedirectToAction("Dashboard");
+                    }
+                }
             }
-            else
+            if (HttpContext.Session.GetString("StudioLoggedInUserId") != null &&
+                HttpContext.Session.GetString("StudioLoggedInUser") != null)
             {
-                HttpContext.Response.Redirect("http://camerack.com/" + "error");
+                return RedirectToAction("Dashboard");
             }
-            return View();
+            return Redirect("https://camerack.com/Account/Login?returnUrl=sessionExpired");
         }
 
         public IActionResult Error()
@@ -63,115 +73,104 @@ namespace CamerackStudio.Controllers
 
         public ActionResult RealoadNavigation()
         {
-            var signedInUserId = Convert.ToInt64(HttpContext.Session.GetString("CamerackLoggedInUserId"));
-            var notifications = new AppUserFactory().GetAllPushNotifications(new AppConfig().UsersPushNotifications)
-                .Result.Where(n=>n.AppUserId == signedInUserId).ToList();
+            var signedInUserId = Convert.ToInt64(HttpContext.Session.GetString("StudioLoggedInUserId"));
+            var notifications =_pushNotifications.Where(n=>n.AppUserId == signedInUserId).ToList();
             return PartialView("Partials/_NotificationPartial", notifications);
         }
         public int RealoadNavigationAndCount()
         {
-            var signedInUserId = Convert.ToInt64(HttpContext.Session.GetString("CamerackLoggedInUserId"));
-            var notifications = new AppUserFactory().GetAllPushNotifications(new AppConfig().UsersPushNotifications)
-                .Result.Where(n => n.AppUserId == signedInUserId).Take(5).ToList();
+            var signedInUserId = Convert.ToInt64(HttpContext.Session.GetString("StudioLoggedInUserId"));
+            var notifications = _pushNotifications.Where(n => n.AppUserId == signedInUserId).Take(5).ToList();
             return notifications.Count;
         }
-        //[SessionExpireFilter]
-        public IActionResult Dashboard(string id)
+        public async Task<IActionResult> Dashboard()
         {
-            if (!String.IsNullOrEmpty(id))
-            {
-                var userSessionString = new Md5Ecryption().Decrypt(id);
-                var userId = Convert.ToInt64(userSessionString);
-
-                var user = new AppUserFactory().GetAllUsers(new AppConfig().FetchUsersUrl).Result
-                    .SingleOrDefault(n => n.AppUserId == userId);
-                if (user != null)
-                {
-                    var userSession = JsonConvert.SerializeObject(user);
-                    HttpContext.Session.SetString("CamerackLoggedInUserId", userId.ToString());
-                    HttpContext.Session.SetString("CamerackLoggedInUser", userSession);
-                }
-                else
-                {
-                    return Redirect("http://camerack.com/Home/Index/" + "error");
-                }
-            }
-            else
-            {
-                return Redirect("http://camerack.com/Home/Index/" + "error");
-            }
-
-            var signedInUserId = Convert.ToInt64(HttpContext.Session.GetString("CamerackLoggedInUserId"));
+            
             AppTransport appTransport = null;
-            if (HttpContext.Session.GetString("CamerackLoggedInUser") != null)
+            if (HttpContext.Session.GetString("StudioLoggedInUser") != null &&
+                HttpContext.Session.GetString("StudioLoggedInUserId") != null)
             {
-                var userString = HttpContext.Session.GetString("CamerackLoggedInUser");
+                var signedInUserId = Convert.ToInt64(HttpContext.Session.GetString("StudioLoggedInUserId"));
+                var userString = HttpContext.Session.GetString("StudioLoggedInUser");
                 _appUser = JsonConvert.DeserializeObject<AppUser>(userString);
-            }
 
-            //validate bank details
-            if (_appUser != null)
-                if (_databaseConnection.UserBanks.Where(n => n.CreatedBy == _appUser.AppUserId).ToList().Count <= 0)
+                //update keys
+                var updatedKeys = await new AppUserFactory().UpdateAccountActivationAccessKey(
+                    new AppConfig().UpdateAccountActivationAccessKey, _appUser.AppUserId);
+                if (updatedKeys.AppUserAccessKeyId > 0)
                 {
-                    //populate and save bank transaction
-                    var newUserBank = new UserBank
-                    {
-                        CreatedBy = _appUser.AppUserId,
-                        LastModifiedBy = _appUser.AppUserId,
-                        DateCreated = DateTime.Now,
-                        DateLastModified = DateTime.Now
-                    };
-                    _databaseConnection.UserBanks.Add(newUserBank);
-                    _databaseConnection.SaveChanges();
+                    //display notification
+                    TempData["display"] = "Welcome back " + _appUser.Name + " our awesome photographer!";
+                    TempData["notificationtype"] = NotificationType.Success.ToString();
                 }
-                else
-                {
-                    var userBank =
-                        _databaseConnection.UserBanks.SingleOrDefault(n => n.CreatedBy == _appUser.AppUserId);
-                    if (string.IsNullOrEmpty(userBank.AccountName) || userBank.BankId <= 0
-                        || string.IsNullOrEmpty(userBank.AccountName) && HttpContext.Session.GetString("UserBank") == null)
+                //validate bank details
+                if (_appUser != null)
+                    if (_databaseConnection.UserBanks.Where(n => n.CreatedBy == _appUser.AppUserId).ToList().Count <= 0)
                     {
-                        var bankString = JsonConvert.SerializeObject(userBank);
-                        HttpContext.Session.SetString("UserBank", bankString);
+                        //populate and save bank transaction
+                        var newUserBank = new UserBank
+                        {
+                            CreatedBy = _appUser.AppUserId,
+                            LastModifiedBy = _appUser.AppUserId,
+                            DateCreated = DateTime.Now,
+                            DateLastModified = DateTime.Now
+                        };
+                        _databaseConnection.UserBanks.Add(newUserBank);
+                        _databaseConnection.SaveChanges();
                     }
                     else
                     {
-                        HttpContext.Session.Remove("UserBank");
+                        var userBank =
+                            _databaseConnection.UserBanks.SingleOrDefault(n => n.CreatedBy == _appUser.AppUserId);
+                        if (userBank != null && (string.IsNullOrEmpty(userBank.AccountName) || userBank.BankId <= 0
+                                                 || string.IsNullOrEmpty(userBank.AccountName) &&
+                                                 HttpContext.Session.GetString("UserBank") == null))
+                        {
+                            var bankString = JsonConvert.SerializeObject(userBank);
+                            HttpContext.Session.SetString("UserBank", bankString);
+                        }
+                        else
+                        {
+                            HttpContext.Session.Remove("UserBank");
+                        }
                     }
+                //store data temporarily, based on the user role
+                if (_appUser != null && _appUser.Role.ManageImages)
+                {
+                    appTransport = new AppTransport
+                    {
+                        Images = _databaseConnection.Images.ToList(),
+                        Cameras = _databaseConnection.Cameras.ToList(),
+                        Locations = _databaseConnection.Locations.ToList(),
+                        Orders = new OrderFactory().GetAllOrdersAsync(new AppConfig().FetchOrdersUrl).Result.ToList(),
+                        Payments = new OrderFactory().GetAllPaymentsAsync(new AppConfig().FetchPaymentsUrl).Result
+                            .ToList()
+                    };
                 }
-            //store data temporarily, based on the user role
-            if (_appUser != null && _appUser.Role.ManageImages)
-            {
-                appTransport = new AppTransport
+                if (_appUser != null && _appUser.Role.UploadImage)
                 {
-                    Images = _databaseConnection.Images.ToList(),
-                    Cameras = _databaseConnection.Cameras.ToList(),
-                    Locations = _databaseConnection.Locations.ToList(),
-                    Orders = new OrderFactory().GetAllOrdersAsync(new AppConfig().FetchOrdersUrl).Result.ToList(),
-                    Payments = new OrderFactory().GetAllPaymentsAsync(new AppConfig().FetchPaymentsUrl).Result
-                        .ToList()
-                };
+                    appTransport = new AppTransport
+                    {
+                        Images = _databaseConnection.Images.Where(n => n.AppUserId == signedInUserId).ToList(),
+                        Cameras = _databaseConnection.Cameras
+                            .Where(n => n.CreatedBy == signedInUserId).ToList(),
+                        Locations = _databaseConnection.Locations
+                            .Where(n => n.CreatedBy == signedInUserId).ToList(),
+                        Orders = new OrderFactory().GetAllOrdersAsync(new AppConfig().FetchOrdersUrl)
+                            .Result.Where(n => n.CreatedBy == signedInUserId).ToList(),
+                        Payments = new OrderFactory().GetAllPaymentsAsync(new AppConfig().FetchPaymentsUrl).Result
+                            .Where(n => n.AppUserId == signedInUserId)
+                            .ToList()
+                    };
+                }
+                //validate mapping
+                if (appTransport != null)
+                    appTransport.AppUsers = new AppUserFactory().GetAllUsers(new AppConfig().FetchUsersUrl).Result
+                        .ToList();
+                return View(appTransport);
             }
-            if (_appUser != null && _appUser.Role.UploadImage)
-            {
-                appTransport = new AppTransport
-                {
-                    Images = _databaseConnection.Images.Where(n => n.AppUserId == signedInUserId).ToList(),
-                    Cameras = _databaseConnection.Cameras
-                        .Where(n => n.CreatedBy == signedInUserId).ToList(),
-                    Locations = _databaseConnection.Locations
-                        .Where(n => n.CreatedBy == signedInUserId).ToList(),
-                    Orders = new OrderFactory().GetAllOrdersAsync(new AppConfig().FetchOrdersUrl)
-                        .Result.Where(n => n.CreatedBy == signedInUserId).ToList(),
-                    Payments = new OrderFactory().GetAllPaymentsAsync(new AppConfig().FetchPaymentsUrl).Result
-                        .Where(n => n.AppUserId == signedInUserId)
-                        .ToList()
-                };
-            }
-            //validate mapping
-            if (appTransport != null)
-                appTransport.AppUsers = new AppUserFactory().GetAllUsers(new AppConfig().FetchUsersUrl).Result.ToList();
-            return View(appTransport);
+            return Redirect("https://camerack.com/Account/Login?returnUrl=sessionExpired");
         }
+
     }
 }

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using CamerackStudio.Models;
@@ -9,8 +8,6 @@ using CamerackStudio.Models.DataBaseConnections;
 using CamerackStudio.Models.Encryption;
 using CamerackStudio.Models.Entities;
 using CamerackStudio.Models.Enum;
-using CamerackStudio.Models.RabbitMq;
-using CamerackStudio.Models.Redis;
 using CloudinaryDotNet;
 using CloudinaryDotNet.Actions;
 using Microsoft.AspNetCore.Http;
@@ -36,12 +33,13 @@ namespace CamerackStudio.Controllers
 
         // GET: Image
         [SessionExpireFilter]
-        public ActionResult Index(string status)
+        public ActionResult Index(string status,string notify)
         {
-            var signedInUserId = Convert.ToInt64(HttpContext.Session.GetString("CamerackLoggedInUserId"));
-            if (HttpContext.Session.GetString("CamerackLoggedInUser") != null)
+            var signedInUserId = Convert.ToInt64(HttpContext.Session.GetString("StudioLoggedInUserId"));
+          
+            if (HttpContext.Session.GetString("StudioLoggedInUser") != null)
             {
-                var userString = HttpContext.Session.GetString("CamerackLoggedInUser");
+                var userString = HttpContext.Session.GetString("StudioLoggedInUser");
                 _appUser = JsonConvert.DeserializeObject<AppUser>(userString);
             }
             if (_appUser.Role.UploadImage)
@@ -63,6 +61,21 @@ namespace CamerackStudio.Controllers
                         .Include(n => n.ImageCategory).Include(n => n.ImageSubCategory).ToList();
             ViewBag.status = status;
             ViewBag.Role = _appUser.Role;
+            if (!String.IsNullOrEmpty(notify))
+            {
+                if (notify == "success")
+                {
+                    //display notification
+                    TempData["display"] = "The image is being uploaded to the server, Continue our work!";
+                    TempData["notificationtype"] = NotificationType.Success.ToString();
+                }
+                if (notify == "fail")
+                {
+                    //display notification
+                    TempData["display"] = "There was an issue uploading the image, Try again Later!";
+                    TempData["notificationtype"] = NotificationType.Error.ToString();
+                }
+            }
             return View(_images);
         }
 
@@ -70,7 +83,7 @@ namespace CamerackStudio.Controllers
         [SessionExpireFilter]
         public ActionResult Report()
         {
-            return View(_databaseConnection.ImageReports.ToList());
+            return View(_databaseConnection.ImageReports.Include(n=>n.Image).ToList());
         }
 
         /// <summary>
@@ -88,7 +101,7 @@ namespace CamerackStudio.Controllers
         [ValidateAntiForgeryToken]
         public PartialViewResult RateImage(IFormCollection collection, ImageAction action)
         {
-            var signedInUserId = Convert.ToInt64(HttpContext.Session.GetString("CamerackLoggedInUserId"));
+            var signedInUserId = Convert.ToInt64(HttpContext.Session.GetString("StudioLoggedInUserId"));
             action.Action = "Rating";
             action.ActionDate = DateTime.Now;
             action.AppUserId = signedInUserId;
@@ -121,7 +134,7 @@ namespace CamerackStudio.Controllers
         [SessionExpireFilter]
         public async Task<ActionResult> ApproveOrRejectImage(long id, string status)
         {
-            var signedInUserId = Convert.ToInt64(new RedisDataAgent().GetStringValue("CamerackLoggedInUserId"));
+            var signedInUserId = Convert.ToInt64(HttpContext.Session.GetString("StudioLoggedInUserId"));
             var image = _databaseConnection.Images.Find(id);
             if (status == ImageStatus.Accepted.ToString())
                 image.Status = ImageStatus.Accepted.ToString();
@@ -175,7 +188,7 @@ namespace CamerackStudio.Controllers
         [SessionExpireFilter]
         public ActionResult Create(long? id)
         {
-            var signedInUserId = Convert.ToInt64(HttpContext.Session.GetString("CamerackLoggedInUserId"));
+            var signedInUserId = Convert.ToInt64(HttpContext.Session.GetString("StudioLoggedInUserId"));
             ViewBag.ImageCategoryId = new SelectList(_databaseConnection.ImageCategories.ToList(), "ImageCategoryId",
                 "Name");
             ViewBag.CameraId = new SelectList(
@@ -199,15 +212,17 @@ namespace CamerackStudio.Controllers
         [SessionExpireFilter]
         public ActionResult Create(Image image, IFormCollection collection, IFormFile file)
         {
-            var signedInUserId = Convert.ToInt64(HttpContext.Session.GetString("CamerackLoggedInUserId"));
+            var signedInUserId = Convert.ToInt64(HttpContext.Session.GetString("StudioLoggedInUserId"));
+            var newLocation = new Location();
+            var newCamera = new Camera();
             try
             {
+              
                 image.AppUserId = signedInUserId;
                 image.DateCreated = DateTime.Now;
                 image.DateLastModified = DateTime.Now;
                 image.CreatedBy = signedInUserId;
                 image.LastModifiedBy = signedInUserId;
-                image.FileName = DateTime.Now.ToFileTime().ToString();
                 image.Status = ImageStatus.Accepted.ToString();
 
                 //collect data from form as model binding is disabled
@@ -231,9 +246,63 @@ namespace CamerackStudio.Controllers
                 {
                     image.CameraId = Convert.ToInt64(collection["CameraId"]);
                 }
+                else
+                {
+                    if (!String.IsNullOrEmpty(collection["NewCameraText"]))
+                    {
+                        string camera = collection["NewCameraText"];
+                        string checkCamera = collection["NewCameraText"].ToString().ToLower();
+                        if (_databaseConnection.Cameras
+                                .Where(n => n.Name.ToLower() == checkCamera && n.CreatedBy == signedInUserId).ToList()
+                                .Count <= 0)
+                        {
+                            newCamera = new Camera
+                            {
+                                Name = camera,
+                                CreatedBy = signedInUserId,
+                                LastModifiedBy = signedInUserId,
+                                DateCreated = DateTime.Now,
+                                DateLastModified = DateTime.Now
+                            };
+
+                        }
+                        else
+                        {
+                            newCamera = _databaseConnection.Cameras
+                                .SingleOrDefault(n => n.Name.ToLower() == checkCamera && n.CreatedBy == signedInUserId);
+                        }
+                    }
+                }
                 if (!String.IsNullOrEmpty(collection["LocationId"]))
                 {
                     image.LocationId = Convert.ToInt64(collection["LocationId"]);
+                }
+                else
+                {
+                    if (!String.IsNullOrEmpty(collection["NewLocationText"]))
+                    {
+                        string location = collection["NewLocationText"];
+                        string checkLocation = collection["NewLocationText"].ToString().ToLower();
+                        if (_databaseConnection.Locations.Where(n => n.Name.ToLower() == checkLocation
+                                                                     && n.CreatedBy == signedInUserId).ToList().Count <=
+                            0)
+                        {
+                            newLocation = new Location
+                            {
+                                Name = location,
+                                CreatedBy = signedInUserId,
+                                LastModifiedBy = signedInUserId,
+                                DateCreated = DateTime.Now,
+                                DateLastModified = DateTime.Now
+                            };
+
+                        }
+                        else
+                        {
+                            newLocation = _databaseConnection.Locations.SingleOrDefault(n => n.Name.ToLower() == checkLocation
+                                                                                   && n.CreatedBy == signedInUserId);
+                        }
+                    }
                 }
                 if (!String.IsNullOrEmpty(collection["ImageCategoryId"]))
                 {
@@ -265,52 +334,86 @@ namespace CamerackStudio.Controllers
                 image.A5 = Convert.ToBoolean(collection["A5"]);
                 image.A6 = Convert.ToBoolean(collection["A6"]);
 
-                //Append new upload object and send task to rabbit MQ API Via CamerackImageUploader API APPLICATION
-                string stream = null;
-                MemoryStream imageStream = null;
-                if (file.Length > 0)
+                var account = new Account(
+                    new AppConfig().CloudinaryAccoutnName,
+                    new AppConfig().CloudinaryApiKey,
+                    new AppConfig().CloudinaryApiSecret);
+                //connect to cloudinary account
+                var cloudinary = new Cloudinary(account);
+                var filename = DateTime.Now.ToFileTime().ToString();
+                //upload parameters
+                var uploadParams = new ImageUploadParams
                 {
-                    using (var ms = new MemoryStream())
-                    {
-                        imageStream = ms;
-                        file.CopyTo(ms);
-                        var fileBytes = ms.ToArray();
-                        stream = Convert.ToBase64String(fileBytes);
-                    }
-                }
-
-                var upload = new ImageUpload
-                {
-                    Image = image,
-                    File = stream
+                    File = new FileDescription(filename, file.OpenReadStream()),
+                    Invalidate = true
                 };
+                //upload image
+                var uploadResult = cloudinary.UploadAsync(uploadParams);
 
-                System.Drawing.Image newImage = System.Drawing.Image.FromStream(file.OpenReadStream());
-                var horizontal = newImage.HorizontalResolution;
-                var vertical = newImage.VerticalResolution;
-                if (horizontal >= 300 && vertical >= 300)
+                if (uploadResult.Result.Format != null)
                 {
-                    //send message to rabbit queue to queue process
-                    new SendImageMessage().SendImageCreationMessage(upload);
+                    image.FilePath = uploadResult.Result.Uri.AbsolutePath;
+                    image.Width = uploadResult.Result.Width;
+                    image.Height = uploadResult.Result.Height;
+                    image.FileName = filename;
+                    if (String.IsNullOrEmpty(collection["CameraId"]) &&
+                        !String.IsNullOrEmpty(collection["NewCameraText"]))
+                    {
+                        if (newCamera != null && newCamera.CameraId > 0)
+                        {
+                            image.CameraId = newCamera.CameraId;
+                        }
+                        if (newCamera != null && newCamera.CameraId <= 0)
+                        {
+
+                            _databaseConnection.Add(newCamera);
+                            _databaseConnection.SaveChanges();
+                            image.CameraId = newCamera.CameraId;
+                        }
+                     
+                      
+                    }
+                    if (String.IsNullOrEmpty(collection["LocationId"]) &&
+                        !String.IsNullOrEmpty(collection["NewLocationText"]))
+                    {
+                        if (newLocation != null && newLocation.LocationId > 0)
+                        {
+                            image.LocationId = newLocation.LocationId;
+                        }
+                        if (newLocation != null && newLocation.LocationId <= 0)
+                        {
+                            _databaseConnection.Add(newLocation);
+                            _databaseConnection.SaveChanges();
+                            image.LocationId = newLocation.LocationId;
+                        }
+                    }
+                    if (signedInUserId > 0)
+                    {
+                        _databaseConnection.Add(image);
+                        _databaseConnection.SaveChanges();
+                    }
+                    else
+                    {
+                        return RedirectToAction("Dashboard","Home");
+                    }
+
 
                     //display notification
                     TempData["display"] =
-                        "Your image is uploading in the background continue your work while it uploads!";
+                        "Your image has been succesfully uploaded!";
                     TempData["notificationtype"] = NotificationType.Success.ToString();
+                    return RedirectToAction("Index");
                 }
-                else
-                {
-                    //display notification
-                    TempData["display"] =
-                        "Sorry, Camerack does not support Low quality Images, we only support images above 300DPI!";
-                    TempData["notificationtype"] = NotificationType.Error.ToString();
-                }
+                //display notification
+                TempData["display"] =
+                    uploadResult.Result.Error.Message;
+                TempData["notificationtype"] = NotificationType.Success.ToString();
                 return RedirectToAction("Index");
             }
             catch (Exception ex)
             {
                 //display notification
-                TempData["display"] = ex.ToString();
+                TempData["display"] = "There was an issue performing the request, check the image deatails,size and try again Later!";
                 TempData["notificationtype"] = NotificationType.Error.ToString();
                 ViewBag.ImageCategoryId = new SelectList(_databaseConnection.ImageCategories.ToList(),
                     "ImageCategoryId",
@@ -328,7 +431,7 @@ namespace CamerackStudio.Controllers
         [SessionExpireFilter]
         public ActionResult SetAsFeatured(long id)
         {
-            var signedInUserId = Convert.ToInt64(HttpContext.Session.GetString("CamerackLoggedInUserId"));
+            var signedInUserId = Convert.ToInt64(HttpContext.Session.GetString("StudioLoggedInUserId"));
 
             var image = _databaseConnection.Images.Find(id);
             image.Featured = true;
@@ -345,7 +448,7 @@ namespace CamerackStudio.Controllers
         [SessionExpireFilter]
         public ActionResult Edit(long id)
         {
-            var signedInUserId = Convert.ToInt64(HttpContext.Session.GetString("CamerackLoggedInUserId"));
+            var signedInUserId = Convert.ToInt64(HttpContext.Session.GetString("StudioLoggedInUserId"));
             var image = _databaseConnection.Images.Find(id);
             ViewBag.ImageCategoryId = new SelectList(_databaseConnection.ImageCategories.ToList(), "ImageCategoryId",
                 "Name", image.ImageCategoryId);
@@ -364,55 +467,50 @@ namespace CamerackStudio.Controllers
         [SessionExpireFilter]
         public ActionResult Edit(Image image, IFormCollection collection)
         {
+            var newLocation = new Location();
+            var newCamera = new Camera();
             try
             {
                 // TODO: Add update logic here
-                var signedInUserId = Convert.ToInt64(HttpContext.Session.GetString("CamerackLoggedInUserId"));
+                var signedInUserId = Convert.ToInt64(HttpContext.Session.GetString("StudioLoggedInUserId"));
                 image.DateLastModified = DateTime.Now;
                 image.LastModifiedBy = signedInUserId;
 
                 //collect data from form as model binding is disabled
-                if (!String.IsNullOrEmpty(collection["Title"]))
-                {
-                    image.Title = collection["Title"];
-                }
-                if (!String.IsNullOrEmpty(collection["Theme"]))
-                {
-                    image.Theme = collection["Theme"];
-                }
-                if (!String.IsNullOrEmpty(collection["Inspiration"]))
-                {
-                    image.Inspiration = collection["Inspiration"];
-                }
-                if (!String.IsNullOrEmpty(collection["CameraId"]))
-                {
-                    image.CameraId = Convert.ToInt64(collection["CameraId"]);
-                }
-                if (!String.IsNullOrEmpty(collection["LocationId"]))
-                {
-                    image.LocationId = Convert.ToInt64(collection["LocationId"]);
-                }
-                if (!String.IsNullOrEmpty(collection["ImageCategoryId"]))
-                {
-                    image.ImageCategoryId = Convert.ToInt64(collection["ImageCategoryId"]);
-                }
-                if (!String.IsNullOrEmpty(collection["ImageSubCategoryId"]))
-                {
-                    image.ImageSubCategoryId = Convert.ToInt64(collection["ImageSubCategoryId"]);
-                }
-                if (!String.IsNullOrEmpty(collection["SellingPrice"]))
-                {
-                    image.SellingPrice = Convert.ToInt64(collection["SellingPrice"]);
-                    image.Discount = Convert.ToInt64(collection["Discount"]);
-                }
-                else
-                {
-                    image.SellingPrice = 0;
-                    image.Discount = 0;
-                }
                 if (!String.IsNullOrEmpty(collection["Description"]))
                 {
                     image.Description = collection["Description"];
+                }
+                if (String.IsNullOrEmpty(collection["CameraId"]) &&
+                    !String.IsNullOrEmpty(collection["NewCameraText"]))
+                {
+                    if (newCamera.CameraId > 0)
+                    {
+                        image.CameraId = newCamera.CameraId;
+                    }
+                    if (newCamera.CameraId <= 0)
+                    {
+
+                        _databaseConnection.Add(newCamera);
+                        _databaseConnection.SaveChanges();
+                        image.CameraId = newCamera.CameraId;
+                    }
+
+
+                }
+                if (String.IsNullOrEmpty(collection["LocationId"]) &&
+                    !String.IsNullOrEmpty(collection["NewLocationText"]))
+                {
+                    if (newLocation.LocationId > 0)
+                    {
+                        image.LocationId = newLocation.LocationId;
+                    }
+                    if (newLocation.LocationId <= 0)
+                    {
+                        _databaseConnection.Add(newLocation);
+                        _databaseConnection.SaveChanges();
+                        image.LocationId = newLocation.LocationId;
+                    }
                 }
 
 
@@ -420,14 +518,14 @@ namespace CamerackStudio.Controllers
                 _databaseConnection.SaveChanges();
 
                 //display notification
-                TempData["display"] = "You have successfully modified the image information!";
+                TempData["display"] = "You have successfully modified the image details!";
                 TempData["notificationtype"] = NotificationType.Success.ToString();
                 return RedirectToAction("Index");
             }
             catch(Exception ex)
             {
                 //display notification
-                TempData["display"] = ex.ToString();
+                TempData["display"] = "There was an issue performing the request, try again Later!";
                 TempData["notificationtype"] = NotificationType.Error.ToString();
                 return View(image);
             }
@@ -439,7 +537,7 @@ namespace CamerackStudio.Controllers
         {
             long? imageId = Convert.ToInt64(collection["ImageId"]);
             var image = _databaseConnection.Images.Find(imageId);
-            var signedInUserId = Convert.ToInt64(HttpContext.Session.GetString("CamerackLoggedInUserId"));
+            var signedInUserId = Convert.ToInt64(HttpContext.Session.GetString("StudioLoggedInUserId"));
             comment.DateCreated = DateTime.Now;
             comment.AppUserId = signedInUserId;
             comment.ImageId = imageId;
@@ -526,7 +624,7 @@ namespace CamerackStudio.Controllers
         {
             var id = Convert.ToInt64(collection["ImageId"]);
             var image = _databaseConnection.Images.Find(id);
-            var imageFile = "https://res.cloudinary.com/" + image.FilePath;
+            var imageFile = image.FilePath.Replace("/cloudmab/image/upload/v1517001994/","");
 
 
             //upload image via Cloudinary API Call
@@ -562,6 +660,62 @@ namespace CamerackStudio.Controllers
 
             //display notification
             TempData["display"] = "You have successfully deleted the Image from your Library!";
+            TempData["notificationtype"] = NotificationType.Success.ToString();
+            return RedirectToAction("Index");
+        }
+        [SessionExpireFilter]
+        public ActionResult RejectImage(long id)
+        {
+            var image = new Image();
+            image.ImageId = id;
+            return View(image);
+        }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> RejectImage(IFormCollection collection)
+        {
+            var id = Convert.ToInt64(collection["ImageId"]);
+            var image = _databaseConnection.Images.Find(id);
+            //customize user object to sent email to user
+           var appUser = new AppUserFactory().GetAllUsers(new AppConfig().FetchUsersUrl)
+                .Result.Single(n=>n.AppUserId == image.AppUserId);
+            appUser.Biography = collection["Reason"];
+            appUser.DateCreated = image.DateCreated;
+            appUser.Address = image.Title;
+
+            //upload image via Cloudinary API Call
+            var account = new Account(
+                new AppConfig().CloudinaryAccoutnName,
+                new AppConfig().CloudinaryApiKey,
+                new AppConfig().CloudinaryApiSecret);
+
+            var cloudinary = new Cloudinary(account);
+            var delParams = new DelResParams
+            {
+                PublicIds = new List<string> { image.FileName },
+                Invalidate = true
+            };
+            await cloudinary.DeleteResourcesAsync(delParams);
+
+            var tags = _databaseConnection.ImageTags.Where(n => n.ImageId == image.ImageId);
+            foreach (var item in tags)
+                _databaseConnection.ImageTags.RemoveRange(item);
+            var imageActions = _databaseConnection.ImageActions.Where(n => n.ImageId == image.ImageId);
+            foreach (var item in imageActions)
+                _databaseConnection.ImageActions.RemoveRange(item);
+            var imageComments = _databaseConnection.ImageComments.Where(n => n.ImageId == image.ImageId);
+            foreach (var item in imageComments)
+                _databaseConnection.ImageComments.RemoveRange(item);
+            var imageReports = _databaseConnection.ImageReports.Where(n => n.ImageId == image.ImageId);
+            foreach (var item in imageReports)
+                _databaseConnection.ImageReports.RemoveRange(item);
+
+            _databaseConnection.Images.Remove(image);
+            _databaseConnection.SaveChanges();
+
+
+            //display notification
+            TempData["display"] = "You have successfully removed the image from the platform!";
             TempData["notificationtype"] = NotificationType.Success.ToString();
             return RedirectToAction("Index");
         }

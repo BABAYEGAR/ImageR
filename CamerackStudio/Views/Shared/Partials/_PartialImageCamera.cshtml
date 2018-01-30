@@ -1,8 +1,7 @@
-﻿@using CamerackStudio.Models.Entities
-@model CamerackStudio.Models.Entities.Image
+﻿@model CamerackStudio.Models.Entities.Image
 @{
-    
+
 }
-@Html.LabelFor(model => model.CameraId, new { @class = "control-label" })  <a data-toggle="tooltip" title="Add a new Camera" data-toggle="modal" class="loadModal3" style="font-weight: bolder" href="#">Add New</a>
-@Html.DropDownListFor(model => model.CameraId, null, "Select the Camera Used", new {@class = "form-control", placeholder = ""})
-@Html.ValidationMessageFor(model => model.CameraId, "", new {@class = "text-danger"})
+
+
+@Html.DropDownListFor(model => model.CameraId, null, "Select the Camera Used", new { @class = "form-control", placeholder = "" })

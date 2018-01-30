@@ -1,17 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using CamerackStudio.Models;
 using CamerackStudio.Models.APIFactory;
 using CamerackStudio.Models.DataBaseConnections;
 using CamerackStudio.Models.Encryption;
 using CamerackStudio.Models.Entities;
 using CamerackStudio.Models.Enum;
-using CamerackStudio.Models.Redis;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
 
 namespace CamerackStudio.Controllers
 {
@@ -19,14 +15,10 @@ namespace CamerackStudio.Controllers
     {
 
         private readonly CamerackStudioDataContext _databaseConnection;
-        AppUser _appUser;
-        private List<PushNotification> pushNotifications;
 
         public AppUserController(CamerackStudioDataContext databaseConnection)
         {
             _databaseConnection = databaseConnection;
-            pushNotifications = new AppUserFactory().GetAllPushNotifications(new AppConfig()
-                .UsersPushNotifications).Result.Where(n => n.ClientId == new AppConfig().ClientId).ToList();
         }
         [SessionExpireFilter]
         public IActionResult AllUsers()

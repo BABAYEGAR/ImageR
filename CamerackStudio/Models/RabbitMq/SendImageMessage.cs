@@ -1,5 +1,4 @@
 ﻿using System.Text;
-using CamerackStudio.Models.APIFactory;
 using CamerackStudio.Models.Entities;
 using Newtonsoft.Json;
 using RabbitMQ.Client;
@@ -10,6 +9,7 @@ namespace CamerackStudio.Models.RabbitMq
     {
         public void SendImageCreationMessage(ImageUpload upload)
         {
+          
             //open Rabbit MQ Connection
             var factory = new ConnectionFactory
             {
@@ -19,27 +19,27 @@ namespace CamerackStudio.Models.RabbitMq
                 Port = AmqpTcpEndpoint.UseDefaultPort,
                 VirtualHost = "/"
             };
-            string message = JsonConvert.SerializeObject(upload);
             using (var connection = factory.CreateConnection())
             using (var channel = connection.CreateModel())
             {
-                channel.QueueDeclare(queue: "CamerackTaskScheduler",
-                    durable: true,
+                channel.QueueDeclare(queue: "ImageUpload",
+                    durable: false,
                     exclusive: false,
                     autoDelete: false,
                     arguments: null);
-                var properties = channel.CreateBasicProperties();
-                properties.Persistent = true;
 
+                string message = JsonConvert.SerializeObject(upload);
                 var body = Encoding.UTF8.GetBytes(message);
+
                 channel.BasicPublish(exchange: "",
-                    routingKey: "CamerackTaskScheduler",
-                    basicProperties: properties,
+                    routingKey: "ImageUpload",
+                    basicProperties: null,
                     body: body);
             }
         }
-        public void SendImageActionMessage(ImageAction action)
+        public void SendImageRejectionEmailMessage(AppUserTransport appUser)
         {
+            appUser.RequestType = "ImageRejection";
             //open Rabbit MQ Connection
             var factory = new ConnectionFactory
             {
@@ -52,23 +52,21 @@ namespace CamerackStudio.Models.RabbitMq
             using (var connection = factory.CreateConnection())
             using (var channel = connection.CreateModel())
             {
-                channel.QueueDeclare(queue: "CamerackTaskScheduler",
-                    durable: true,
+                channel.QueueDeclare(queue: "EmailTaskManager",
+                    durable: false,
                     exclusive: false,
                     autoDelete: false,
                     arguments: null);
 
-                string message = JsonConvert.SerializeObject(action);
+                string message = JsonConvert.SerializeObject(appUser);
                 var body = Encoding.UTF8.GetBytes(message);
 
-                var properties = channel.CreateBasicProperties();
-                properties.Persistent = true;
-
                 channel.BasicPublish(exchange: "",
-                    routingKey: "CamerackTaskScheduler",
-                    basicProperties: properties,
+                    routingKey: "EmailTaskManager",
+                    basicProperties: null,
                     body: body);
             }
         }
+
     }
 }

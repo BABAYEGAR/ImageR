@@ -1,8 +1,4 @@
-﻿@using CamerackStudio.Models
-@using CamerackStudio.Models.Entities
-@using CamerackStudio.Models.Redis
-@using Microsoft.AspNetCore.Http
-@using Newtonsoft.Json
+﻿@using CamerackStudio.Models.Entities
 @model AppTransport
 @{
     Layout = "Layout/Dashboard/_LayoutDashboard";
@@ -38,14 +34,14 @@
                                                                 }" alt="" style="opacity: 1; z-index: -1" class="img-main img-responsive"><a href="javascript:void(0)" style="background-color: #fff; border-radius: 50%; display: inline-block; padding: 3px;">
                 @if (Model.AppUser != null && Model.AppUser.HasSocialMediaLogin)
                 {
-                    <img src="@Model.AppUser.ProfilePicture" width="100" alt="" class="img-circle">
+                    <img src="@Model.AppUser.ProfilePicture" alt="" class="img-circle img-responsive" style="width: 80px; height: 80px">
                 }
                 else
                 {
                     <img src="~/UploadedImage/ProfilePicture/@if (Model.AppUser != null &&Model.AppUser.ProfilePicture != null)
                                                              {
                                                                  @Model.AppUser.ProfilePicture
-                                                             }" width="100" alt="" class="img-circle">
+                                                             }"alt="" class="img-circle img-responsive" style="width: 80px; height: 80px">
                 }
                     </a>
                 </div>
@@ -142,7 +138,7 @@
                         </div>
                         <div class="media-body">
                             <p>   @if (Model.AppUser != null)
-                                  {@Model.AppUser.Website}</p>
+                                  {<a href="@Model.AppUser.Website">@Model.AppUser.Website</a>}</p>
                         </div>
                     </li>
                 </ul>
@@ -165,7 +161,7 @@
             var singleOrDefault = Model.AppUsers.SingleOrDefault(n => n.AppUserId == item.AppUserId);
             var singleRating = Model.ImageActions.SingleOrDefault(n => { return Model.AppUser != null && (n.AppUserId == Model.AppUser.AppUserId && n.ImageId == item.ImageId); });
             var pic = "https://res.cloudinary.com/" + item.FilePath;
-            var otherPic = "https://res.cloudinary.com/" + item.FilePath.Replace("upload/", "upload/q_auto:best/w_600,c_scale,x_-30,y_30,a_12,l_watermark/");
+            var otherPic = "https://res.cloudinary.com/" + item.FilePath.Replace("upload/", "upload/q_auto:best/w_650,h_670/w_600,c_scale,x_0,y_0,a_0,l_watermark/");
             <div class="widget clear">
                 <div class="widget-heading">
                     <div class="media">
@@ -198,11 +194,19 @@
                         <a href="@Url.Action("SingleImage", new {id = item.ImageId})">
                             @if (Model.AppUser != null && item.AppUserId == Model.AppUser.AppUserId)
                             {
-                                <img class="lazy" data-src="@pic" alt=""> 
+                                <img class="lazy" src="@pic" data-src="@pic" alt=""> 
                             }
                             else
                             {
-                                <img class="lazy" data-src="@otherPic" alt=""> 
+                                if (item.SellingPrice > 0)
+                                 {
+                                     <img class="lazy" src="@otherPic" data-src="@otherPic" alt="">
+                                 }
+                                 else
+                                 {
+                                     <img class="lazy" src="@pic" data-src="@pic" alt=""> 
+                                 }
+
                             }
                       
                             <div class="text-left caption">
@@ -268,8 +272,8 @@
     <script src="~/Rating/js/star-rating.min.js"></script>
     <script>
         var onBegin = function() {
-            $('#hideRating').fadeOut("slow");
-            $('#showRatings').fadeIn(1000);
+            $('#hideRating').fadeOut(100);
+            $('#showRatings').fadeIn(100);
         };
         var onFormComplete = function() {
             $('.comment').val('');

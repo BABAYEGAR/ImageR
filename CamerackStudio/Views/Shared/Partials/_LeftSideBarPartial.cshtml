@@ -1,13 +1,12 @@
 @using CamerackStudio.Models.Entities
 @using CamerackStudio.Models.Enum
-@using CamerackStudio.Models.Redis
 @using Microsoft.AspNetCore.Http
 @using Newtonsoft.Json
 @{
     AppUser appUser = null;
-    if (Context.Session.GetString("CamerackLoggedInUser") != null)
+    if (Context.Session.GetString("StudioLoggedInUser") != null)
     {
-        var userString = Context.Session.GetString("CamerackLoggedInUser");
+        var userString = Context.Session.GetString("StudioLoggedInUser");
         appUser = JsonConvert.DeserializeObject<AppUser>(userString);
     }
 
@@ -16,16 +15,16 @@
 <aside data-mcs-theme="minimal-dark" class="main-sidebar mCustomScrollbar">
     <div class="user">
         <a href="@Url.Action("Profile", "Account")">
-            <div id="esp-user-profile" data-percent="65" style="height: 104px; line-height: 80px; padding: 12px; width: 104px;" class="easy-pie-chart">
+            <div id="esp-user-profile" data-percent="65" style="height: 110px; line-height: 80px; padding: 12px; width: 110px;" class="easy-pie-chart">
                 @if (appUser != null)
                 {
                     if (appUser.HasSocialMediaLogin)
                     {
-                        <img src="@appUser.ProfilePicture" alt="" class="avatar img-circle"><span class="status bg-success"></span>
+                        <img src="@appUser.ProfilePicture" alt="" class="avatar img-circle img-responsive" style="width: 80px; height: 80px"><span class="status bg-success"></span>
                     }
                     else
                     {
-                        <img src="~/UploadedImage/ProfilePicture/@appUser.ProfilePicture" alt="" class="avatar img-circle"><span class="status bg-success"></span> 
+                        <img src="~/UploadedImage/ProfilePicture/@appUser.ProfilePicture" alt="" class="avatar img-circle img-responsive" style="width: 80px; height: 80px"><span class="status bg-success"></span> 
                     }
                  
                 }
@@ -46,8 +45,8 @@
         @if (appUser != null && appUser.Role != null && appUser.Role.ManageApplicationUser)
         {
             <li class="panel">
-                <a role="button" data-toggle="collapse" data-parent=".navigation" href="#collapse5" aria-expanded="false" aria-controls="collapse5" class="collapsed"><i class="ti-user"></i>Users @*<span class="label label-outline label-success">New</span>*@</a>
-                <ul id="collapse5" class="list-unstyled collapse">
+                <a role="button" data-toggle="collapse" data-parent=".navigation" href="#collapse51" aria-expanded="false" aria-controls="collapse51" class="collapsed"><i class="ti-user"></i>Users @*<span class="label label-outline label-success">New</span>*@</a>
+                <ul id="collapse51" class="list-unstyled collapse">
                     <li>
                         <a href="@Url.Action("AllUsers", "AppUser")">All Users </a>
                     </li>

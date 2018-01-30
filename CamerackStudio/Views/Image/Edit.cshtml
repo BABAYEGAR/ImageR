@@ -1,5 +1,4 @@
-﻿@using CamerackStudio.Models.Entities
-@model CamerackStudio.Models.Entities.Image
+﻿@model CamerackStudio.Models.Entities.Image
 @{
     Layout = "Layout/Dashboard/_LayoutForm";
     ViewBag.PageTitle = "Image Upload";
@@ -41,8 +40,14 @@
         @Html.HiddenFor(m=>m.A5)
         @Html.HiddenFor(m=>m.A6)
         @Html.HiddenFor(m=>m.Status)
+        @Html.HiddenFor(m=>m.ImageCategoryId)
+        @Html.HiddenFor(m=>m.ImageSubCategoryId)
+        @Html.HiddenFor(m=>m.Width)
+        @Html.HiddenFor(m=>m.Height)
         @Html.HiddenFor(m=>m.SellingPrice)
         @Html.HiddenFor(m=>m.Discount)
+        @Html.HiddenFor(m=>m.CameraId)
+        @Html.HiddenFor(m=>m.LocationId)
         <div class="form-body">
             <div class="row">
                 <div class="form-group col-md-6">
@@ -65,22 +70,27 @@
                     @Html.DropDownListFor(m => m.ImageSubCategoryId, new SelectList(string.Empty, "Value", "Text"), "--Please select a Sub-Category/ Sub-Genre--", new {@class = "form-control", id = "sub"})
                     @Html.ValidationMessageFor(model => model.ImageSubCategoryId, "", new {@class = "text-danger"})
                 </div>
-                <div class="form-group col-md-6" id="reloadLocationPartial">
-
-                    @{
-                        Html.RenderPartial("Partials/_PartialImageLocation", Model);
-                    }
-                </div>
                 <div class="form-group col-md-6">
                     @Html.LabelFor(model => model.Inspiration, new {@class = "control-label"})
                     @Html.EditorFor(model => model.Inspiration, new {htmlAttributes = new {@class = "form-control", placeholder = "Please enter the your inspiration for taking the image"}})
                     @Html.ValidationMessageFor(model => model.Inspiration, "", new {@class = "text-danger"})
                 </div>
-                <div class="form-group col-md-6" id="reloadCameraPartial">
+                <div class="form-group col-md-6">
+                    @Html.LabelFor(model => model.LocationId, new {@class = "control-label"}) <a data-toggle="tooltip" title="Add a new Location" class="loadModal4" style="font-weight: bolder">Add New</a>
+                    @Html.DropDownListFor(model => model.LocationId, null, "Select an Image Location", new {@class = "form-control", placeholder = ""})
 
-                    @{
-                        Html.RenderPartial("Partials/_PartialImageCamera", Model);
-                    }
+                </div>
+                <div class="form-group col-md-12" style="display: none" id="NewLocation">
+                    <label class="control-label">Add Location</label>
+                    <input type="text" name="NewLocationText" class="form-control" required="required"/>
+                </div>
+                <div class="form-group col-md-6">
+                    @Html.LabelFor(model => model.CameraId, new {@class = "control-label"}) <a data-toggle="tooltip" title="Add a new Camera" class="loadModal3" style="font-weight: bolder">Add New</a>
+                    @Html.DropDownListFor(model => model.CameraId, null, "Select the Camera Used", new { @class = "form-control", placeholder = "" })
+                </div>
+                <div class="form-group col-md-12" style="display: none" id="NewCamera">
+                    <label class="control-label">Add Camera:</label>
+                    <input type="text" name="NewCameraText" class="form-control" required="required"/>
                 </div>
                 <div class="form-group col-md-6">
                     <label for="state">Pricing Category</label><span class="required">*</span>
@@ -90,8 +100,8 @@
                     </select>
                 </div>
                 <div class="form-group col-md-6">
-                    @Html.LabelFor(model => model.SellingPrice, new {@class = "control-label"})<span style="font-weight: bolder" class="required">(N1000 - N500,000)*</span>
-                    @Html.EditorFor(model => model.SellingPrice, new {htmlAttributes = new {@class = "form-control", placeholder = "Please enter the selling price for the image", min="1000" ,max="500000", value=0,id="price"}})
+                    @Html.LabelFor(model => model.SellingPrice, new {@class = "control-label"})<span style="font-weight: bolder" class="required">(N500 - N100,000)*</span>
+                    @Html.EditorFor(model => model.SellingPrice, new {htmlAttributes = new {@class = "form-control", placeholder = "Please enter the selling price for the image", min="500" ,max="100000", value=0,id="price"}})
                     @Html.ValidationMessageFor(model => model.SellingPrice, "", new {@class = "text-danger"})
                 </div>
                 <div class="form-group col-md-6">
@@ -188,26 +198,30 @@
                 //Ajax ends
             });
     </script>
+
+        <script>
+            $(document).ready(function() {
+                $(".loadModal4").click(function () { // Click to only happen on announce links
+                    $('#NewLocation').fadeIn(1000);
+                });
+            });
+    </script>
     <script>
-        $(document).ready(function () {
+        $(document).ready(function() {
             $(".loadModal3").click(function () { // Click to only happen on announce links
-                $('#myModal1').modal('show');
+                $('#NewCamera').fadeIn(1000);
             });
         });
     </script>
     <script>
-        $(document).ready(function () {
-            $(".loadModal4").click(function () { // Click to only happen on announce links
-                $('#myModal2').modal('show');
-            });
-        });
+
     </script>
     <script>
-        var onCameraComplete = function () {
-            $('#myModal1').modal('hide');
-        };
-        var onLocationComplete = function () {
-            $('#myModal2').modal('hide');
-        };
+        //loads assigned lga for state on change/select
+        $('#submitForm').on('click', function() {
+            $('#hideBody').fadeOut(1000);
+            $('#loader').fadeIn(1000);
+        });
     </script>
+
 }

@@ -68,10 +68,10 @@
                 <h5 class="mb-5">Pending Payments</h5>
                 <div class="fs-36 fw-600 mb-20 counter">@if (Model != null && Model.Orders != null)
                                                         {
-                                                            @Model.Payments.Where(n => n.Status == PaymentStatus.Pending.ToString()).ToList().Count
+                                                            @string.Format("{0:n0}", @Model.Payments.Where(n => n.Status == PaymentStatus.Pending.ToString()).ToList().Count)
                                                         }</div>
                 <div id="esp-feedback" data-percent="20" style="height: 10px; line-height: 20px; padding: 5px; width: 140px;" class="easy-pie-chart fs-36">
-                    <i class="ti-money text-muted"></i>
+                    &#8358
                 </div>
             </div>
         </div>
@@ -80,12 +80,13 @@
         <div class="widget text-center">
             <div class="widget-body">
                 <h5 class="mb-5">Approved Payments</h5>
-                <div class="fs-36 fw-600 mb-20 counter">@if (Model != null && Model.Orders != null)
+                <div class="fs-36 fw-600 mb-20 counter">@if (Model != null && Model.Payments != null)
                                                         {
-                                                            @Model.Payments.Where(n => n.Status == PaymentStatus.Paid.ToString()).ToList().Count
-                                                        }</div>
+                                                            @string.Format("{0:n0}", @Model.Payments.Where(n => n.Status == PaymentStatus.Paid.ToString()).ToList().Count)
+                                                        }
+                                                        </div>
                 <div id="esp-feedback" data-percent="20" style="height: 10px; line-height: 20px; padding: 5px; width: 140px;" class="easy-pie-chart fs-36">
-                    <i class="ti-money text-muted"></i>
+                    &#8358
                 </div>
             </div>
         </div>

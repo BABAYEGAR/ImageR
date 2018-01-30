@@ -8,7 +8,6 @@ using CamerackStudio.Models.DataBaseConnections;
 using CamerackStudio.Models.Encryption;
 using CamerackStudio.Models.Entities;
 using CamerackStudio.Models.Enum;
-using CamerackStudio.Models.Redis;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
@@ -33,7 +32,7 @@ namespace CamerackStudio.Controllers
         {
             try
             {
-                var signedInUserId = Convert.ToInt64(HttpContext.Session.GetString("CamerackLoggedInUserId"));
+                var signedInUserId = Convert.ToInt64(HttpContext.Session.GetString("StudioLoggedInUserId"));
 
                 //update notification to read
                 if (notificationId != null)
@@ -50,9 +49,9 @@ namespace CamerackStudio.Controllers
                 }
 
 
-                if (HttpContext.Session.GetString("CamerackLoggedInUser") != null)
+                if (HttpContext.Session.GetString("StudioLoggedInUser") != null)
                 {
-                    var userString = HttpContext.Session.GetString("CamerackLoggedInUser");
+                    var userString = HttpContext.Session.GetString("StudioLoggedInUser");
                     _appUser = JsonConvert.DeserializeObject<AppUser>(userString);
                 }
                 List<Order> orders = new List<Order>();

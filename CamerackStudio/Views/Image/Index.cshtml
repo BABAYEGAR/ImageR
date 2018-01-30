@@ -5,7 +5,7 @@
 @using Microsoft.AspNetCore.Http
 @model List<CamerackStudio.Models.Entities.Image>
 @{
-    var signedInUserId = Context.Session.GetInt32("CamerackLoggedInUserId");
+    var signedInUserId = Convert.ToInt64(Context.Session.GetString("StudioLoggedInUserId"));
     Role role = ViewBag.Role;
     string status = ViewBag.status;
     Layout = "Layout/Dashboard/_LayoutTable";
@@ -89,13 +89,23 @@
     @foreach (var item in Model)
     {
         var displayImage = "https://res.cloudinary.com/" + item.FilePath.Replace("upload/", new AppConfig().GeneralImage);
-        var image = "https://res.cloudinary.com/" + item.FilePath.Replace("upload/", "upload/q_auto:best/w_50,l_watermark/");
+        var image = "https://res.cloudinary.com/" + item.FilePath.Replace("upload/", new AppConfig().TableImage);
+        var freeimage = "https://res.cloudinary.com/" + item.FilePath;
         <tr>
             @if (item.Status != null && item.Status != ImageStatus.Rejected.ToString())
             {
-                <td>
-                    <img src='@image' width="100" alt="" class="img-thumbnail img-responsive"/>
-                </td>
+                if (item.SellingPrice > 0)
+                {
+                    <td>
+                        <img src='@image' width="100" alt="" class="img-thumbnail img-responsive"/>
+                    </td>
+                }
+                else
+                {
+                    <td>
+                        <img src='@freeimage' width="100" alt="" class="img-thumbnail img-responsive"/>
+                    </td>
+                }
             }
             else
             {
@@ -140,9 +150,19 @@
                     </button>
                     <ul class="dropdown-menu pull-right" role="menu">
                         <li>
-                            <a href="@displayImage" data-toggle="tooltip" title="View the Image" target="_blank">
-                                <i class="icon-pencil"></i> View Image
-                            </a>
+                            @if (item.SellingPrice > 0)
+                            {
+                                <a href="@displayImage" data-toggle="tooltip" title="View the Image" target="_blank">
+                                    <i class="icon-pencil"></i> View Image
+                                </a>
+                            }
+                            else
+                            {
+                                <a href="@freeimage" data-toggle="tooltip" title="View the Image" target="_blank">
+                                    <i class="icon-pencil"></i> View Image
+                                </a>
+                            }
+                        
                         </li>
                         @if (item.CreatedBy == signedInUserId)
                         {
@@ -160,7 +180,7 @@
                         @if (role.ManageImages && item.Status == ImageStatus.Accepted.ToString())
                         {
                             <li>
-                                <a href="@Url.Action("ApproveOrRejectImage", "Image", new {id = item.ImageId, status = ImageStatus.Rejected.ToString()})" data-toggle="tooltip" title="Edit the Image">
+                                <a href="@Url.Action("RejectImage", "Image", new {id = item.ImageId})" data-toggle="tooltip" title="Edit the Image">
                                     <i class="icon-pencil"></i> Disapprove Image
                                 </a>
                             </li>

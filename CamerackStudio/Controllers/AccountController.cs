@@ -9,7 +9,6 @@ using CamerackStudio.Models.DataBaseConnections;
 using CamerackStudio.Models.Encryption;
 using CamerackStudio.Models.Entities;
 using CamerackStudio.Models.Enum;
-using CamerackStudio.Models.Redis;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
@@ -25,19 +24,19 @@ namespace CamerackStudio.Controllers
     {
         private readonly CamerackStudioDataContext _databaseConnection;
         private readonly List<AppUser> _users;
-        private List<PushNotification> pushNotifications;
+        private readonly List<PushNotification> _pushNotifications;
         public AccountController(IHostingEnvironment env, CamerackStudioDataContext databaseConnection)
         {
             _databaseConnection = databaseConnection;
             _users = new AppUserFactory().GetAllUsers(new AppConfig().FetchUsersUrl).Result;
-            pushNotifications = new AppUserFactory().GetAllPushNotifications(new AppConfig()
-                .UsersPushNotifications).Result.Where(n => n.ClientId == new AppConfig().ClientId).ToList();
+            _pushNotifications = new AppUserFactory().GetAllPushNotifications(new AppConfig()
+                .UsersPushNotifications).Result.ToList();
         }
 
         [SessionExpireFilter]
         public ActionResult Profile()
         {
-            var signedInUserId = Convert.ToInt64(HttpContext.Session.GetString("CamerackLoggedInUserId"));
+            var signedInUserId = Convert.ToInt64(HttpContext.Session.GetString("StudioLoggedInUserId"));
             var appTransport = new AppTransport
             {
                 AppUsers = _users,
@@ -69,12 +68,12 @@ namespace CamerackStudio.Controllers
         [SessionExpireFilter]
         public async Task<ActionResult> SingleImage(long id,long? notificationId)
         {
-            var signedInUserId = Convert.ToInt64(HttpContext.Session.GetString("CamerackLoggedInUserId"));
+            var signedInUserId = Convert.ToInt64(HttpContext.Session.GetString("StudioLoggedInUserId"));
 
             //update notification to read
             if (notificationId != null)
             {
-                var notification = pushNotifications.SingleOrDefault(n=>n.PushNotificationId == notificationId);
+                var notification = _pushNotifications.SingleOrDefault(n=>n.PushNotificationId == notificationId);
 
                 if (notification != null)
                 {
@@ -105,14 +104,14 @@ namespace CamerackStudio.Controllers
         /// <returns></returns>
         public ActionResult Notification()
         {
-            var signedInUserId = Convert.ToInt64(HttpContext.Session.GetString("CamerackLoggedInUserId"));
-            return View(pushNotifications.Where(n=>n.AppUserId == signedInUserId).ToList());
+            var signedInUserId = Convert.ToInt64(HttpContext.Session.GetString("StudioLoggedInUserId"));
+            return View(_pushNotifications.Where(n=>n.AppUserId == signedInUserId).ToList());
         }
 
         public async Task<ActionResult> MarkNotificationAsRead(long id)
         {
-            var signedInUserId = Convert.ToInt64(HttpContext.Session.GetString("CamerackLoggedInUserId"));
-            var notification = pushNotifications.SingleOrDefault(n=>n.PushNotificationId == id);
+            var signedInUserId = Convert.ToInt64(HttpContext.Session.GetString("StudioLoggedInUserId"));
+            var notification = _pushNotifications.SingleOrDefault(n=>n.PushNotificationId == id);
             if (notification != null)
             {
                 notification.DateLastModified = DateTime.Now;
@@ -138,8 +137,8 @@ namespace CamerackStudio.Controllers
         public ActionResult ChangeProfileImage(IList<IFormFile> profile, IList<IFormFile> background)
         {
             ViewBag.Users = _users;
-            var signedInUserId = Convert.ToInt64(HttpContext.Session.GetString("CamerackLoggedInUserId"));
-            var userString = HttpContext.Session.GetString("CamerackLoggedInUser");
+            var signedInUserId = Convert.ToInt64(HttpContext.Session.GetString("StudioLoggedInUserId"));
+            var userString = HttpContext.Session.GetString("StudioLoggedInUser");
             var appUser = JsonConvert.DeserializeObject<AppUser>(userString);
 
             ActionResponse response;
@@ -165,7 +164,7 @@ namespace CamerackStudio.Controllers
                             if (response.AppUser != null)
                             {
                                 var newUserString = JsonConvert.SerializeObject(appUser);
-                                HttpContext.Session.SetString("CamerackLoggedInUser",newUserString);
+                                HttpContext.Session.SetString("StudioLoggedInUser", newUserString);
                             }
                         }
                     }
@@ -193,7 +192,7 @@ namespace CamerackStudio.Controllers
                             if (response.AppUser != null)
                             {
                                 var newerUserString = JsonConvert.SerializeObject(appUser);
-                                HttpContext.Session.SetString("CamerackLoggedInUser", newerUserString);
+                                HttpContext.Session.SetString("StudioLoggedInUser", newerUserString);
                             }
                         }
                     }
@@ -214,7 +213,7 @@ namespace CamerackStudio.Controllers
         [SessionExpireFilter]
         public ActionResult UserBank()
         {
-            var signedInUserId = Convert.ToInt64(HttpContext.Session.GetString("CamerackLoggedInUserId"));
+            var signedInUserId = Convert.ToInt64(HttpContext.Session.GetString("StudioLoggedInUserId"));
             var userBank = _databaseConnection.UserBanks.SingleOrDefault(n => n.CreatedBy == signedInUserId);
             var banks = new AppUserFactory().GetAllBanks(new AppConfig().AllBanks).Result;
             if (userBank != null && userBank.BankId != null)
@@ -236,7 +235,7 @@ namespace CamerackStudio.Controllers
             try
             {
                 //populate object and save transaction
-                var signedInUserId = Convert.ToInt64(HttpContext.Session.GetString("CamerackLoggedInUserId"));
+                var signedInUserId = Convert.ToInt64(HttpContext.Session.GetString("StudioLoggedInUserId"));
                 userBank.LastModifiedBy = signedInUserId;
                 userBank.DateLastModified = DateTime.Now;
 
@@ -271,7 +270,7 @@ namespace CamerackStudio.Controllers
         [SessionExpireFilter]
         public ActionResult EditProfile()
         {
-            var userString = HttpContext.Session.GetString("CamerackLoggedInUser");
+            var userString = HttpContext.Session.GetString("StudioLoggedInUser");
             var appUser = JsonConvert.DeserializeObject<AppUser>(userString);
             return View(appUser);
         }
@@ -279,12 +278,12 @@ namespace CamerackStudio.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [SessionExpireFilter]
-        public ActionResult EditProfile(AppUser appUser, FormCollection collection)
+        public ActionResult EditProfile(AppUser appUser, IFormCollection collection)
         {
             try
             {
                 //populate object and save transaction
-                var signedInUserId = Convert.ToInt64(HttpContext.Session.GetString("CamerackLoggedInUserId"));
+                var signedInUserId = Convert.ToInt64(HttpContext.Session.GetString("StudioLoggedInUserId"));
                 appUser.LastModifiedBy = signedInUserId;
                 appUser.DateLastModified = DateTime.Now;
                 appUser.ClientId = new AppConfig().ClientId;
@@ -300,7 +299,7 @@ namespace CamerackStudio.Controllers
                     return View(appUser);
                 }
                 var userString = JsonConvert.SerializeObject(resonse.Result.AppUser);
-                HttpContext.Session.SetString("CamerackLoggedInUser",userString);
+                HttpContext.Session.SetString("StudioLoggedInUser", userString);
 
                 //display notification
                 TempData["display"] = resonse.Result.AccessLog.Message;
@@ -329,8 +328,8 @@ namespace CamerackStudio.Controllers
         {
             try
             {
-                var signedInUserId = Convert.ToInt64(HttpContext.Session.GetString("CamerackLoggedInUserId"));
-                var userString = HttpContext.Session.GetString("CamerackLoggedInUser");
+                var signedInUserId = Convert.ToInt64(HttpContext.Session.GetString("StudioLoggedInUserId"));
+                var userString = HttpContext.Session.GetString("StudioLoggedInUser");
                 var appUser = JsonConvert.DeserializeObject<AppUser>(userString);
                 if (appUser != null)
                 {
@@ -351,7 +350,7 @@ namespace CamerackStudio.Controllers
                     return View(model);
                 }
                 var newUserString = JsonConvert.SerializeObject(resonse.Result.AppUser);
-                HttpContext.Session.SetString("CamerackLoggedInUser",newUserString);
+                HttpContext.Session.SetString("StudioLoggedInUser", newUserString);
 
                 //display notification
                 TempData["display"] = resonse.Result.AccessLog.Message;
@@ -565,7 +564,7 @@ namespace CamerackStudio.Controllers
         {
             _databaseConnection.Dispose();
             HttpContext.Session.Clear();
-            if (HttpContext.Session.GetString("CamerackLoggedInUser") != null)
+            if (HttpContext.Session.GetString("StudioLoggedInUser") != null)
             {
                 return RedirectToAction("Dashboard", "Home");
             }
@@ -598,7 +597,7 @@ namespace CamerackStudio.Controllers
                 var userExist = response.Result.AppUser;
                 //convert object to json string and insert into session
                 var userString = JsonConvert.SerializeObject(userExist);
-                HttpContext.Session.SetString("CamerackLoggedInUser",userString);
+                HttpContext.Session.SetString("StudioLoggedInUser", userString);
 
                 var userBank = _databaseConnection.UserBanks.SingleOrDefault(n => n.CreatedBy == userExist.AppUserId);
                 if(userBank != null && (string.IsNullOrEmpty(userBank.AccountName) || userBank.BankId <= 0
@@ -612,8 +611,8 @@ namespace CamerackStudio.Controllers
                     HttpContext.Session.Remove("UserBank");
                 }
                 //set user id into session string
-                HttpContext.Session.SetString("CamerackLoggedInUserId",userExist.AppUserId.ToString());
-                var signedInUserId = Convert.ToInt64(HttpContext.Session.GetString("CamerackLoggedInUserId"));
+                HttpContext.Session.SetString("StudioLoggedInUserId", userExist.AppUserId.ToString());
+                var signedInUserId = Convert.ToInt64(HttpContext.Session.GetString("StudioLoggedInUserId"));
                 var mapping = _databaseConnection.PhotographerCategoryMappings.Where(n => n.AppUserId == signedInUserId)
                     .ToList();
 
@@ -638,9 +637,8 @@ namespace CamerackStudio.Controllers
         [HttpGet]
         public IActionResult LogOut()
         {
-            HttpContext.Session.Remove("CamerackLoggedInUser");
-            HttpContext.Session.Remove("CamerackLoggedInUserId");
-            HttpContext.Session.Remove("Cart");
+            HttpContext.Session.Remove("StudioLoggedInUser");
+            HttpContext.Session.Remove("StudioLoggedInUserId");
             HttpContext.Session.Clear();
             _databaseConnection.Dispose();
             HttpContext.SignOutAsync();

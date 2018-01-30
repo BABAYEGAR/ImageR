@@ -7,7 +7,6 @@ using CamerackStudio.Models.DataBaseConnections;
 using CamerackStudio.Models.Encryption;
 using CamerackStudio.Models.Entities;
 using CamerackStudio.Models.Enum;
-using CamerackStudio.Models.Redis;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -49,7 +48,7 @@ namespace CamerackStudio.Controllers
         {
             try
             {
-                var signedInUserId = Convert.ToInt64(HttpContext.Session.GetString("CamerackLoggedInUserId"));
+                var signedInUserId = Convert.ToInt64(HttpContext.Session.GetString("StudioLoggedInUserId"));
                 photographerCategory.DateCreated = DateTime.Now;
                 photographerCategory.DateLastModified = DateTime.Now;
                 photographerCategory.CreatedBy = signedInUserId;
@@ -89,7 +88,7 @@ namespace CamerackStudio.Controllers
         public void MapAndUnmapPhotographyCategory(long id)
         {
             var allMappings = _databaseConnection.PhotographerCategoryMappings.ToList();
-            var signedInUserId = Convert.ToInt64(HttpContext.Session.GetString("CamerackLoggedInUserId"));
+            var signedInUserId = Convert.ToInt64(HttpContext.Session.GetString("StudioLoggedInUserId"));
             var userMapping =
                 allMappings.SingleOrDefault(n => n.AppUserId == signedInUserId && n.PhotographerCategoryId == id);
             if (userMapping != null)
@@ -128,7 +127,7 @@ namespace CamerackStudio.Controllers
         public ActionResult MapPhotographyCategory(int[] table_records, IFormCollection collection)
         {
             var allMappings = _databaseConnection.PhotographerCategoryMappings.ToList();
-            var signedInUserId = Convert.ToInt64(HttpContext.Session.GetString("CamerackLoggedInUserId"));
+            var signedInUserId = Convert.ToInt64(HttpContext.Session.GetString("StudioLoggedInUserId"));
             if (table_records != null)
             {
                 var length = table_records.Length;
@@ -185,7 +184,7 @@ namespace CamerackStudio.Controllers
             try
             {
                 // TODO: Add update logic here
-                var signedInUserId = Convert.ToInt64(HttpContext.Session.GetString("CamerackLoggedInUserId"));
+                var signedInUserId = Convert.ToInt64(HttpContext.Session.GetString("StudioLoggedInUserId"));
                 photographerCategory.DateLastModified = DateTime.Now;
                 photographerCategory.LastModifiedBy = signedInUserId;
                 if (image.Count > 0)
@@ -225,7 +224,7 @@ namespace CamerackStudio.Controllers
         {
             try
             {
-                var signedInUserId = Convert.ToInt64(HttpContext.Session.GetString("CamerackLoggedInUserId"));
+                var signedInUserId = Convert.ToInt64(HttpContext.Session.GetString("StudioLoggedInUserId"));
                 var categoryId = Convert.ToInt64(collection["PhtographerCategoryId"]);
                 var mapping =
                     _databaseConnection.PhotographerCategoryMappings.SingleOrDefault(

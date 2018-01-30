@@ -5,7 +5,6 @@ using CamerackStudio.Models.DataBaseConnections;
 using CamerackStudio.Models.Encryption;
 using CamerackStudio.Models.Entities;
 using CamerackStudio.Models.Enum;
-using CamerackStudio.Models.Redis;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -28,17 +27,17 @@ namespace CamerackStudio.Controllers
         [SessionExpireFilter]
         public ActionResult Index()
         {
-            var signedInUserId = Convert.ToInt64(HttpContext.Session.GetString("CamerackLoggedInUserId"));
+            var signedInUserId = Convert.ToInt64(HttpContext.Session.GetString("StudioLoggedInUserId"));
             return View(_databaseConnection.Cameras.Where(n=>n.CreatedBy == signedInUserId).ToList());
         }
         // GET: Image
         [SessionExpireFilter]
         public ActionResult Images(long id)
         {
-            var signedInUserId = Convert.ToInt64(HttpContext.Session.GetString("CamerackLoggedInUserId"));
-            if (new RedisDataAgent().GetStringValue("CamerackLoggedInUser") != null)
+            var signedInUserId = Convert.ToInt64(HttpContext.Session.GetString("StudioLoggedInUserId"));
+            if (HttpContext.Session.GetString("StudioLoggedInUserId") != null)
             {
-                var userString = HttpContext.Session.GetString("CamerackLoggedInUser");
+                var userString = HttpContext.Session.GetString("StudioLoggedInUserId");
                 _appUser = JsonConvert.DeserializeObject<AppUser>(userString);
             }
             if (_appUser.Role.ManageImages)
@@ -74,7 +73,7 @@ namespace CamerackStudio.Controllers
         {
             try
             {
-                var signedInUserId = Convert.ToInt64(HttpContext.Session.GetString("CamerackLoggedInUserId"));
+                var signedInUserId = Convert.ToInt64(HttpContext.Session.GetString("StudioLoggedInUserId"));
                 camera.DateCreated = DateTime.Now;
                 camera.DateLastModified = DateTime.Now;
                 camera.CreatedBy = signedInUserId;
@@ -83,17 +82,19 @@ namespace CamerackStudio.Controllers
                 _databaseConnection.Cameras.Add(camera);
                 _databaseConnection.SaveChanges();
 
-                //display notification
-                TempData["display"] = "You have successfully added a new Camera!";
-                TempData["notificationtype"] = NotificationType.Success.ToString();
-
+            
                 if (collection != null && collection["Image"] != "" && collection["Image"] == "Redirect")
                 {
                     ViewBag.CameraId = new SelectList(
                         _databaseConnection.Cameras.Where(n => n.CreatedBy == signedInUserId).ToList(), "CameraId",
                         "Name");
+                    var cameras = new Camera();
                     return PartialView("Partials/_PartialImageCamera");
                 }
+                //display notification
+                TempData["display"] = "You have successfully added a new Camera!";
+                TempData["notificationtype"] = NotificationType.Success.ToString();
+
                 return RedirectToAction("Index");
             }
             catch(Exception)
@@ -118,7 +119,7 @@ namespace CamerackStudio.Controllers
             try
             {
                 // TODO: Add update logic here
-                var signedInUserId = Convert.ToInt64(HttpContext.Session.GetString("CamerackLoggedInUserId"));
+                var signedInUserId = Convert.ToInt64(HttpContext.Session.GetString("StudioLoggedInUserId"));
                 camera.DateLastModified = DateTime.Now;
                 camera.LastModifiedBy = signedInUserId;
 

@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace CamerackStudio.Models.Entities
+﻿namespace CamerackStudio.Models.Entities
 {
     public class Bank
     {

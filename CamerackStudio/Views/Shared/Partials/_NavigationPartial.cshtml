@@ -1,13 +1,11 @@
 @using CamerackStudio.Models
 @using CamerackStudio.Models.APIFactory
-@using CamerackStudio.Models.Entities
-@using CamerackStudio.Models.Redis
+@using CamerackStudio.Models.Enum
 @using Microsoft.AspNetCore.Http
-@using Newtonsoft.Json
 @{
-    var signedInUserId = Convert.ToInt64(Context.Session.GetString("CamerackLoggedInUserId"));
+    var signedInUserId = Convert.ToInt64(Context.Session.GetString("StudioLoggedInUserId"));
     var notifications = new AppUserFactory().GetAllPushNotifications(new AppConfig().UsersPushNotifications).Result.Where(n=>n.AppUserId == signedInUserId).ToList();
-    var payments = new OrderFactory().GetAllPaymentsAsync(new AppConfig().FetchPaymentsUrl).Result.Where(n=>n.AppUserId == signedInUserId).ToList();
+    var payments = new OrderFactory().GetAllPaymentsAsync(new AppConfig().FetchPaymentsUrl).Result.Where(n=>n.AppUserId == signedInUserId && n.Status == PaymentStatus.Paid.ToString()).ToList();
 }
 <header>
     <div class="search-bar closed">
@@ -22,7 +20,7 @@
             <li class="visible-lg">
                 <a href="javascript:;" role="button" class="header-icon fullscreen-toggle" style="font-size: 17px">
                     <strong>
-                        Total Earnings : <del>N</del> @string.Format("{0:n0}", payments.Sum(n => n.Amount))
+                        Total Earnings : &#8358 @string.Format("{0:n0}", payments.Sum(n => n.Amount))
                     </strong>
                 </a>
             </li>

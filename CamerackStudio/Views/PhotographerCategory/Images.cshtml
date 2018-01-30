@@ -3,7 +3,7 @@
 @using Microsoft.AspNetCore.Http
 @model List<CamerackStudio.Models.Entities.Image>
 @{
-    var signedInUserId = Context.Session.GetInt32("userId");
+    var signedInUserId = Context.Session.GetInt32("StudioLoggedInUserId");
     Role role = ViewBag.Role;
     string status = ViewBag.status;
     Layout = "Layout/Dashboard/_LayoutTable";

@@ -5,7 +5,6 @@ using CamerackStudio.Models.DataBaseConnections;
 using CamerackStudio.Models.Encryption;
 using CamerackStudio.Models.Entities;
 using CamerackStudio.Models.Enum;
-using CamerackStudio.Models.Redis;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -34,10 +33,10 @@ namespace CamerackStudio.Controllers
         [SessionExpireFilter]
         public ActionResult Images(long id)
         {
-            var signedInUserId = Convert.ToInt64(HttpContext.Session.GetString("CamerackLoggedInUserId"));
-            if (HttpContext.Session.GetString("CamerackLoggedInUser") != null)
+            var signedInUserId = Convert.ToInt64(HttpContext.Session.GetString("StudioLoggedInUserId"));
+            if (HttpContext.Session.GetString("StudioLoggedInUser") != null)
             {
-                var userString = HttpContext.Session.GetString("CamerackLoggedInUser");
+                var userString = HttpContext.Session.GetString("StudioLoggedInUser");
                 _appUser = JsonConvert.DeserializeObject<AppUser>(userString);
             }
             if (_appUser.Role.ManageImages)
@@ -77,7 +76,7 @@ namespace CamerackStudio.Controllers
             try
             {
                 // TODO: Add insert logic here
-                var signedInUserId = Convert.ToInt64(HttpContext.Session.GetString("CamerackLoggedInUserId"));
+                var signedInUserId = Convert.ToInt64(HttpContext.Session.GetString("StudioLoggedInUserId"));
                 imageSubCategory.ImageCategoryId = Convert.ToInt64(collection["CategoryId"]);
                 imageSubCategory.DateCreated = DateTime.Now;
                 imageSubCategory.DateLastModified = DateTime.Now;
@@ -114,7 +113,7 @@ namespace CamerackStudio.Controllers
             try
             {
                 // TODO: Add update logic here
-                var signedInUserId = Convert.ToInt64(HttpContext.Session.GetString("CamerackLoggedInUserId"));
+                var signedInUserId = Convert.ToInt64(HttpContext.Session.GetString("StudioLoggedInUserId"));
                 imageSubCategory.DateLastModified = DateTime.Now;
                 imageSubCategory.LastModifiedBy = signedInUserId;
 

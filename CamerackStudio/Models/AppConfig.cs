@@ -3,8 +3,9 @@
     public class AppConfig
     {
         #region Cloudinary
-        public string GeneralImage => "upload/w_640,h_670/w_640,l_watermark/";
-        public string TableImage => "upload/w_60,h_80/w_50,l_watermark/";
+        public string GeneralImage => "upload/q_auto:best/w_640,h_670/w_580,c_scale,x_0,y_0,a_0,l_watermark/";
+        public string FreeImage => "upload/";
+        public string TableImage => "upload/q_auto:best/w_60,h_60/w_80,c_scale,x_0,y_0,a_0,l_watermark/";
         public string A5Image => "upload/w_559,h_794/";
         public string A4Image => "upload/w_794,h_1123/";
         public string A3Image => "upload/w_1123,h_1587/";
@@ -32,7 +33,7 @@
         public string SavePushNotifications => SSOBaseUrl + "API/SavePushNotifications";
         public string UsersPushNotifications => SSOBaseUrl + "API/GetPushNotifications";
         public string UpdatePushNotifications => SSOBaseUrl + "API/UpdatePushNotifications";
-        public string AllBanks => SSOBaseUrl + "API/AllBanks";
+        public string AllBanks => SSOBaseUrl + "API/GetAllBanks";
         public long ClientId => 3;
 
         #endregion

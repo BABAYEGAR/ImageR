@@ -1,10 +1,9 @@
 ﻿@using CamerackStudio.Models.Entities
-@using CamerackStudio.Models.Redis
 @using Microsoft.AspNetCore.Http
 @model List<CamerackStudio.Models.Entities.PhotographerCategory>
 @{
     List<PhotographerCategoryMapping> mapping = ViewBag.Mapping;
-    var signedInUserId = Convert.ToInt64(new RedisDataAgent().GetStringValue("CamerackLoggedInUserId"));
+    var signedInUserId = Convert.ToInt64(Context.Session.GetString("StudioLoggedInUserId"));
 }
 
 @foreach (var item in Model)

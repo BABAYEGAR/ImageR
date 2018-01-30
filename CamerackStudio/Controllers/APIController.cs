@@ -7,7 +7,7 @@ using CamerackStudio.Models.APIFactory;
 using CamerackStudio.Models.DataBaseConnections;
 using CamerackStudio.Models.Entities;
 using CamerackStudio.Models.Enum;
-using CamerackStudio.Models.Services;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -29,8 +29,7 @@ namespace CamerackStudio.Controllers
         public JsonResult GetAllImages()
         {
             return Json(_databaseConnection.Images.Include(n => n.Camera).Include(n => n.Location)
-                .Include(n => n.ImageCategory)
-                .Include(n => n.ImageActions).Where(n => n.Status == ImageStatus.Accepted.ToString()).ToList());
+                .Where(n => n.Status == ImageStatus.Accepted.ToString()).ToList());
         }
 
         /// <summary>
@@ -133,9 +132,9 @@ namespace CamerackStudio.Controllers
                 {
                     var notification = new PushNotification
                     {
-                        AppUserId = image.AppUserId,
-                        CreatedBy = image.AppUserId,
-                        LastModifiedBy = image.AppUserId,
+                        AppUserId = action.OwnerId,
+                        CreatedBy = action.AppUserId,
+                        LastModifiedBy = action.AppUserId,
                         DateLastModified = DateTime.Now,
                         DateCreated = DateTime.Now,
                         Category = SystemNotificationCategory.Comment.ToString(),
@@ -165,10 +164,38 @@ namespace CamerackStudio.Controllers
         }
 
         [HttpPost]
-        public JsonResult SaveComment([FromBody] ImageComment comment)
+        public async Task<JsonResult> SaveComment([FromBody] ImageComment comment)
         {
             _databaseConnection.Add(comment);
             _databaseConnection.SaveChanges();
+
+            var image = _databaseConnection.Images.SingleOrDefault(n => n.ImageId == comment.ImageId);
+            if (comment.ImageCommentId > 0)
+            {
+                if (image != null)
+                {
+                    var notification = new PushNotification
+                    {
+                        AppUserId = image.AppUserId,
+                        CreatedBy = comment.CreatedBy,
+                        LastModifiedBy = comment.CreatedBy,
+                        DateLastModified = DateTime.Now,
+                        DateCreated = DateTime.Now,
+                        Category = SystemNotificationCategory.Comment.ToString(),
+                        Read = false,
+                        ControllerId = image.ImageId,
+                        ClientId = 4
+                    };
+
+                    var singleOrDefault = new AppUserFactory()
+                        .GetAllUsers(new AppConfig().FetchUsersUrl).Result
+                        .SingleOrDefault(n => n.AppUserId == image.AppUserId);
+                    if (singleOrDefault != null)
+                        notification.Message = singleOrDefault.Name +
+                                               " Commented on your Image";
+                    await new AppUserFactory().SavePushNotification(new AppConfig().SavePushNotifications, notification);
+                }
+            }
             return Json(comment);
         }
 
@@ -245,6 +272,16 @@ namespace CamerackStudio.Controllers
             {
                 return Json(notification);
             }
+        }
+
+        public RedirectResult LogOut()
+        {
+            HttpContext.Session.Remove("StudioLoggedInUser");
+            HttpContext.Session.Remove("StudioLoggedInUserId");
+            HttpContext.Session.Clear();
+            _databaseConnection.Dispose();
+            HttpContext.SignOutAsync();
+            return Redirect("https://camerack.com/Account/Login");
         }
 
     }
