@@ -21,7 +21,6 @@ namespace CamerackStudio.Models.DataBaseConnections
         // on configuring and using a Code First model, see http://go.microsoft.com/fwlink/?LinkId=390109.
         public virtual DbSet<Image> Images { get; set; }
         public virtual DbSet<ImageTag> ImageTags { get; set; }
-        public virtual DbSet<ImageCompetitionRating> ImageCompetitionRatings { get; set; }
         public virtual DbSet<ImageComment> ImageComments { get; set; }
         public virtual DbSet<ImageCategory> ImageCategories { get; set; }
         public virtual DbSet<ImageAction> ImageActions { get; set; }
@@ -32,9 +31,14 @@ namespace CamerackStudio.Models.DataBaseConnections
         public virtual DbSet<PhotographerCategoryMapping> PhotographerCategoryMappings { get; set; }
         public virtual DbSet<ImageReport> ImageReports { get; set; }
         public virtual DbSet<UserBank> UserBanks { get; set; }
+        public virtual DbSet<SliderImage> SliderImages { get; set; }
+        public virtual DbSet<HeaderImage> HeaderImages { get; set; }
+        public virtual DbSet<TermAndCondition> TermsAndConditions { get; set; }
+
+        public virtual DbSet<Advertisement> Advertisements { get; set; }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            //optionsBuilder.UseSqlServer(@"Server=.;Database=CamerackStudio;Trusted_Connection=True;");
+            optionsBuilder.UseSqlServer(@"Server=.;Database=CamerackStudio;Trusted_Connection=True;");
         }
     }
 }

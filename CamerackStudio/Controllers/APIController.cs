@@ -31,7 +31,30 @@ namespace CamerackStudio.Controllers
             return Json(_databaseConnection.Images.Include(n => n.Camera).Include(n => n.Location)
                 .Where(n => n.Status == ImageStatus.Accepted.ToString()).ToList());
         }
-
+        /// <summary>
+        ///     The method returns all images from photo studio via json object
+        /// </summary>
+        /// <returns></returns>
+        public JsonResult GetAllSliderImages()
+        {
+            return Json(_databaseConnection.SliderImages.ToList());
+        }
+        /// <summary>
+        ///     The method returns all images from photo studio via json object
+        /// </summary>
+        /// <returns></returns>
+        public JsonResult GetAllAdvertisments()
+        {
+            return Json(_databaseConnection.Advertisements.ToList());
+        }
+        /// <summary>
+        ///     The method returns all images from photo studio via json object
+        /// </summary>
+        /// <returns></returns>
+        public JsonResult GetAllHeaderImages()
+        {
+            return Json(_databaseConnection.HeaderImages.ToList());
+        }
         /// <summary>
         ///     The method returns all images from photo studio via json object
         /// </summary>
@@ -281,7 +304,7 @@ namespace CamerackStudio.Controllers
             HttpContext.Session.Clear();
             _databaseConnection.Dispose();
             HttpContext.SignOutAsync();
-            return Redirect("https://camerack.com/Account/Login");
+            return Redirect("https://camerack.com/Account/Login?returnUrl=sessionExpired");
         }
 
     }

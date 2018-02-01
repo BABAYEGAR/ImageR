@@ -59,6 +59,23 @@
                 </ul>
             </li>
         }
+        @if (appUser != null && appUser.Role != null && appUser.Role.ManageApplicationUser)
+        {
+            <li class="panel">
+                <a role="button" data-toggle="collapse" data-parent=".navigation" href="#collapse511" aria-expanded="false" aria-controls="collapse511" class="collapsed"><i class="ti-user"></i>Users @*<span class="label label-outline label-success">New</span>*@</a>
+                <ul id="collapse511" class="list-unstyled collapse">
+                    <li>
+                        <a href="@Url.Action("Index", "Slider")">Slider Image</a>
+                    </li>
+                    <li>
+                        <a href="@Url.Action("Index", "Advertisement")">Advertisement </a>
+                    </li>
+                    <li>
+                        <a href="@Url.Action("HeaderImage", "ApplicationManagement")">Header Image </a>
+                    </li>
+                </ul>
+            </li>
+        }
         @if (appUser != null && appUser.Role != null && appUser.Role.ManageImages)
         {
             <li class="panel">

@@ -39,7 +39,7 @@ namespace CamerackStudio
 
             // Add framework services.
             services.AddDbContext<CamerackStudioDataContext>(options =>
-                options.UseMySql(Configuration.GetConnectionString("CamerackStudio")));
+                options.UseSqlServer(Configuration.GetConnectionString("CamerackStudio")));
             // Adds a default in-memory implementation of IDistributedCache.
             services.AddDistributedMemoryCache();
             services.AddSession(options =>

@@ -49,10 +49,13 @@
   <ItemGroup>
     <Folder Include="wwwroot\Dashboard\plugins\codemirror\mode\rpm\changes\" />
     <Folder Include="wwwroot\Dashboard\plugins\pdfmake\libs\FileSaver.js\" />
+    <Folder Include="wwwroot\UploadedImage\Advert\" />
+    <Folder Include="wwwroot\UploadedImage\Header\" />
     <Folder Include="wwwroot\UploadedImage\ImageCategory\" />
     <Folder Include="wwwroot\UploadedImage\PhotoCategory\" />
     <Folder Include="wwwroot\UploadedImage\ProfileBackground\" />
     <Folder Include="wwwroot\UploadedImage\ProfilePicture\" />
+    <Folder Include="wwwroot\UploadedImage\Slider\" />
   </ItemGroup>
 
   <ItemGroup>

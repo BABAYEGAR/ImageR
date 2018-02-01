@@ -1,0 +1,102 @@
+﻿@model List<CamerackStudio.Models.Entities.TermAndCondition>
+@{
+    Layout = "Layout/Dashboard/_LayoutTable";
+    ViewBag.PageTitle = "List of T&C's";
+    ViewBag.PageHeader = "Manage T&C's";
+    ViewBag.FormHeader = "List of T&C's";
+}
+@section Breadcrumbs
+{
+    <div class="pull-left">
+        <h4 class="mt-0 mb-5">@ViewBag.PageHeader</h4>
+        <ol class="breadcrumb mb-0">
+            <li><a href="@Url.Action("Dashboard","Home")">Dashboard</a></li>
+            <li class="active">@ViewBag.PageHeader</li>
+        </ol>
+    </div>
+}
+<div class="modal fade" id="myModal1" tabindex="-1" role="dialog" aria-labelledby="myModalLabel1">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title" id="myModalLabel1">Delete T&C</h4>
+            </div>@using (Html.BeginForm("Delete", "TermAndCondition"))
+                  {
+                      <input type="hidden" id="id" name="TermAndConditionId" />
+                      <div class="modal-body">
+
+                          @Html.AntiForgeryToken()
+                          <p>
+                              Are you sure you want to delete the T&C?
+                          </p>
+
+                      </div>
+                      <div class="modal-footer">
+                          <input type="submit" value="Delete" class="btn btn-danger pull-right fa fa-trash" />
+                          <input type="button" data-dismiss="modal" value="Cancel" class="btn btn-default pull-left" />
+                      </div>
+                  }
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="btn-group">
+            <a href="@Url.Action("Create", "TermAndCondition")" class="btn btn-primary" data-toggle="tooltip" title="Add New T&C">
+                Add New
+                <i class="fa fa-plus"></i>
+            </a>
+        </div>
+    </div>
+</div>
+<br />
+<table id="example-2" cellspacing="0" width="100%" class="table table-striped table-bordered">
+    <thead>
+    <tr>
+        <th>Date Added</th>
+        <th>Action</th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>@item.DateCreated</td>
+            <td>
+                <div class="btn-group">
+                    <button class="btn btn-xs btn-primary dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false">
+                        Actions
+                        <i class="fa fa-angle-down"></i>
+                    </button>
+                    <ul class="dropdown-menu pull-right" role="menu">
+                        <li>
+                            <a href="@Url.Action("Edit", "TermAndCondition", new {id = item.TermAndConditionId})" data-toggle="tooltip" title="Edit the T&C">
+                                <i class="icon-pencil"></i> Edit
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#" data-toggle="tooltip" title="Delete the T&C" data-id="@item.TermAndConditionId" data-toggle="modal" class="loadModal3">
+                                <i class="icon-trash"></i> Delete
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>
+@section Functions {
+    <script>
+        $(document).ready(function() {
+            $(".loadModal3").click(function() { // Click to only happen on announce links
+                $("#id").val($(this).data('id'));
+                $('#myModal1').modal('show');
+            });
+        });
+    </script>
+}

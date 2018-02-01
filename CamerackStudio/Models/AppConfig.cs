@@ -68,6 +68,9 @@
         public string ImageCategoryPicture => "wwwroot/UploadedImage/ImageCategory/";
 
         public string PhotoCategoryPicture => "wwwroot/UploadedImage/PhotoCategory/";
+        public string AdvertPicture => "wwwroot/UploadedImage/Advert/";
+        public string SliderPicture => "wwwroot/UploadedImage/Slider/";
+        public string HeaderPicture => "wwwroot/UploadedImage/Header/";
         #endregion
 
         #region Cloudinary
