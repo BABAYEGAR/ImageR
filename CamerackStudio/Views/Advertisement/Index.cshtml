@@ -1,4 +1,5 @@
-﻿@model List<CamerackStudio.Models.Entities.Advertisement>
+﻿@using CamerackStudio.Models.Enum
+@model List<CamerackStudio.Models.Entities.Advertisement>
 @{
     Layout = "Layout/Dashboard/_LayoutTable";
     ViewBag.PageTitle = "List of Advertisements";
@@ -59,6 +60,7 @@
     <tr>
         <th>Client</th>
         <th>Client Email</th>
+        <th>Category</th>
         <th>Start Date</th>
         <th>End Date</th>
         <th>Clicks</th>
@@ -71,6 +73,7 @@
         <tr>
             <td>@item.Client</td>
             <td>@item.ClientEmail</td>
+            <td>@(Enum.GetName(typeof(AdvertPageCategory),Convert.ToInt32(item.PageCategory)))</td>
             <td>@item.StartDate</td>
             <td>@item.EndDate</td>
             <td>@item.AdClick</td>

@@ -1,4 +1,5 @@
-﻿@model CamerackStudio.Models.Entities.HeaderImage
+﻿@using CamerackStudio.Models.Enum
+@model CamerackStudio.Models.Entities.HeaderImage
 @{
     Layout = "Layout/Dashboard/_LayoutForm";
     ViewBag.PageTitle = "Edit Header Image";
@@ -41,7 +42,7 @@
         </div>
         <div class="form-group col-md-6">
             @Html.LabelFor(model => model.PageCategory, new { @class = "control-label" })<span class="required">*</span>
-            @Html.EditorFor(model => model.PageCategory, new { htmlAttributes = new { @class = "form-control", placeholder = "Please enter the client name" } })
+            @Html.DropDownListFor(model => model.PageCategory, Html.GetEnumSelectList(typeof(HeaderPageCategory)), new {@class = "form-control", placeholder = ""})
             @Html.ValidationMessageFor(model => model.PageCategory, "", new { @class = "text-danger" })
         </div>
         <div class="form-group">

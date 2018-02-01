@@ -1,4 +1,5 @@
-﻿@model CamerackStudio.Models.Entities.Advertisement
+﻿@using CamerackStudio.Models.Enum
+@model CamerackStudio.Models.Entities.Advertisement
 @{
     Layout = "Layout/Dashboard/_LayoutForm";
     ViewBag.PageTitle = "Create Advertisement";
@@ -72,7 +73,7 @@
         </div>
         <div class="form-group col-md-6">
             @Html.LabelFor(model => model.PageCategory, new {@class = "control-label"})<span class="required">*</span>
-            @Html.DropDownListFor(model => model.PageCategory, null, new {htmlAttributes = new {@class = "form-control", placeholder = ""}})
+            @Html.DropDownListFor(model => model.PageCategory, Html.GetEnumSelectList(typeof(AdvertPageCategory)), new {@class = "form-control", placeholder = ""})
             @Html.ValidationMessageFor(model => model.PageCategory, "", new {@class = "text-danger"})
         </div>
         <div class="form-group col-md-6">
@@ -101,7 +102,7 @@
     </div>
     <div class="form-group">
         <button type="submit" class="btn btn-primary">Submit</button>
-        <a href="@Url.Action("Index", "Slider")" class="btn btn-default">Cancel</a>
+        <a href="@Url.Action("Index", "SliderImage")" class="btn btn-default">Cancel</a>
     </div>
 }
 @section Scripts{

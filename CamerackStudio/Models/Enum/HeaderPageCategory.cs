@@ -5,18 +5,15 @@ using System.Threading.Tasks;
 
 namespace CamerackStudio.Models.Enum
 {
-    public enum AdvertPageCategory
+    public enum HeaderPageCategory
     {
-        HomePageMain,
-        HomePageSubOne,
-        HomePageSubTwo,
         ShopPage,
-        FreePage,
         OnSalePage,
+        FreePage,
         BestSellerPage,
-        CategoryImagesPage,
+        NewPage,
         PhotographersPage,
-        CategoryPhotographersPage,
-        NewPage
+        CategoryImagesPage,
+        CategoryPhotographersPage
     }
 }

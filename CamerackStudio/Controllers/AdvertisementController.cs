@@ -59,7 +59,7 @@ namespace CamerackStudio.Controllers
                             var ext = fileInfo.Extension.ToLower();
                             var name = DateTime.Now.ToFileTime().ToString();
                             var fileName = name + ext;
-                            var uploadedImage = new AppConfig().ImageCategoryPicture + fileName;
+                            var uploadedImage = new AppConfig().AdvertPicture + fileName;
                             using (var fs = System.IO.File.Create(uploadedImage))
                             {
                                 if (fs != null)
@@ -77,6 +77,7 @@ namespace CamerackStudio.Controllers
                     //display notification
                     TempData["display"] = "You have successfully added a new Advertisement to Camerack!";
                     TempData["notificationtype"] = NotificationType.Success.ToString();
+                    return RedirectToAction("Index");
                 }
 
                 //display notification
@@ -122,7 +123,7 @@ namespace CamerackStudio.Controllers
                             var ext = fileInfo.Extension.ToLower();
                             var name = DateTime.Now.ToFileTime().ToString();
                             var fileName = name + ext;
-                            var uploadedImage = new AppConfig().ImageCategoryPicture + fileName;
+                            var uploadedImage = new AppConfig().AdvertPicture + fileName;
                             using (var fs = System.IO.File.Create(uploadedImage))
                             {
                                 if (fs != null)
@@ -140,6 +141,7 @@ namespace CamerackStudio.Controllers
                     //display notification
                     TempData["display"] = "You have successfully modified the Advertisement!";
                     TempData["notificationtype"] = NotificationType.Success.ToString();
+                    return RedirectToAction("Index");
                 }
 
                 //display notification

@@ -48,33 +48,43 @@ namespace CamerackStudio.Controllers
                 headerImage.DateLastModified = DateTime.Now;
                 headerImage.CreatedBy = signedInUserId;
                 headerImage.LastModifiedBy = signedInUserId;
-                if (image.Count > 0)
-                    foreach (var file in image)
-                    {
-                        var fileInfo = new FileInfo(file.FileName);
-                        var ext = fileInfo.Extension.ToLower();
-                        var name = DateTime.Now.ToFileTime().ToString();
-                        var fileName = name + ext;
-                        var uploadedImage = new AppConfig().ImageCategoryPicture + fileName;
-                        using (var fs = System.IO.File.Create(uploadedImage))
+                if (_databaseConnection.HeaderImages
+                        .Where(n => n.PageCategory == headerImage.PageCategory)
+                        .ToList().Count <= 0)
+                {
+                    if (image.Count > 0)
+                        foreach (var file in image)
                         {
-                            if (fs != null)
+                            var fileInfo = new FileInfo(file.FileName);
+                            var ext = fileInfo.Extension.ToLower();
+                            var name = DateTime.Now.ToFileTime().ToString();
+                            var fileName = name + ext;
+                            var uploadedImage = new AppConfig().HeaderPicture + fileName;
+                            using (var fs = System.IO.File.Create(uploadedImage))
                             {
-                                file.CopyTo(fs);
-                                fs.Flush();
-                                headerImage.File = fileName;
+                                if (fs != null)
+                                {
+                                    file.CopyTo(fs);
+                                    fs.Flush();
+                                    headerImage.File = fileName;
 
+                                }
                             }
                         }
-                    }
-                _databaseConnection.HeaderImages.Add(headerImage);
-                _databaseConnection.SaveChanges();
+                    _databaseConnection.HeaderImages.Add(headerImage);
+                    _databaseConnection.SaveChanges();
 
+                    //display notification
+                    TempData["display"] = "You have successfully added a new Header Image!";
+                    TempData["notificationtype"] = NotificationType.Success.ToString();
+                    return RedirectToAction("Index");
+                }
                 //display notification
-                TempData["display"] = "You have successfully added a new Header Image!";
-                TempData["notificationtype"] = NotificationType.Success.ToString();
+                TempData["display"] = "The Header Image for the category Cannot be duplicated as it already exist!";
+                TempData["notificationtype"] = NotificationType.Error.ToString();
                 return RedirectToAction("Index");
             }
+            
             catch(Exception)
             {
                 return View();
@@ -107,7 +117,7 @@ namespace CamerackStudio.Controllers
                         var ext = fileInfo.Extension.ToLower();
                         var name = DateTime.Now.ToFileTime().ToString();
                         var fileName = name + ext;
-                        var uploadedImage = new AppConfig().ImageCategoryPicture + fileName;
+                        var uploadedImage = new AppConfig().HeaderPicture + fileName;
                         using (var fs = System.IO.File.Create(uploadedImage))
                         {
                             if (fs != null)

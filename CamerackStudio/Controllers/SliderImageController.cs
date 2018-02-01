@@ -55,7 +55,7 @@ namespace CamerackStudio.Controllers
                         var ext = fileInfo.Extension.ToLower();
                         var name = DateTime.Now.ToFileTime().ToString();
                         var fileName = name + ext;
-                        var uploadedImage = new AppConfig().ImageCategoryPicture + fileName;
+                        var uploadedImage = new AppConfig().SliderPicture + fileName;
                         using (var fs = System.IO.File.Create(uploadedImage))
                         {
                             if (fs != null)
@@ -107,7 +107,7 @@ namespace CamerackStudio.Controllers
                         var ext = fileInfo.Extension.ToLower();
                         var name = DateTime.Now.ToFileTime().ToString();
                         var fileName = name + ext;
-                        var uploadedImage = new AppConfig().ImageCategoryPicture + fileName;
+                        var uploadedImage = new AppConfig().SliderPicture + fileName;
                         using (var fs = System.IO.File.Create(uploadedImage))
                         {
                             if (fs != null)
