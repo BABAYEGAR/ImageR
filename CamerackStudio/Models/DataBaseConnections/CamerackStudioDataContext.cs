@@ -34,11 +34,14 @@ namespace CamerackStudio.Models.DataBaseConnections
         public virtual DbSet<SliderImage> SliderImages { get; set; }
         public virtual DbSet<HeaderImage> HeaderImages { get; set; }
         public virtual DbSet<TermAndCondition> TermsAndConditions { get; set; }
+        public virtual DbSet<Faq> Faqs { get; set; }
+        public virtual DbSet<PrivacyPolicy> PrivacyPolicies { get; set; }
+        public virtual DbSet<AboutUs> AboutUs { get; set; }
 
         public virtual DbSet<Advertisement> Advertisements { get; set; }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlServer(@"Server=.;Database=CamerackStudio;Trusted_Connection=True;");
+            //optionsBuilder.UseSqlServer(@"Server=.;Database=CamerackStudio;Trusted_Connection=True;");
         }
     }
 }

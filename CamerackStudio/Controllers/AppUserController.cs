@@ -7,6 +7,8 @@ using CamerackStudio.Models.DataBaseConnections;
 using CamerackStudio.Models.Encryption;
 using CamerackStudio.Models.Entities;
 using CamerackStudio.Models.Enum;
+using CamerackStudio.Models.RabbitMq;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CamerackStudio.Controllers
@@ -36,6 +38,53 @@ namespace CamerackStudio.Controllers
                 return View();
             }
         }
+        public IActionResult Newsletter()
+        {
+            return View();
+        }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Newsletter(UserEmail email)
+        {
+            List<AppUser> users = new List<AppUser>();
+
+
+            var subscriptions = new AppUserFactory().GetAllSubscriptions(new AppConfig().GetSubscriptionsUrl).Result.ToList();
+            foreach (var item in subscriptions)
+            {
+                AppUser user = new AppUser
+                {
+                    Name = item.Name,
+                    Email = item.Email
+                };
+                users.Add(user);
+            }
+            email.MessageCategory = "Newsletter";
+            email.AppUsers = users;
+            new SendUserMessage().SendNewsLetter(email);
+            TempData["display"] = "You have successfully sent the Newsletter!";
+            TempData["notificationtype"] = NotificationType.Success.ToString();
+            return RedirectToAction("Dashboard", "Home");
+        }
+        public IActionResult GeneralNotice()
+        {
+            return View();
+        }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult GeneralNotice(UserEmail email)
+        {
+            var users = new AppUserFactory().GetAllUsers(new AppConfig().FetchUsersUrl).Result.ToList();
+            email.MessageCategory = "General";
+            email.AppUsers = users;
+            new SendUserMessage().SendGeneralNotice(email);
+            //display notification
+            TempData["display"] = "You have successfully sent the General Notice!";
+            TempData["notificationtype"] = NotificationType.Success.ToString();
+            return RedirectToAction("Dashboard", "Home");
+        }
+
+
         [SessionExpireFilter]
         public IActionResult Customers()
         {
@@ -60,15 +109,11 @@ namespace CamerackStudio.Controllers
             {
                 var users = new AppUserFactory().GetAllUsers(new AppConfig().FetchUsersUrl)
                     .Result.Where(n=>n.RoleId == 3);
-                List<AppUser> results = new List<AppUser>();
-                var images = _databaseConnection.Images;
-                foreach (var item in users)
-                {
-                    if (images.Where(n => n.AppUserId == item.AppUserId).ToList().Count > 0)
-                    {
-                        results.Add(item);
-                    }   
-                }
+                var results = (from a in users
+                    join b in _databaseConnection.Images.ToList()
+                    on a.AppUserId equals b.AppUserId
+                    where b != null
+                    select a).Distinct().ToList();
                 return View(results);
             }
             catch (Exception)

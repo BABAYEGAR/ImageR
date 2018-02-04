@@ -46,6 +46,7 @@
         public string FetchPaymentsUrl => CamerackBaseUrl + "API/GetAllPayments";
         public string FetchInvoiceUrl => CamerackBaseUrl + "API/GetAllInvoices";
         public string ApprovePaymentsUrl => CamerackBaseUrl + "API/ApprovePayment/";
+        public string GetSubscriptionsUrl => CamerackBaseUrl + "API/GetAllSubscriptions";
         #endregion
 
         #region Mailer
@@ -71,6 +72,7 @@
         public string AdvertPicture => "wwwroot/UploadedImage/Advert/";
         public string SliderPicture => "wwwroot/UploadedImage/Slider/";
         public string HeaderPicture => "wwwroot/UploadedImage/Header/";
+        public string AboutPicture => "wwwroot/UploadedImage/About/";
         #endregion
 
         #region Cloudinary

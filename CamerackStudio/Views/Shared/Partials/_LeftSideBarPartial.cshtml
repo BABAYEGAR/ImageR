@@ -45,7 +45,7 @@
         @if (appUser != null && appUser.Role != null && appUser.Role.ManageApplicationUser)
         {
             <li class="panel">
-                <a role="button" data-toggle="collapse" data-parent=".navigation" href="#collapse51" aria-expanded="false" aria-controls="collapse51" class="collapsed"><i class="ti-user"></i>Users @*<span class="label label-outline label-success">New</span>*@</a>
+                <a role="button" data-toggle="collapse" data-parent=".navigation" href="#collapse51" aria-expanded="false" aria-controls="collapse51" class="collapsed"><i class="ti-user"></i>User @*<span class="label label-outline label-success">New</span>*@</a>
                 <ul id="collapse51" class="list-unstyled collapse">
                     <li>
                         <a href="@Url.Action("AllUsers", "AppUser")">All Users </a>
@@ -56,6 +56,7 @@
                     <li>
                         <a href="@Url.Action("Photographers", "AppUser")">All Photographers </a>
                     </li>
+
                 </ul>
             </li>
         }
@@ -72,6 +73,32 @@
                     </li>
                     <li>
                         <a href="@Url.Action("Index", "HeaderImage")">Header Image </a>
+                    </li>
+                    <li>
+                        <a href="@Url.Action("GeneralNotice", "AppUser")">Send General Notice </a>
+                    </li>
+                    <li>
+                        <a href="@Url.Action("Newsletter", "AppUser")">Send Newsletter </a>
+                    </li>
+                </ul>
+            </li>
+        }
+        @if (appUser != null && appUser.Role != null && appUser.Role.ManageApplicationUser)
+        {
+            <li class="panel">
+                <a role="button" data-toggle="collapse" data-parent=".navigation" href="#collapse5111" aria-expanded="false" aria-controls="collapse5111" class="collapsed"><i class="ti-book"></i>Pages @*<span class="label label-outline label-success">New</span>*@</a>
+                <ul id="collapse5111" class="list-unstyled collapse">
+                    <li>
+                        <a href="@Url.Action("Faq", "Page")">Faq</a>
+                    </li>
+                    <li>
+                        <a href="@Url.Action("Terms", "Page")">Terms & Conditions </a>
+                    </li>
+                    <li>
+                        <a href="@Url.Action("PrivacyPolicy", "Page")">Privacy Policy </a>
+                    </li>
+                    <li>
+                        <a href="@Url.Action("AboutUs", "Page")">About Us </a>
                     </li>
                 </ul>
             </li>

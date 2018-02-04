@@ -1,0 +1,73 @@
+﻿@using CamerackStudio.Models.Enum
+@model CamerackStudio.Models.Entities.AboutUs
+@{
+    Layout = "Layout/Dashboard/_LayoutForm";
+    ViewBag.PageTitle = "About Us";
+    ViewBag.PageHeader = "About Us";
+    ViewBag.FormHeader = "Manage About Us (Make sure to fill all compulsory fields *)";
+}
+@section Breadcrumbs
+    {
+    <div class="pull-left">
+        <h4 class="mt-0 mb-5">@ViewBag.PageHeader</h4>
+        <ol class="breadcrumb mb-0">
+            <li><a href="@Url.Action("Dashboard","Home")">Dashboard</a></li>
+            <li class="active">@ViewBag.PageHeader</li>
+        </ol>
+    </div>
+}
+@section css{
+
+    <style>
+
+        .page-header {
+            padding: 0px;
+        }
+
+        .selectize-input {
+            border: 0px solid #d0d0d0;
+            font-weight: bolder;
+            padding: 0px 0px;
+            width: 100%;
+        }
+    </style>
+}
+@using (Html.BeginForm("AboutUs", "Page", FormMethod.Post, new {enctype = "multipart/form-data", role = "form"}))
+{
+    @Html.HiddenFor(n=>n.AboutUsId)
+    @Html.HiddenFor(n=>n.DateCreated)
+    @Html.HiddenFor(n=>n.CreatedBy)
+    @Html.HiddenFor(n=>n.File)
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true, "", new {@class = "text-danger"})
+    <div class="form-group col-md-12">
+        @Html.LabelFor(model => model.Text, new {@class = "control-label"})<span class="required">*</span>
+        @Html.TextAreaFor(model => model.Text, new {@class = "form-control", id = "ckeditor-full", placeholder = "Please enter the body"})
+        @Html.ValidationMessageFor(model => model.Text, "", new {@class = "text-danger"})
+    </div>
+    <div class="form-group">
+        <br/>
+        <br/>
+
+        <label class="col-sm-2 control-label">Image Upload</label>
+        <div class="col-sm-10">
+                
+            <input id="input-5" name="image" required="required" type="file" multiple="" class="file-loading">
+            <p class="help-block">Note that uploading large image sizes might take some more time to upload to the server at such please be patient, but a quick fix is to have a speedy internet connection.
+            </p>
+        </div>
+    </div>
+    <div class="form-group">
+        <button type="submit" class="btn btn-primary">Submit</button>
+        <a href="@Url.Action("Dashboard","Home")"  class="btn btn-default">Cancel</a>
+    </div>
+}
+@section Scripts{
+    <!-- CKEditor-->
+    <script type="text/javascript" src="~/Dashboard/plugins/bootstrapck4-skin/ckeditor.js"></script>
+    <!-- Custom JS-->
+    <script type="text/javascript" src="~/Dashboard/build/js/page-content/editors/ckeditor.js"></script>
+}
+@section Functions
+    {
+}

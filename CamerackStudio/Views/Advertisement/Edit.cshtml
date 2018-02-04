@@ -102,7 +102,7 @@
             <label class="col-sm-2 control-label">Image Upload</label>
             <div class="col-sm-10">
 
-                <input id="input-5" name="image" required="required" type="file" multiple="" class="file-loading">
+                <input id="input-5" name="image" type="file" multiple="" class="file-loading">
                 <p class="help-block">
                     Note that uploading large image sizes might take some more time to upload to the server at such please be patient, but a quick fix is to have a speedy internet connection.
                 </p>
@@ -134,18 +134,16 @@
     <script>
         $(document).ready(function() {
             $("#no-icon-dtpicker1")
-                .datetimepicker({ locale: "en-gb", minDate: new Date(), format: "DD/MM/YYYY HH:mm" });
+                .datetimepicker({ locale: "en-gb", minDate: new Date() });
             $("#no-icon-dtpicker2").datetimepicker({
-                locale: "en-gb",
-                format: "DD/MM/YYYY HH:mm"
+                locale: "en-gb"
             });
 
             $('#no-icon-dtpicker1')
-                .datetimepicker({ locale: "en-gb", minDate: new Date(), format: "DD/MM/YYYY HH:mm" });
+                .datetimepicker({ locale: "en-gb", minDate: new Date()});
             $('#no-icon-dtpicker2').datetimepicker({
                 useCurrent: false,
-                locale: "en-gb",
-                format: "DD/MM/YYYY HH:mm"
+                locale: "en-gb"
             });
             $("#no-icon-dtpicker1").on("dp.change",
                 function(e) {

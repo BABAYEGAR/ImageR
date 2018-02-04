@@ -108,7 +108,38 @@ namespace CamerackStudio.Controllers
         {
             return Json(_databaseConnection.ImageActions.ToList());
         }
-
+        /// <summary>
+        ///     The method returns all images from photo studio via json object
+        /// </summary>
+        /// <returns></returns>
+        public JsonResult GetAllTermsAndConditions()
+        {
+            return Json(_databaseConnection.TermsAndConditions.ToList());
+        }
+        /// <summary>
+        ///     The method returns all images from photo studio via json object
+        /// </summary>
+        /// <returns></returns>
+        public JsonResult GetPrivacyPolicy()
+        {
+            return Json(_databaseConnection.PrivacyPolicies.FirstOrDefault());
+        }
+        /// <summary>
+        ///     The method returns all images from photo studio via json object
+        /// </summary>
+        /// <returns></returns>
+        public JsonResult GetFaq()
+        {
+            return Json(_databaseConnection.Faqs.FirstOrDefault());
+        }
+        /// <summary>
+        ///     The method returns all images from photo studio via json object
+        /// </summary>
+        /// <returns></returns>
+        public JsonResult GetAboutUs()
+        {
+            return Json(_databaseConnection.AboutUs.FirstOrDefault());
+        }
         /// <summary>
         ///     The method returns all images from photo studio via json object
         /// </summary>
@@ -127,7 +158,19 @@ namespace CamerackStudio.Controllers
         {
             return Json(_databaseConnection.Cameras.ToList());
         }
-
+        /// <summary>
+        ///     The method returns a single images via a json object
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public JsonResult UpdateAdCount(long id)
+        {
+            var ad = _databaseConnection.Advertisements.Find(id);
+            ad.AdClick = ad.AdClick + 1;
+            _databaseConnection.Entry(ad).State = EntityState.Modified;
+            _databaseConnection.SaveChanges();
+            return Json(ad);
+        }
         /// <summary>
         ///     The method returns a single images via a json object
         /// </summary>
@@ -304,7 +347,7 @@ namespace CamerackStudio.Controllers
             HttpContext.Session.Clear();
             _databaseConnection.Dispose();
             HttpContext.SignOutAsync();
-            return Redirect("https://camerack.com/Account/Login?returnUrl=sessionExpired");
+            return Redirect("https://camerack.com/Account/Login?returnUrl=logOut");
         }
 
     }

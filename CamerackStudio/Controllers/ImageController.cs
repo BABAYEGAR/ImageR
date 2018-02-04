@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using CamerackStudio.Models;
@@ -345,11 +346,12 @@ namespace CamerackStudio.Controllers
                 var uploadParams = new ImageUploadParams
                 {
                     File = new FileDescription(filename, file.OpenReadStream()),
-                    Invalidate = true
+                    Invalidate = true,
+                    Format = "JPG"
                 };
                 //upload image
                 var uploadResult = cloudinary.UploadAsync(uploadParams);
-
+                
                 if (uploadResult.Result.Format != null)
                 {
                     image.FilePath = uploadResult.Result.Uri.AbsolutePath;

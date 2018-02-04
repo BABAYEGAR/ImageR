@@ -31,6 +31,7 @@ namespace CamerackStudio.Controllers
             {
                 var appUserKeys = new AppUserFactory().GetUsersAccessKey(new AppConfig().FetchUsersAccessKeys);
                 var userKey = appUserKeys.Result.SingleOrDefault(n => n.AccountActivationAccessCode == id);
+               
                 if (userKey != null)
                 {
                     var user = new AppUserFactory().GetAllUsers(new AppConfig().FetchUsersUrl).Result
@@ -38,8 +39,10 @@ namespace CamerackStudio.Controllers
                     if (user != null)
                     {
                         var userSession = JsonConvert.SerializeObject(user);
+                        var imageCount = _databaseConnection.Images.Where(n => n.AppUserId == user.AppUserId).ToList().Count;
                         HttpContext.Session.SetString("StudioLoggedInUserId", userKey.AppUserId.ToString());
                         HttpContext.Session.SetString("StudioLoggedInUser", userSession);
+                        HttpContext.Session.SetInt32("StudioLoggedInUserImageCount", imageCount);
                         return RedirectToAction("Dashboard");
                     }
                 }
@@ -70,7 +73,7 @@ namespace CamerackStudio.Controllers
 
             return View();
         }
-
+  
         public ActionResult RealoadNavigation()
         {
             var signedInUserId = Convert.ToInt64(HttpContext.Session.GetString("StudioLoggedInUserId"));
@@ -104,7 +107,7 @@ namespace CamerackStudio.Controllers
                     TempData["notificationtype"] = NotificationType.Success.ToString();
                 }
                 //validate bank details
-                if (_appUser != null)
+                if (_appUser != null && _appUser.Role.UploadImage)
                     if (_databaseConnection.UserBanks.Where(n => n.CreatedBy == _appUser.AppUserId).ToList().Count <= 0)
                     {
                         //populate and save bank transaction

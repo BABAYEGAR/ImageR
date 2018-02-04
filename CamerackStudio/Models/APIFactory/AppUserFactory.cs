@@ -35,6 +35,30 @@ namespace CamerackStudio.Models.APIFactory
                 return users.ToList();
             }
         }
+        public async Task<List<Subscription>> GetAllSubscriptions(string baseAddress)
+        {
+            if (baseAddress == null) throw new ArgumentNullException(nameof(baseAddress));
+            IEnumerable<Subscription> subscriptions = new List<Subscription>();
+            try
+            {
+                using (var httpClient = new HttpClient())
+                {
+                    // Do the actual request and await the response
+                    var httpResponse = await httpClient.GetAsync(baseAddress);
+                    if (httpResponse != null)
+                        if (httpResponse.IsSuccessStatusCode)
+                        {
+                            var stringData = httpResponse.Content.ReadAsStringAsync().Result;
+                            subscriptions = await Task.Run(() => JsonConvert.DeserializeObject<List<Subscription>>(stringData));
+                        }
+                }
+                return subscriptions.ToList();
+            }
+            catch (Exception)
+            {
+                return subscriptions.ToList();
+            }
+        }
         public async Task<PushNotification> SavePushNotification(string baseAddress, PushNotification model)
         {
             var response = new PushNotification();

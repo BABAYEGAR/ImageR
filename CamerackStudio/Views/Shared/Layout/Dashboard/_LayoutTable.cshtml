@@ -9,6 +9,7 @@
         var userString = Context.Session.GetString("UserBank");
         userBank = JsonConvert.DeserializeObject<UserBank>(userString);
     }
+    var imageCount = Context.Session.GetInt32("StudioLoggedInUserImageCount");
 }
 <!DOCTYPE html>
 <html lang="en">
@@ -67,7 +68,7 @@
         <div class="page-header clearfix">
             @RenderSection("Breadcrumbs", false)
         </div>
-        @if (userBank != null && (userBank.AccountName == null || userBank.AccountNumber == null || userBank.BankId == null))
+        @if (userBank != null && (userBank.AccountName == null || userBank.AccountNumber == null || userBank.BankId == null) && imageCount != null && imageCount > 0)
         {
             <div class="alert alert-info alert-dismissable">
                 Your Bank Account Information is Incomplete, Please Update to Receive Payment from Images Purchases .. Click Here <strong><a href="@Url.Action("UserBank","Account")">Update Information</a></strong> 
