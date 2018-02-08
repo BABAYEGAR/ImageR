@@ -65,7 +65,6 @@
             });
                 $(function() {
                     setInterval(function (data) {
-                            console.log(data);
                             $('#number')
                             .load('@Url.Action("RealoadNavigationAndCount", "Home")');
                             $('#number').val(data);

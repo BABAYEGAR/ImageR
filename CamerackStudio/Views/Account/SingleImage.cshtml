@@ -1,12 +1,13 @@
 ﻿@using CamerackStudio.Models.Entities
+@using Microsoft.AspNetCore.Http
 @model AppTransport
 @{
     Layout = "Layout/Dashboard/_LayoutDashboard";
     ViewBag.PageTitle = "Profile";
     ViewBag.PageHeader = "Profile Information";
-
+    var signedInUserId = Convert.ToInt64(Context.Session.GetString("StudioLoggedInUserId"));
     var singleOrDefault = Model.AppUsers.SingleOrDefault(n => n.AppUserId == Model.Image.AppUserId);
-    var singleRating = Model.ImageActions.SingleOrDefault(n => n.AppUserId == Model.Image.AppUserId && n.ImageId == Model.Image.ImageId);
+    var singleRating = Model.ImageActions.SingleOrDefault(n => n.AppUserId == signedInUserId && n.ImageId == Model.Image.ImageId);
     var pic = "https://res.cloudinary.com/" + Model.Image.FilePath;
 }
 @section Css
@@ -126,7 +127,7 @@
     <script>
         var onBegin = function() {
             $('#hideRating').fadeOut("slow");
-            $('#showRatings').fadeIn(3000);
+            $('#showRatings').fadeIn(300);
         };
         var onFormComplete = function() {
             $('.comment').val('');

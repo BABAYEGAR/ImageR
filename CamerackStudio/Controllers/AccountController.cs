@@ -42,7 +42,7 @@ namespace CamerackStudio.Controllers
                 AppUsers = _users,
                 Images = _databaseConnection.Images.Include(n => n.ImageCategory)
                     .Include(n => n.ImageComments).Include(n => n.ImageTags)
-                    .Include(n => n.Location).Include(n => n.ImageSubCategory).ToList(),
+                    .Include(n => n.Location).Include(n => n.ImageSubCategory).OrderByDescending(n => n.DateCreated).ToList(),
                 ImageComments = _databaseConnection.ImageComments.ToList(),
                 ImageActions = _databaseConnection.ImageActions.ToList(),
                 AppUser = _users.SingleOrDefault(n=>n.AppUserId ==signedInUserId )
@@ -57,7 +57,8 @@ namespace CamerackStudio.Controllers
                 AppUsers = _users,
                 Images = _databaseConnection.Images.Include(n => n.ImageCategory)
                     .Include(n => n.ImageComments).Include(n => n.ImageTags)
-                    .Include(n => n.Location).Include(n => n.ImageSubCategory).ToList(),
+                    .Include(n => n.Location).Include(n => n.ImageSubCategory).Where(n=>n.AppUserId == id)
+                    .OrderByDescending(n=>n.DateCreated).ToList(),
                 ImageComments = _databaseConnection.ImageComments.ToList(),
                 ImageActions = _databaseConnection.ImageActions.ToList(),
                 Image = _databaseConnection.Images.Find(id),

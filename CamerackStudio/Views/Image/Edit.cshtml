@@ -44,8 +44,6 @@
         @Html.HiddenFor(m=>m.ImageSubCategoryId)
         @Html.HiddenFor(m=>m.Width)
         @Html.HiddenFor(m=>m.Height)
-        @Html.HiddenFor(m=>m.SellingPrice)
-        @Html.HiddenFor(m=>m.Discount)
         @Html.HiddenFor(m=>m.CameraId)
         @Html.HiddenFor(m=>m.LocationId)
         <div class="form-body">
@@ -92,20 +90,32 @@
                     <label class="control-label">Add Camera:</label>
                     <input type="text" name="NewCameraText" class="form-control" required="required"/>
                 </div>
-                <div class="form-group col-md-6">
-                    <label for="state">Pricing Category</label><span class="required">*</span>
-                    <select name="state" class="form-control" id="state">
-                        <option value="Free">Free</option>
-                        <option value="NotFree">Set Price</option>
-                    </select>
-                </div>
-                <div class="form-group col-md-6">
+                @if (Model.SellingPrice > 0)
+                {
+                    <div class="form-group col-md-6">
+                        <label for="state">Pricing Category</label><span class="required">*</span>
+                        <select name="state" class="form-control" id="state">
+                            <option value="Free">Free</option>
+                            <option value="NotFree" selected="selected">Set Price</option>
+                        </select>
+                    </div>
+                }
+                else
+                {
+                    <div class="form-group col-md-6">
+                        <label for="state">Pricing Category</label><span class="required">*</span>
+                        <select name="state" class="form-control" id="state">
+                            <option value="Free" selected="selected">Free</option>
+                            <option value="NotFree">Set Price</option>
+                        </select>
+                    </div> 
+                }<div class="form-group col-md-6" id="priceDiv">
                     @Html.LabelFor(model => model.SellingPrice, new {@class = "control-label"})<span style="font-weight: bolder" class="required">(N500 - N100,000)*</span>
-                    @Html.EditorFor(model => model.SellingPrice, new {htmlAttributes = new {@class = "form-control", placeholder = "Please enter the selling price for the image", min="500" ,max="100000", value=0,id="price"}})
+                    @Html.EditorFor(model => model.SellingPrice, new {htmlAttributes = new {@class = "form-control", placeholder = "Please enter the selling price for the image", min="500" ,max="100000",id="price"}})
                     @Html.ValidationMessageFor(model => model.SellingPrice, "", new {@class = "text-danger"})
                 </div>
-                <div class="form-group col-md-6">
-                    @Html.LabelFor(model => model.Discount, new {@class = "control-label"})<span style="font-weight: bolder" class="required"> (0.01% - 100%)</span>
+                <div class="form-group col-md-6" id="discountDiv">
+                    @Html.LabelFor(model => model.Discount, new {@class = "control-label"})<span style="font-weight: bolder" class="required"> (0% - 100%)</span>
                     @Html.EditorFor(model => model.Discount, new {htmlAttributes = new {@class = "form-control", placeholder = "Please enter the discount % for the image",min="0",max="100",id="discount"}})
                     @Html.ValidationMessageFor(model => model.Discount, "", new {@class = "text-danger"})
                 </div>
@@ -148,13 +158,23 @@
                 var $state = $('#state'),
                     $price = $('#price');
                 $discount = $('#discount');
+                $price.val(0);
+                $discount.val(0);
                 $state.change(function() {
                     if ($state.val() == 'NotFree') {
                         $price.removeAttr('disabled');
                         $discount.removeAttr('disabled');
-                    } else {
-                        $price.attr('disabled', 'disabled');
-                        $discount.attr('disabled', 'disabled');
+                        $('#priceDiv').fadeIn(100);
+                        $('#discountDiv').fadeIn(100);
+                        $price.val(500);
+                        $discount.val(0);
+                    } if ($state.val() == 'Free') {
+                        $price.attr('disabled', 'disabled').val('');
+                        $discount.attr('disabled', 'disabled').val('');
+                        $price.val(0);
+                        $discount.val(0);
+                        $('#priceDiv').fadeOut(100);
+                        $('#discountDiv').fadeOut(100);
                     }
                 }).trigger('change'); // added trigger to calculate initial state
 
@@ -217,10 +237,11 @@
 
     </script>
     <script>
-        //loads assigned lga for state on change/select
-        $('#submitForm').on('click', function() {
-            $('#hideBody').fadeOut(1000);
-            $('#loader').fadeIn(1000);
+        $('#form').submit(function () {
+            if($(this).valid()) {
+                $('#hideBody').fadeOut(100);
+                $('#loader').fadeIn(100);
+            }
         });
     </script>
 

@@ -27,12 +27,8 @@ namespace CamerackStudio.Models.Entities
         public Location Location { get; set; }
         [Display(Name = "Selling Price")]
         [Required]
-        [Currency.MinDecimalValueAttribute(1000.00)]
-        [Currency.MaxDecimalValueAttribute(500000.00)]
         [DefaultValue("0")]
         public long? SellingPrice { get; set; }
-        [Currency.MinDecimalValueAttribute(0.01)]
-        [Currency.MaxDecimalValueAttribute(100.00)]
         [DefaultValue("0")]
         public long? Discount { get; set; }
         public bool? Featured { get; set; }

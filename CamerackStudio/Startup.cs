@@ -2,6 +2,7 @@
 using CamerackStudio.Models.DataBaseConnections;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -46,7 +47,10 @@ namespace CamerackStudio
             {
                 options.IdleTimeout = TimeSpan.FromHours(12);
             });
-
+            services.Configure<FormOptions>(options =>
+            {
+                options.MultipartBodyLengthLimit = 100000000;
+            });
             services.AddMvc(options => options.MaxModelValidationErrors = 50).AddJsonOptions(options => {
                 options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
                 options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;

@@ -58,33 +58,16 @@
     </div>
 <div class="widget-body" id="hideBody">
     <h4>
-        <span class="required">*</span> Make sure to <strong class="annouce">upload an Image</strong> in the <strong class="required">next tab</strong> ..
-    </h4>
-    <h4>
-        <span class="required">*</span> For the mean time the allowed image upload size limit is <strong class="annouce">10MB</strong>.Soonest larger uploads will be active..
+        <span class="required">*</span> For the mean time the allowed image upload size limit is <strong class="annouce">10MB</strong>.Soon larger uploads will be allowed..
     </h4>
     <h4>
         <span class="required">*</span> Note That the <strong class="annouce">Supported Formats</strong> for Image Uploads are <strong class="required">JPG/JPEG</strong>..
     </h4>
-    <div role="tabpanel">
-        <ul role="tablist" class="nav nav-tabs nav-justified mb-15">
-            <li role="presentation" class="active">
-                <a id="home-tab5" href="#home5" role="tab" data-toggle="tab" aria-controls="home5" aria-expanded="true">
-                    <h3>Image Details</h3>(Enter Image Details)
-                </a>
-            </li>
-            <li role="presentation">
-                <a id="profile-tab5" href="#profile5" role="tab" data-toggle="tab" aria-controls="profile5" aria-expanded="False">
-                    <h3>Image Upload</h3> (Click to upload image)
-                </a>
-            </li>
-        </ul>
 
-    @using (Html.BeginForm("Create", "Image", FormMethod.Post, new {enctype = "multipart/form-data", role = "form"}))
+    @using (Html.BeginForm("Create", "Image", FormMethod.Post, new {enctype = "multipart/form-data", role = "form",id="form"}))
     {
         <div class="tab-content" id="uploadHide">
-            <div id="home5" role="tabpanel" aria-labelledby="home-tab5" class="tab-pane fade active in">
-                @*@Html.AntiForgeryToken()*@
+                @Html.AntiForgeryToken()
                 @Html.ValidationSummary(true, "", new {@class = "text-danger"})
 
                 <div class="form-body">
@@ -133,19 +116,19 @@
                             <input type="text" name="NewCameraText" class="form-control" required="required"/>
                         </div>
                         <div class="form-group col-md-6">
-                            <label for="state">Pricing Category</label><span class="required">*</span>
+                            <label for="state">Pricing Category</label>
                             <select name="state" class="form-control" id="state">
                                 <option value="Free">Free</option>
                                 <option value="NotFree">Set Price</option>
                             </select>
                         </div>
-                        <div class="form-group col-md-6">
+                        <div class="form-group col-md-6" id="priceDiv">
                             @Html.LabelFor(model => model.SellingPrice, new {@class = "control-label"})<span style="font-weight: bolder" class="required">(N500 - N100,000)*</span>
-                            @Html.EditorFor(model => model.SellingPrice, new {htmlAttributes = new {@class = "form-control", placeholder = "Please enter the selling price for the image", min = "500", max = "100000", value = 0, id = "price"}})
+                            @Html.EditorFor(model => model.SellingPrice, new {htmlAttributes = new {@class = "form-control", placeholder = "Please enter the selling price for the image", min = "500", max = "100000", id = "price"}})
                             @Html.ValidationMessageFor(model => model.SellingPrice, "", new {@class = "text-danger"})
                         </div>
-                        <div class="form-group col-md-6">
-                            @Html.LabelFor(model => model.Discount, new {@class = "control-label"})<span style="font-weight: bolder" class="required"> (0.01% - 100%)</span>
+                        <div class="form-group col-md-6" id="discountDiv">
+                            @Html.LabelFor(model => model.Discount, new {@class = "control-label"})<span style="font-weight: bolder" class="required"> (0% - 100%)</span>
                             @Html.EditorFor(model => model.Discount, new {htmlAttributes = new {@class = "form-control", placeholder = "Please enter the discount % for the image", min = "0", max = "100", id = "discount"}})
                             @Html.ValidationMessageFor(model => model.Discount, "", new {@class = "text-danger"})
                         </div>
@@ -161,76 +144,70 @@
                             <textarea name="Description" data-provide="markdown" rows="10" required="required"></textarea>
                             @Html.ValidationMessageFor(model => model.Description, "", new {@class = "text-danger"})
                         </div>
+                        <div class="form-group">
+                            <br/>
+                            <br/>
+
+                            <label class="col-sm-2 control-label">Image Upload</label>
+                            <div class="col-sm-10">
+                    
+                                <input id="input-5" name="FileName" type="file" class="file-loading" required="required">
+                                @Html.ValidationMessageFor(model => model.FileName, "", new {@class = "text-danger"})
+                                <p class="help-block">
+                                    Note that uploading large image sizes might take some more time to upload to the server at such please be patient, but a quick fix is to have a speedy internet connection.
+                                </p>
+                            </div>
+                        </div>
+                        <br/>
+                        <br/>
+                        <br/>
+                        <br/>
+                        <h4>
+                            <strong>Image Print Supports up to 300 and above DPI</strong>
+                        </h4>
+                        <h5>Please make sure your image supports printing before selecting the appropriate Options</h5>
+                        <div class="form-group">
+                            <div class="form-group col-md-2">
+                                @Html.LabelFor(model => model.A1, new {@class = "control-label"})
+                                @*@Html.CheckBoxFor(model => model.A1, new {id = "checkA1" })*@
+                                <input type="checkbox" name="A1" id="checkA1"/>
+                                @Html.ValidationMessageFor(model => model.A1, "", new {@class = "text-danger"})
+                            </div>
+                            <div class="form-group col-md-2">
+                                @Html.LabelFor(model => model.A2, new {@class = "control-label"})
+                                @*@Html.CheckBoxFor(model => model.A2, new { id = "checkA2" })*@
+                                <input type="checkbox" name="A2" id="checkA2"/>
+                                @Html.ValidationMessageFor(model => model.A2, "", new {@class = "text-danger"})
+                            </div>
+                            <div class="form-group col-md-2">
+                                @Html.LabelFor(model => model.A3, new {@class = "control-label"})
+                                @*@Html.CheckBoxFor(model => model.A3, new {id = "checkA3" } )*@
+                                <input type="checkbox" name="A3" id="checkA3"/>
+                                @Html.ValidationMessageFor(model => model.A3, "", new {@class = "text-danger"})
+                            </div>
+                            <div class="form-group col-md-2">
+                                @Html.LabelFor(model => model.A4, new {@class = "control-label"})
+                                @*@Html.CheckBoxFor(model => model.A4,  new {id = "checkA4" } )*@
+                                <input type="checkbox" name="A4" id="checkA4"/>
+                                @Html.ValidationMessageFor(model => model.A4, "", new {@class = "text-danger"})
+                            </div>
+                            <div class="form-group col-md-2">
+                                @Html.LabelFor(model => model.A5, new {@class = "control-label"})
+                                @*@Html.CheckBoxFor(model => model.A5,new {id = "checkA5" } )*@
+                                <input type="checkbox" name="A5" id="checkA5"/>
+                                @Html.ValidationMessageFor(model => model.A5, "", new {@class = "text-danger"})
+                            </div>
+                            <div class="form-group col-md-2">
+                                @Html.LabelFor(model => model.A6, new {@class = "control-label"})
+                                @*@Html.CheckBoxFor(model => model.A6,  new {id = "checkA6" } )*@
+                                <input type="checkbox" name="A6" id="checkA6"/>
+                                @Html.ValidationMessageFor(model => model.A5, "", new {@class = "text-danger"})
+                            </div>
+                        </div>
                     </div>
 
-                </div>
-
-            </div>
-            <div id="profile5" role="tabpanel" aria-labelledby="profile-tab5" class="tab-pane fade">
-                <div class="form-group">
-                    <br/>
-                    <br/>
-
-                    <label class="col-sm-2 control-label">Image Upload</label>
-                    <div class="col-sm-10">
-
-                        <input id="input-5" name="file" type="file" multiple="" class="file-loading" required="required">
-                        <p class="help-block">
-                            Note that uploading large image sizes might take some more time to upload to the server at such please be patient, but a quick fix is to have a speedy internet connection.
-                        </p>
-                    </div>
-                </div>
-                <br/>
-                <br/>
-                <br/>
-                <br/>
-                <h4>
-                    <strong>Image Print Supports up to 150 PPI/DPI</strong>
-                </h4>
-                <h5>Please make sure your image supports printing before selecting the appropriate Options</h5>
-                <div class="form-group">
-                    <div class="form-group col-md-2">
-                        @Html.LabelFor(model => model.A1, new {@class = "control-label"})
-                        @*@Html.CheckBoxFor(model => model.A1, new {id = "checkA1" })*@
-                        <input type="checkbox" name="A1" id="checkA1"/>
-                        @Html.ValidationMessageFor(model => model.A1, "", new {@class = "text-danger"})
-                    </div>
-                    <div class="form-group col-md-2">
-                        @Html.LabelFor(model => model.A2, new {@class = "control-label"})
-                        @*@Html.CheckBoxFor(model => model.A2, new { id = "checkA2" })*@
-                        <input type="checkbox" name="A2" id="checkA2"/>
-                        @Html.ValidationMessageFor(model => model.A2, "", new {@class = "text-danger"})
-                    </div>
-                    <div class="form-group col-md-2">
-                        @Html.LabelFor(model => model.A3, new {@class = "control-label"})
-                        @*@Html.CheckBoxFor(model => model.A3, new {id = "checkA3" } )*@
-                        <input type="checkbox" name="A3" id="checkA3"/>
-                        @Html.ValidationMessageFor(model => model.A3, "", new {@class = "text-danger"})
-                    </div>
-                    <div class="form-group col-md-2">
-                        @Html.LabelFor(model => model.A4, new {@class = "control-label"})
-                        @*@Html.CheckBoxFor(model => model.A4,  new {id = "checkA4" } )*@
-                        <input type="checkbox" name="A4" id="checkA4"/>
-                        @Html.ValidationMessageFor(model => model.A4, "", new {@class = "text-danger"})
-                    </div>
-                    <div class="form-group col-md-2">
-                        @Html.LabelFor(model => model.A5, new {@class = "control-label"})
-                        @*@Html.CheckBoxFor(model => model.A5,new {id = "checkA5" } )*@
-                        <input type="checkbox" name="A5" id="checkA5"/>
-                        @Html.ValidationMessageFor(model => model.A5, "", new {@class = "text-danger"})
-                    </div>
-                    <div class="form-group col-md-2">
-                        @Html.LabelFor(model => model.A6, new {@class = "control-label"})
-                        @*@Html.CheckBoxFor(model => model.A6,  new {id = "checkA6" } )*@
-                        <input type="checkbox" name="A6" id="checkA6"/>
-                        @Html.ValidationMessageFor(model => model.A5, "", new {@class = "text-danger"})
-                    </div>
                 </div>
             </div>
-
-
-        </div>
-        <br/>
         <div class="row">
             <button id="submitForm" type="submit" class="btn btn-primary">
                 <i class="glyphicon glyphicon-upload"></i>
@@ -241,7 +218,6 @@
     }
     </div >
 
-</div>
 
 @section Scripts
 {
@@ -274,28 +250,20 @@
                     if ($state.val() == 'NotFree') {
                         $price.removeAttr('disabled');
                         $discount.removeAttr('disabled');
-                        $price.val(0);
+                        $('#priceDiv').fadeIn(100);
+                        $('#discountDiv').fadeIn(100);
+                        $price.val(500);
                         $discount.val(0);
-                    } else {
+                    } if ($state.val() == 'Free') {
                         $price.attr('disabled', 'disabled').val('');
                         $discount.attr('disabled', 'disabled').val('');
                         $price.val(0);
                         $discount.val(0);
+                        $('#priceDiv').fadeOut(100);
+                        $('#discountDiv').fadeOut(100);
                     }
                 }).trigger('change'); // added trigger to calculate initial state
 
-                //determine image upload type
-                var statecategory = $('#statecategory'),
-                    competition = $('#competition');
-                competition.hide();
-                statecategory.change(function () {
-                    console.log(statecategory.val());
-                    if (statecategory.val() == '0') {
-                        competition.fadeOut(1000);
-                    } if (statecategory.val() == '1') {
-                        competition.fadeIn(1000);
-                    }
-                }).trigger('change'); // added trigger to calculate initial state
 
                 //chnage to true/false on change action
                 var checkA1 = $('#checkA1');
@@ -414,13 +382,11 @@
         });
     </script>
     <script>
-
-    </script>
-    <script>
-        //loads assigned lga for state on change/select
-        $('#submitForm').on('click', function() {
-            $('#hideBody').fadeOut(1000);
-            $('#loader').fadeIn(1000);
-        });
+            $('#form').submit(function () {
+                if($(this).valid()) {
+                   $('#hideBody').fadeOut(100);
+                   $('#loader').fadeIn(100);
+                }
+            });
     </script>
 }

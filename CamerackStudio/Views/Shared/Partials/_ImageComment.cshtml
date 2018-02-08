@@ -1,28 +1,40 @@
 ﻿@using CamerackStudio.Models.Entities
-@model AppTransport
+@model CamerackStudio.Models.Entities.AppTransport
 @{
+
 }
-@foreach (var items in Model.ImageComments.Where(n=>n.ImageId == Model.Image.ImageId).Take(6))
+@foreach (var items in Model.ImageComments.Where(n => n.ImageId == Model.Image.ImageId).Take(6))
 {
     var singleOrDefault = Model.AppUsers.SingleOrDefault(n => n.AppUserId == items.AppUserId);
     <li class="media">
         <div class="media-left avatar">
             @if (singleOrDefault != null && singleOrDefault.HasSocialMediaLogin)
-    {
-        <img alt="" src="@singleOrDefault.ProfilePicture"
-             class="media-object img-circle"><span class="status bg-success"></span>
-}
+            {
+                <img alt="" src="@singleOrDefault.ProfilePicture"
+                     class="media-object img-circle">
+                <span class="status bg-success"></span>
+            }
             @if (singleOrDefault != null && !singleOrDefault.HasSocialMediaLogin)
-    {
-        <img alt="" src="~/UploadedImage/ProfilePicture/@singleOrDefault.ProfilePicture"
-             class="media-object img-circle"><span class="status bg-success"></span>
-}
+            {
+                if (singleOrDefault.HasSocialMediaLogin)
+                {
+                    <img alt="" src="@singleOrDefault.ProfilePicture"
+                         class="media-object img-circle">
+                    <span class="status bg-success"></span>
+                }
+                else
+                {
+                    <img alt="" src="~/UploadedImage/ProfilePicture/@singleOrDefault.ProfilePicture"
+                         class="media-object img-circle">
+                    <span class="status bg-success"></span>
+                }
+            }
         </div>
         <div class="media-body">
-        @if (singleOrDefault != null)
-        {
-            <h5 class="media-heading inline-block">@singleOrDefault.Name</h5>
-        }
+            @if (singleOrDefault != null)
+            {
+                <h5 class="media-heading inline-block">@singleOrDefault.Name</h5>
+            }
             <time datetime="2015-12-10T20:50:48+07:00" class="text-muted fs-12">
                 @items.DateCreated.ToString("D") <i class="ti-time"></i> @items.DateCreated.ToString("h:mm:ss tt")</time>
             <p>@items.Comment</p>
@@ -31,18 +43,18 @@
                 <form asp-controller="Image" asp-action="DeleteComment" data-ajax="true" data-ajax-method="POST" data-ajax-update="#content-@items.ImageId" data-ajax-complete="onFormComplete">
                     <input type="hidden" value="@items.ImageCommentId" name="CommentId"/>
                     <input type="hidden" value="@items.ImageId" name="ImageId"/>
-                    <button type="submit" class="btn btn-primary btn-sm pull-right" style="color: red; background: white">
+                    <button type="submit" class="btn btn-primary btn-sm pull-right" style="background: white; color: red;">
                         <i class="glyphicon glyphicon-trash"></i>
                     </button>
 
                 </form>
             }
-     
+
         </div>
-     
+
     </li>
 }
-@if (Model.ImageComments.Count > 6)
+@if (Model.ImageComments.Where(n => n.ImageId == Model.Image.ImageId).ToList().Count > 6)
 {
-    <a href="@Url.Action("SingleImage","Account",new{id = Model.ImageComments.FirstOrDefault().ImageId})">View @(Model.ImageComments.Count - 6) comments</a>
+    <a href="@Url.Action("SingleImage", "Account", new {id = Model.Image.ImageId})">View @(Model.ImageComments.Count - 6) comments</a>
 }

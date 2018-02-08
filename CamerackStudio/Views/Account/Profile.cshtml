@@ -1,10 +1,9 @@
 ﻿@using CamerackStudio.Models.Entities
-@model AppTransport
+@model CamerackStudio.Models.Entities.AppTransport
 @{
     Layout = "Layout/Dashboard/_LayoutDashboard";
     ViewBag.PageTitle = "Profile";
     ViewBag.PageHeader = "Profile Information";
-
 }
 @section Css
 {
@@ -27,44 +26,46 @@
         <div style="height: 260px; padding-top: 130px" class="pl-30 pr-30 clearfix overlay text-white">
             <div class="pull-left media">
                 <div class="media-left">
-                    
+
                     <img src="~/UploadedImage/ProfileBackground/@if (Model.AppUser != null && Model.AppUser.ProfilePicture != null)
                                                                 {
                                                                     @Model.AppUser.BackgroundPicture
                                                                 }" alt="" style="opacity: 1; z-index: -1" class="img-main img-responsive"><a href="javascript:void(0)" style="background-color: #fff; border-radius: 50%; display: inline-block; padding: 3px;">
-                @if (Model.AppUser != null && Model.AppUser.HasSocialMediaLogin)
-                {
-                    <img src="@Model.AppUser.ProfilePicture" alt="" class="img-circle img-responsive" style="width: 80px; height: 80px">
-                }
-                else
-                {
-                    <img src="~/UploadedImage/ProfilePicture/@if (Model.AppUser != null &&Model.AppUser.ProfilePicture != null)
-                                                             {
-                                                                 @Model.AppUser.ProfilePicture
-                                                             }"alt="" class="img-circle img-responsive" style="width: 80px; height: 80px">
-                }
+                        @if (Model.AppUser != null && Model.AppUser.HasSocialMediaLogin)
+                        {
+                            <img src="@Model.AppUser.ProfilePicture" alt="" class="img-circle img-responsive" style="height: 80px; width: 80px;">
+                        }
+                        else
+                        {
+                            <img src="~/UploadedImage/ProfilePicture/@if (Model.AppUser != null && Model.AppUser.ProfilePicture != null)
+                                                                     {
+                                                                         @Model.AppUser.ProfilePicture
+                                                                     }"alt="" class="img-circle img-responsive" style="height: 80px; width: 80px;">
+                        }
                     </a>
                 </div>
                 <div style="width: auto" class="media-body media-middle">
-                    <h2 class="media-heading">@if (Model.AppUser != null)
-                                              {
-                                                  @Model.AppUser.Username
-                                              }</h2>
-                    <div class="fs-20">@if (Model.AppUser != null)
-                                       {
-                                           @Model.AppUser.Name
-                                               
-                                       }</div>
+                    <h2 class="media-heading">
+                        @if (Model.AppUser != null)
+                        {
+                            @Model.AppUser.Username
+                        }</h2>
+                    <div class="fs-20">
+                        @if (Model.AppUser != null)
+                        {
+                            @Model.AppUser.Name
+                        }</div>
                 </div>
 
             </div>
             <div class="pull-right text-center">
                 <ul class="list-inline">
                     <li>
-                        <div class="fs-24 fw-500">      @if (Model.AppUser != null)
-                                                        {
-                                                            @Model.Images.Where(n => n.AppUserId == Model.AppUser.AppUserId).ToList().Count
-                                                        }</div>
+                        <div class="fs-24 fw-500">
+                            @if (Model.AppUser != null)
+                            {
+                                @Model.Images.Where(n => n.AppUserId == Model.AppUser.AppUserId).ToList().Count
+                            }</div>
                         <p>Photos</p>
                     </li>
                 </ul>
@@ -74,209 +75,247 @@
     </div>
 </div>
 <div class="row ml-10 mr-10 pt-10">
-    <div class="col-md-3">
-        <div class="widget clear">
-            <div class="widget-heading">
-                <h3 class="widget-title">About me</h3>
-                <a href="@Url.Action("EditProfile")">Edit Information<i style="font-size: 20px; font-weight: bolder;" class="ti-pencil"></i></a>
-                @if (Model.AppUser != null && !Model.AppUser.HasSocialMediaLogin)
-                {
-                    <a href="@Url.Action("ChangePassword")">Change Password<i style="font-size: 20px; font-weight: bolder;" class="ti-lock"></i></a>
-                    <br/>
-                }
+<div class="col-md-3">
+    <div class="widget clear">
+        <div class="widget-heading">
+            <h3 class="widget-title">About me</h3>
+            <a href="@Url.Action("EditProfile")">Edit Information<i style="font-size: 20px; font-weight: bolder;" class="ti-pencil"></i></a>
+            @if (Model.AppUser != null && !Model.AppUser.HasSocialMediaLogin)
+            {
+                <a href="@Url.Action("ChangePassword")">Change Password<i style="font-size: 20px; font-weight: bolder;" class="ti-lock"></i></a>
+                <br/>
+            }
             @if (Model.AppUser != null && !Model.AppUser.HasSocialMediaLogin)
             {
                 <a href="@Url.Action("ChangeProfileImage")">Change Profile Images<i style="font-size: 20px; font-weight: bolder;" class="ti-image"></i></a>
             }
-                <br />
-                <a href="@Url.Action("UserBank")">Bank Information<i style="font-size: 20px; font-weight: bolder;" class="ti-money"></i></a>
-            </div>
-            <div class="widget-body">
-                <ul class="media-list mb-0">
-                    <li class="media">
-                        <div class="media-left">
-                            <i class="ti-gift text-info"></i>
-                        </div>
-                        <div class="media-body">
-                            @if (Model.AppUser != null && Model.AppUser.DateOfBirth != null)
-                            {
-                                <p>@Model.AppUser.DateOfBirth.Value.ToString("D")</p>
-                            }
-
-                        </div>
-                    </li>
-                    <li class="media">
-                        <div class="media-left">
-                            <i class="ti-email text-info"></i>
-                        </div>
-                        <div class="media-body">
-                            <p>   @if (Model.AppUser != null)
-                                  {@Model.AppUser.Email}</p>
-                        </div>
-                    </li>
-                    <li class="media">
-                        <div class="media-left">
-                            <i class="ti-home text-info"></i>
-                        </div>
-                        <div class="media-body">
-                            <p>   @if (Model.AppUser != null)
-                                  {@Model.AppUser.Address}</p>
-                        </div>
-                    </li>
-                    <li class="media">
-                        <div class="media-left">
-                            <i class="ti-mobile text-info"></i>
-                        </div>
-                        <div class="media-body">
-                            <p>   @if (Model.AppUser != null)
-                                  {@Model.AppUser.Mobile}</p>
-                        </div>
-                    </li>
-                    <li class="media">
-                        <div class="media-left">
-                            <i class="ti-world text-info"></i>
-                        </div>
-                        <div class="media-body">
-                            <p>   @if (Model.AppUser != null)
-                                  {<a href="@Model.AppUser.Website">@Model.AppUser.Website</a>}</p>
-                        </div>
-                    </li>
-                </ul>
-            </div>
+            <br/>
+            <a href="@Url.Action("UserBank")">Bank Information<i style="font-size: 20px; font-weight: bolder;" class="ti-money"></i></a>
         </div>
-        <div class="widget clear">
-            <div class="widget-heading">
-                <h3 class="widget-title">Biography</h3>
-            </div>
-            <div class="widget-body">
-                <p>   @if (Model.AppUser != null)
-                      {@Model.AppUser.Biography}</p>
-            </div>
+        <div class="widget-body">
+            <ul class="media-list mb-0">
+                <li class="media">
+                    <div class="media-left">
+                        <i class="ti-gift text-info"></i>
+                    </div>
+                    <div class="media-body">
+                        @if (Model.AppUser != null && Model.AppUser.DateOfBirth != null)
+                        {
+                            <p>@Model.AppUser.DateOfBirth.Value.ToString("D")</p>
+                        }
+
+                    </div>
+                </li>
+                <li class="media">
+                    <div class="media-left">
+                        <i class="ti-email text-info"></i>
+                    </div>
+                    <div class="media-body">
+                        <p>
+                            @if (Model.AppUser != null)
+                            {
+                                @Model.AppUser.Email
+                            }</p>
+                    </div>
+                </li>
+                <li class="media">
+                    <div class="media-left">
+                        <i class="ti-home text-info"></i>
+                    </div>
+                    <div class="media-body">
+                        <p>
+                            @if (Model.AppUser != null)
+                            {
+                                @Model.AppUser.Address
+                            }</p>
+                    </div>
+                </li>
+                <li class="media">
+                    <div class="media-left">
+                        <i class="ti-mobile text-info"></i>
+                    </div>
+                    <div class="media-body">
+                        <p>
+                            @if (Model.AppUser != null)
+                            {
+                                @Model.AppUser.Mobile
+                            }</p>
+                    </div>
+                </li>
+                <li class="media">
+                    <div class="media-left">
+                        <i class="ti-world text-info"></i>
+                    </div>
+                    <div class="media-body">
+                        <p>
+                            @if (Model.AppUser != null)
+                            {
+                                <a href="@Model.AppUser.Website">@Model.AppUser.Website</a>
+                            }</p>
+                    </div>
+                </li>
+            </ul>
         </div>
     </div>
-    <div class="col-md-6">
+    <div class="widget clear">
+        <div class="widget-heading">
+            <h3 class="widget-title">Biography</h3>
+        </div>
+        <div class="widget-body">
+            <p>
+                @if (Model.AppUser != null)
+                {
+                    @Model.AppUser.Biography
+                }</p>
+        </div>
+    </div>
+</div>
+<div class="col-md-6">
 
-        @foreach (var item in Model.Images)
-        {
-            var singleOrDefault = Model.AppUsers.SingleOrDefault(n => n.AppUserId == item.AppUserId);
-            var singleRating = Model.ImageActions.SingleOrDefault(n => { return Model.AppUser != null && (n.AppUserId == Model.AppUser.AppUserId && n.ImageId == item.ImageId); });
-            var pic = "https://res.cloudinary.com/" + item.FilePath;
-            var otherPic = "https://res.cloudinary.com/" + item.FilePath.Replace("upload/", "upload/q_auto:low/w_650,h_670/w_600,c_scale,x_0,y_0,a_0,l_watermark/");
-            <div class="widget clear">
-                <div class="widget-heading">
-                    <div class="media">
-                        <a href="@Url.Action("UserProfile",new{id = item.AppUserId})" class="media-left">
-                            <img src="~/UploadedImage/ProfilePicture/@{
-                                                                     }@if (singleOrDefault != null)
-                                                                      {
-                                                                          @singleOrDefault.ProfilePicture
-                                                                      }" alt="" class="media-object mo-lg img-circle">
-                        </a>
-                        <div class="media-body media-middle">
-                            <p class="mb-0">
-                                <span class="fw-500">
-                                    @if (singleOrDefault != null)
-                                    {
-                                        @singleOrDefault.Username
-                                    }</span> uploaded a new photo
-                            </p>
-                            <time datetime="2015-12-10T20:50:48+07:00" class="text-muted fs-12">
-                                @item.DateCreated.ToString("D") <i class="ti-time"></i>@item.DateCreated.ToString("h:mm:ss tt")
-                            </time>
-                        </div>
-                    </div>
-                </div>
-                <div class="widget-body">
-                    <p>
-                        @item.Description
-                    </p>
-                    <div class="thumbnail">
-                        <a href="@Url.Action("SingleImage", new {id = item.ImageId})">
-                            @if (Model.AppUser != null && item.AppUserId == Model.AppUser.AppUserId)
+    @foreach (var item in Model.Images)
+    {
+        var singleOrDefault = Model.AppUsers.SingleOrDefault(n => n.AppUserId == item.AppUserId);
+        var singleRating = Model.ImageActions.SingleOrDefault(n => { return Model.AppUser != null && n.AppUserId == Model.AppUser.AppUserId && n.ImageId == item.ImageId; });
+        var pic = "https://res.cloudinary.com/" + item.FilePath;
+        var otherPic = "https://res.cloudinary.com/" + item.FilePath.Replace("upload/", "upload/q_auto:low/w_650,h_670/w_600,c_scale,x_0,y_0,a_0,l_watermark/");
+        Model.Image = item;
+        <div class="widget clear">
+            <div class="widget-heading">
+                <div class="media">
+                    <a href="@Url.Action("UserProfile", new {id = item.AppUserId})" class="media-left">
+                        @if (singleOrDefault != null)
+                        {
+                            if (singleOrDefault.HasSocialMediaLogin)
                             {
-                                <img class="lazy" src="@pic" data-src="@pic" alt=""> 
+                                <img src="@singleOrDefault.ProfilePicture" alt="" class="media-object mo-lg img-circle">
                             }
                             else
                             {
-                                if (item.SellingPrice > 0)
-                                 {
-                                     <img class="lazy" src="@otherPic" data-src="@otherPic" alt="">
-                                 }
-                                 else
-                                 {
-                                     <img class="lazy" src="@pic" data-src="@pic" alt=""> 
-                                 }
-
+                                <img src="~/UploadedImage/ProfilePicture/@singleOrDefault.ProfilePicture" alt="" class="media-object mo-lg img-circle">
                             }
-                      
-                            <div class="text-left caption">
-                                @{
-                                    Model.Image = item;
-                                    Html.RenderPartial("Partials/_PartialRating", Model);
-                                }
-                            </div>
-                            <div class="text-right caption">
-                                <ul class="list-inline mb-0">
-                                    @if (singleRating != null)
-                                    {
-
-                                        <span class="skill-instock"><i class="fa fa-star"></i>Already Rated</span>
-                                    }
-                                    else
-                                    {
-                                        if (Model.AppUser != null && Model.AppUser.AppUserId != null)
-                                        {
-                                            <form asp-controller="Image" asp-action="RateImage" data-ajax-begin="onBegin"
-                                                  data-ajax="true" data-ajax-method="POST" data-ajax-update="#" id="hideRating">
-                                                @Html.AntiForgeryToken()
-                                                @Html.ValidationSummary(true, "", new {@class = "text-danger"})
-                                                @Html.Hidden("ImageId", item.ImageId)
-                                                @Html.AntiForgeryToken()
-                                                @Html.ValidationSummary(true, "", new {@class = "text-danger"})
-                                                <input id="input-21d" name="rating" type="text" class="rating" data-min=0 data-max=5 data-step=1 data-size="sm">
-                                                <input type="submit" class="btn btn-primary" value="Rate" id="rateButton">
-                                            </form>
-                                        }
-                                    }
-                                </ul>
-                            </div>
-                        </a>
-
-                    </div>
-                    <ul class="media-list content" id="content-@item.ImageId">
-                        @{
-                            Model.Image = item;
-                            @Html.Partial("Partials/_ImageComment", Model)
                         }
-                    </ul>
-
-                    <form asp-controller="Image" asp-action="PostImageComment" data-ajax="true" data-ajax-method="POST" data-ajax-update="#content-@item.ImageId" data-ajax-complete="onFormComplete">
-                        <input type="hidden" value="@item.ImageId" name="ImageId"/>
-                        <label>Post a Comment</label>
-                        <textarea name="Comment" id="comment-@item.ImageId" class="form-control comment" aria-expanded="False" required="required"></textarea>
-                        <br/>
-                        <button type="submit" class="btn btn-primary btn-sm pull-right" id="postComment" data-id="@item.ImageId">
-                            <i class="glyphicon glyphicon-upload"></i>
-                            Post
-                        </button>
-
-                    </form>
+                      
+                    </a>
+                    <div class="media-body media-middle">
+                        <p class="mb-0">
+                            <span class="fw-500">
+                                @if (singleOrDefault != null)
+                                {
+                                    @singleOrDefault.Username
+                                }</span> uploaded a new photo
+                        </p>
+                        <time datetime="2015-12-10T20:50:48+07:00" class="text-muted fs-12">
+                            @item.DateCreated.ToString("D") <i class="ti-time"></i>@item.DateCreated.ToString("h:mm:ss tt")
+                        </time>
+                    </div>
                 </div>
             </div>
-        }
-    </div>
+            <div class="widget-body">
+                <p>
+                    @item.Description
+                </p>
+                <div class="thumbnail">
+                    <a href="@Url.Action("SingleImage", new {id = item.ImageId})">
+                        @if (Model.AppUser != null && item.AppUserId == Model.AppUser.AppUserId)
+                        {
+
+                            <img class="lazy" src="@pic" data-src="@pic" alt="">
+                        }
+                        else
+                        {
+                            if (item.SellingPrice > 0)
+                            {
+                                <img class="lazy" src="@otherPic" data-src="@otherPic" alt="">
+                            }
+                            else
+                            {
+                                <img class="lazy" src="@pic" data-src="@pic" alt="">
+                            }
+                        }
+
+                        <div class="text-left caption" id="updateRating-@item.ImageId">
+                            @{
+                                Model.Image = item;
+                                Html.RenderPartial("Partials/_PartialRating", Model);
+                            }
+                        </div>
+                        <div class="text-right caption">
+                            <ul class="list-inline mb-0">
+                                @if (singleRating != null)
+                                {
+                                    <span class="skill-instock"><i class="fa fa-star"></i>Already Rated</span>
+                                }
+                            </ul>
+                            @if (singleRating == null && Model.AppUser != null)
+                            {
+                                <form asp-controller="Image" asp-action="RateImage" data-ajax-begin="onBegin"
+                                      data-ajax="true" data-ajax-method="POST" data-ajax-update="#updateRating-@item.ImageId"
+                                      id="hideRating-@item.ImageId">
+                                    @Html.AntiForgeryToken()
+                                    @Html.ValidationSummary(true, "", new {@class = "text-danger"})
+                                    <input type="hidden" value="@item.ImageId" name="ImageId"/>
+                                    <input id="input-21d" name="rating" type="text" class="rating" data-min=0 data-max=5 data-step=1 data-size="sm">
+
+                                    <input type="submit" class="btn btn-primary rateButton" value="Rate"  data-id="@item.ImageId">
+                                </form>
+                            }
+
+
+                        </div>
+                    </a>
+
+                </div>
+          
+                <ul class="media-list content" id="content-@item.ImageId">
+                    @{
+                        Model.Image = item;
+                        @Html.Partial("Partials/_ImageComment", Model)
+                    }
+                </ul>
+
+                <form asp-controller="Image" asp-action="PostImageComment" data-ajax="true" data-ajax-method="POST" data-ajax-update="#content-@item.ImageId" data-ajax-success="onSuccess">
+                    <input type="hidden" value="@item.ImageId" name="ImageId"/>
+                    <label>Post a Comment</label>
+                    <textarea name="Comment" id="comment-@item.ImageId" class="form-control comment" aria-expanded="False" required="required"></textarea>
+                    <br/>
+                    <button type="submit" class="btn btn-primary btn-sm pull-right" id="postComment-@item.ImageId" data-id="@item.ImageId">
+                        <i class="glyphicon glyphicon-upload"></i>
+                        Post
+                    </button>
+
+                </form>
+            </div>
+        </div>
+    }
+</div>
 </div>
 
 @section Functions
 {
     <script src="~/Rating/js/star-rating.min.js"></script>
+    <!-- cdnjs -->
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jquery.lazy/1.7.6/jquery.lazy.min.js"></script>
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jquery.lazy/1.7.6/jquery.lazy.plugins.min.js"></script>
     <script>
-        var onBegin = function() {
-            $('#hideRating').fadeOut(100);
-            $('#showRatings').fadeIn(100);
-        };
-        var onFormComplete = function() {
+        var onSuccess = function() {
             $('.comment').val('');
         };
+    </script>
+    <script>
+        var onBegin = function() {
+           
+          
+
+        };
+        $('.rateButton').click(function () {
+            var id = $(this).data('id');
+            console.log(id);
+            $('#hideRating-' + id).fadeOut(100);
+        });
+    </script>
+    <script>
+        $(function() {
+            $('.lazy').lazy();
+        });
     </script>
 }
