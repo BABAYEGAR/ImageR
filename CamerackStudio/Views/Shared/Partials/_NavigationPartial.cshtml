@@ -9,7 +9,7 @@
 }
 <header>
     <div class="search-bar closed">
-    </div><a href="http://camerack.com/" class="brand pull-left">
+    </div><a href="https://camerack.com/" class="brand pull-left">
         <h2>
             <img src="~/LandingPage/assets/img/icon-camerack-studio.png" alt="logo">
         </h2>
@@ -56,7 +56,7 @@
         .ready(function() {
 
             $(function() {
-                setInterval(function () {
+                setTimeout(function () {
                         $('#numberOfNotifications')
                             .load('@Url.Action("RealoadNavigation", "Home")');
 
@@ -64,7 +64,7 @@
                     20000);
             });
                 $(function() {
-                    setInterval(function (data) {
+                    setTimeout(function (data) {
                             $('#number')
                             .load('@Url.Action("RealoadNavigationAndCount", "Home")');
                             $('#number').val(data);

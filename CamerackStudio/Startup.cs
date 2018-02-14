@@ -1,6 +1,9 @@
 ﻿using System;
 using CamerackStudio.Models.DataBaseConnections;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.DataProtection.AuthenticatedEncryption;
+using Microsoft.AspNetCore.DataProtection.AuthenticatedEncryption.ConfigurationModel;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.EntityFrameworkCore;
@@ -51,6 +54,13 @@ namespace CamerackStudio
             {
                 options.MultipartBodyLengthLimit = 100000000;
             });
+            services.AddDataProtection()
+                .UseCryptographicAlgorithms(
+                    new AuthenticatedEncryptorConfiguration()
+                    {
+                        EncryptionAlgorithm = EncryptionAlgorithm.AES_256_CBC,
+                        ValidationAlgorithm = ValidationAlgorithm.HMACSHA256
+                    });
             services.AddMvc(options => options.MaxModelValidationErrors = 50).AddJsonOptions(options => {
                 options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
                 options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
