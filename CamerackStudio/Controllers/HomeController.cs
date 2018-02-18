@@ -22,7 +22,6 @@ namespace CamerackStudio.Controllers
         public HomeController(CamerackStudioDataContext databaseConnection)
         {
             _databaseConnection = databaseConnection;
-            _databaseConnection.Database.EnsureCreated();
             _pushNotifications = new AppUserFactory().GetAllPushNotifications(new AppConfig().UsersPushNotifications).Result;
         }
         public IActionResult Index(string id)

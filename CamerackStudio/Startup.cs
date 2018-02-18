@@ -1,5 +1,6 @@
 ﻿using System;
 using CamerackStudio.Models.DataBaseConnections;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.DataProtection.AuthenticatedEncryption;
@@ -54,19 +55,12 @@ namespace CamerackStudio
             {
                 options.MultipartBodyLengthLimit = 100000000;
             });
-            services.AddDataProtection()
-                .UseCryptographicAlgorithms(
-                    new AuthenticatedEncryptorConfiguration()
-                    {
-                        EncryptionAlgorithm = EncryptionAlgorithm.AES_256_CBC,
-                        ValidationAlgorithm = ValidationAlgorithm.HMACSHA256
-                    });
             services.AddMvc(options => options.MaxModelValidationErrors = 50).AddJsonOptions(options => {
                 options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
                 options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
 
             });
-            //services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie();
+            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie();
         }
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
@@ -75,8 +69,6 @@ namespace CamerackStudio
             loggerFactory.AddDebug();
             if (env.IsDevelopment())
             {
-                //app.UseDeveloperExceptionPage();
-                //app.UseExceptionHandler("/Home/Error");
                 app.UseDeveloperExceptionPage();
                 app.UseDatabaseErrorPage();
                 app.UseBrowserLink();
@@ -87,6 +79,7 @@ namespace CamerackStudio
             }
             app.UseStaticFiles();
             app.UseSession();
+            app.UseAuthentication();
             app.UseMvc(routes =>
             {
                 routes.MapRoute(

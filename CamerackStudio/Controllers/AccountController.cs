@@ -40,9 +40,8 @@ namespace CamerackStudio.Controllers
             var appTransport = new AppTransport
             {
                 AppUsers = _users,
-                Images = _databaseConnection.Images.Include(n => n.ImageCategory)
-                    .Include(n => n.ImageComments).Include(n => n.ImageTags)
-                    .Include(n => n.Location).Include(n => n.ImageSubCategory).OrderByDescending(n => n.DateCreated).ToList(),
+                Images = _databaseConnection.Images.Include(n => n.ImageCategory).Include(n => n.ImageTags)
+                    .Include(n => n.Location).OrderByDescending(n => n.DateCreated).ToList(),
                 ImageComments = _databaseConnection.ImageComments.ToList(),
                 ImageActions = _databaseConnection.ImageActions.ToList(),
                 AppUser = _users.SingleOrDefault(n=>n.AppUserId ==signedInUserId )

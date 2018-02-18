@@ -83,7 +83,28 @@ namespace CamerackStudio.Controllers
             TempData["notificationtype"] = NotificationType.Success.ToString();
             return RedirectToAction("Dashboard", "Home");
         }
-
+        public IActionResult PhotographersNotice()
+        {
+            return View();
+        }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult PhotographersNotice(UserEmail email)
+        {
+            var users = new AppUserFactory().GetAllUsers(new AppConfig().FetchUsersUrl).Result.ToList();
+            var results = (from a in users
+                join b in _databaseConnection.Images.ToList()
+                on a.AppUserId equals b.AppUserId
+                where b != null
+                select a).Distinct().ToList();
+            email.MessageCategory = "General";
+            email.AppUsers = results;
+            new SendUserMessage().SendGeneralNotice(email);
+            //display notification
+            TempData["display"] = "You have successfully sent the Photographers Notice!";
+            TempData["notificationtype"] = NotificationType.Success.ToString();
+            return RedirectToAction("Dashboard", "Home");
+        }
 
         [SessionExpireFilter]
         public IActionResult Customers()

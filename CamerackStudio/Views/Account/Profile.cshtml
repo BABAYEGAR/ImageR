@@ -176,8 +176,8 @@
     {
         var singleOrDefault = Model.AppUsers.SingleOrDefault(n => n.AppUserId == item.AppUserId);
         var singleRating = Model.ImageActions.SingleOrDefault(n => { return Model.AppUser != null && n.AppUserId == Model.AppUser.AppUserId && n.ImageId == item.ImageId; });
-        var pic = "https://res.cloudinary.com/" + item.FilePath;
-        var otherPic = "https://res.cloudinary.com/" + item.FilePath.Replace("upload/", "upload/q_auto:low/w_650,h_670/w_600,c_scale,x_0,y_0,a_0,l_watermark/");
+        var pic = "https://res.cloudinary.com/" + item.FilePath.Replace("upload/", "upload/q_auto:low,f_auto/w_650,h_670,c_fit,c_fill,dpr_auto/"); ;
+        var otherPic = "https://res.cloudinary.com/" + item.FilePath.Replace("upload/", "upload/q_auto:low,f_auto/w_650,h_670,c_fit,c_fill,dpr_auto/w_400,c_fit,x_0,y_0,a_0,l_watermark/");
         Model.Image = item;
         <div class="widget clear">
             <div class="widget-heading">

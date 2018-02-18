@@ -28,8 +28,9 @@ namespace CamerackStudio.Controllers
         /// <returns></returns>
         public JsonResult GetAllImages()
         {
-            return Json(_databaseConnection.Images.Include(n => n.Camera).Include(n => n.Location)
-                .Where(n => n.Status == ImageStatus.Accepted.ToString()).ToList());
+            var images = _databaseConnection.Images.Include(n => n.Camera).Include(n => n.Location)
+                .Where(n => n.Status == ImageStatus.Accepted.ToString());
+            return Json(images);
         }
         /// <summary>
         ///     The method returns all images from photo studio via json object
@@ -63,7 +64,14 @@ namespace CamerackStudio.Controllers
         {
             return Json(_databaseConnection.ImageCategories.ToList());
         }
-
+        /// <summary>
+        ///     The method returns all images from photo studio via json object
+        /// </summary>
+        /// <returns></returns>
+        public JsonResult GetAllImageSubCategories()
+        {
+            return Json(_databaseConnection.ImageSubCategories.ToList());
+        }
         /// <summary>
         ///     The method returns all images from photo studio via json object
         /// </summary>
