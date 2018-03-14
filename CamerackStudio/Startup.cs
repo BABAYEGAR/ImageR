@@ -49,7 +49,7 @@ namespace CamerackStudio
             services.AddDistributedMemoryCache();
             services.AddSession(options =>
             {
-                options.IdleTimeout = TimeSpan.FromHours(12);
+                options.IdleTimeout = TimeSpan.FromDays(2);
             });
             services.Configure<FormOptions>(options =>
             {

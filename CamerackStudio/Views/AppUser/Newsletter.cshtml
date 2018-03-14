@@ -39,7 +39,7 @@
     @Html.ValidationSummary(true, "", new {@class = "text-danger"})
     <div class="form-group col-md-12">
         @Html.LabelFor(model => model.Subject, new {@class = "control-label"})<span class="required">*</span>
-        @Html.TextAreaFor(model => model.Subject, new {@class = "form-control", id = "ckeditor-full", placeholder = "Please enter the subject"})
+        @Html.TextBoxFor(model => model.Subject, new {@class = "form-control", placeholder = "Please enter the subject"})
         @Html.ValidationMessageFor(model => model.Subject, "", new {@class = "text-danger"})
     </div>
     <div class="form-group col-md-12">

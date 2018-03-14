@@ -107,7 +107,9 @@ namespace CamerackStudio.Controllers
         {
             var signedInUserId = Convert.ToInt64(HttpContext.Session.GetString("StudioLoggedInUserId"));
             terms.DateLastModified = DateTime.Now;
+            terms.DateCreated = DateTime.Now;
             terms.LastModifiedBy = signedInUserId;
+            terms.CreatedBy = signedInUserId;
 
             _databaseConnection.TermsAndConditions.Add(terms);
             _databaseConnection.SaveChanges();
@@ -115,19 +117,25 @@ namespace CamerackStudio.Controllers
             TempData["notificationtype"] = NotificationType.Success.ToString();
             return RedirectToAction("Terms");
         }
-        public IActionResult EditTerms()
+        public IActionResult EditTerms(long id)
         {
-            return View();
+            return View(_databaseConnection.TermsAndConditions.Find(id));
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult EditTerms(TermAndCondition terms)
         {
             var signedInUserId = Convert.ToInt64(HttpContext.Session.GetString("StudioLoggedInUserId"));
-            terms.DateLastModified = DateTime.Now;
-            terms.LastModifiedBy = signedInUserId;
+            var newterms = new TermAndCondition
+            {
+                Text = terms.Text,
+                DateLastModified = DateTime.Now,
+                LastModifiedBy = signedInUserId,
+                DateCreated = DateTime.Now,
+                CreatedBy = signedInUserId
+            };
 
-            _databaseConnection.Entry(terms).State = EntityState.Modified;
+            _databaseConnection.TermsAndConditions.Add(newterms);
             _databaseConnection.SaveChanges();
             TempData["display"] = "You have successfully modified the version of the T&C!";
             TempData["notificationtype"] = NotificationType.Success.ToString();

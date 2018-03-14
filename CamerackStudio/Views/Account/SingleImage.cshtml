@@ -1,4 +1,5 @@
-﻿@using CamerackStudio.Models.Entities
+﻿@using CamerackStudio.Models
+@using CamerackStudio.Models.Entities
 @using Microsoft.AspNetCore.Http
 @model AppTransport
 @{
@@ -41,7 +42,8 @@
                         }
                         @if (singleOrDefault != null && !singleOrDefault.HasSocialMediaLogin)
                         {
-                            <img src="~/UploadedImage/ProfilePicture/@singleOrDefault.ProfilePicture" alt="" class="media-object mo-lg img-circle">
+                            var image = "https://res.cloudinary.com/" + singleOrDefault.ProfilePicture.Replace("upload/", new AppConfig().GeneralImage);
+                            <img src="@image" alt="" class="media-object mo-lg img-circle">
                         }
                    
                     </div>
@@ -51,7 +53,7 @@
                                 @if (singleOrDefault != null)
                                 {
                                     @singleOrDefault.Username
-                                }</span> uploaded a new photo
+                                }</span> uploaded a new image
                         </p>
                         <time datetime="2015-12-10T20:50:48+07:00" class="text-muted fs-12">
                             @Model.Image.DateCreated.ToString("D") <i class="ti-time"></i>@Model.Image.DateCreated.ToString("h:mm:ss tt")

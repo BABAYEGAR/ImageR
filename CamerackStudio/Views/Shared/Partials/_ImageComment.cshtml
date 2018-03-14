@@ -1,4 +1,5 @@
-﻿@using CamerackStudio.Models.Entities
+﻿@using CamerackStudio.Models
+@using CamerackStudio.Models.Entities
 @model CamerackStudio.Models.Entities.AppTransport
 @{
 
@@ -8,26 +9,11 @@
     var singleOrDefault = Model.AppUsers.SingleOrDefault(n => n.AppUserId == items.AppUserId);
     <li class="media">
         <div class="media-left avatar">
-            @if (singleOrDefault != null && singleOrDefault.HasSocialMediaLogin)
+            @if (singleOrDefault != null)
             {
                 <img alt="" src="@singleOrDefault.ProfilePicture"
                      class="media-object img-circle">
                 <span class="status bg-success"></span>
-            }
-            @if (singleOrDefault != null && !singleOrDefault.HasSocialMediaLogin)
-            {
-                if (singleOrDefault.HasSocialMediaLogin)
-                {
-                    <img alt="" src="@singleOrDefault.ProfilePicture"
-                         class="media-object img-circle">
-                    <span class="status bg-success"></span>
-                }
-                else
-                {
-                    <img alt="" src="~/UploadedImage/ProfilePicture/@singleOrDefault.ProfilePicture"
-                         class="media-object img-circle">
-                    <span class="status bg-success"></span>
-                }
             }
         </div>
         <div class="media-body">

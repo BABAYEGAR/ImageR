@@ -9,6 +9,8 @@ using CamerackStudio.Models.DataBaseConnections;
 using CamerackStudio.Models.Encryption;
 using CamerackStudio.Models.Entities;
 using CamerackStudio.Models.Enum;
+using CloudinaryDotNet;
+using CloudinaryDotNet.Actions;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
@@ -23,8 +25,9 @@ namespace CamerackStudio.Controllers
     public class AccountController : Controller
     {
         private readonly CamerackStudioDataContext _databaseConnection;
-        private readonly List<AppUser> _users;
         private readonly List<PushNotification> _pushNotifications;
+        private readonly List<AppUser> _users;
+
         public AccountController(IHostingEnvironment env, CamerackStudioDataContext databaseConnection)
         {
             _databaseConnection = databaseConnection;
@@ -44,10 +47,11 @@ namespace CamerackStudio.Controllers
                     .Include(n => n.Location).OrderByDescending(n => n.DateCreated).ToList(),
                 ImageComments = _databaseConnection.ImageComments.ToList(),
                 ImageActions = _databaseConnection.ImageActions.ToList(),
-                AppUser = _users.SingleOrDefault(n=>n.AppUserId ==signedInUserId )
+                AppUser = _users.SingleOrDefault(n => n.AppUserId == signedInUserId)
             };
             return View(appTransport);
         }
+
         [SessionExpireFilter]
         public ActionResult UserProfile(long id)
         {
@@ -56,8 +60,8 @@ namespace CamerackStudio.Controllers
                 AppUsers = _users,
                 Images = _databaseConnection.Images.Include(n => n.ImageCategory)
                     .Include(n => n.ImageComments).Include(n => n.ImageTags)
-                    .Include(n => n.Location).Include(n => n.ImageSubCategory).Where(n=>n.AppUserId == id)
-                    .OrderByDescending(n=>n.DateCreated).ToList(),
+                    .Include(n => n.Location).Include(n => n.ImageSubCategory).Where(n => n.AppUserId == id)
+                    .OrderByDescending(n => n.DateCreated).ToList(),
                 ImageComments = _databaseConnection.ImageComments.ToList(),
                 ImageActions = _databaseConnection.ImageActions.ToList(),
                 Image = _databaseConnection.Images.Find(id),
@@ -65,22 +69,24 @@ namespace CamerackStudio.Controllers
             };
             return View(appTransport);
         }
+
         [SessionExpireFilter]
-        public async Task<ActionResult> SingleImage(long id,long? notificationId)
+        public async Task<ActionResult> SingleImage(long id, long? notificationId)
         {
             var signedInUserId = Convert.ToInt64(HttpContext.Session.GetString("StudioLoggedInUserId"));
 
             //update notification to read
             if (notificationId != null)
             {
-                var notification = _pushNotifications.SingleOrDefault(n=>n.PushNotificationId == notificationId);
+                var notification = _pushNotifications.SingleOrDefault(n => n.PushNotificationId == notificationId);
 
                 if (notification != null)
                 {
                     notification.Read = true;
                     notification.DateLastModified = DateTime.Now;
                     notification.LastModifiedBy = signedInUserId;
-                    await new AppUserFactory().UpdatePushNotification(new AppConfig().UpdatePushNotifications, notification);
+                    await new AppUserFactory().UpdatePushNotification(new AppConfig().UpdatePushNotifications,
+                        notification);
                 }
             }
 
@@ -94,31 +100,40 @@ namespace CamerackStudio.Controllers
                 ImageComments = _databaseConnection.ImageComments.ToList(),
                 ImageActions = _databaseConnection.ImageActions.ToList(),
                 Image = _databaseConnection.Images.Find(id),
-                AppUser = _users.SingleOrDefault(n=>n.AppUserId == signedInUserId)
+                AppUser = _users.SingleOrDefault(n => n.AppUserId == signedInUserId)
             };
             return View(appTransport);
         }
+
         /// <summary>
-        /// Get all User Notifications
+        ///     Get all User Notifications
         /// </summary>
         /// <returns></returns>
-        public ActionResult Notification()
+        public async Task<ActionResult> Notification()
         {
             var signedInUserId = Convert.ToInt64(HttpContext.Session.GetString("StudioLoggedInUserId"));
-            return View(_pushNotifications.Where(n=>n.AppUserId == signedInUserId).ToList());
+            var notifications = _pushNotifications.Where(n => n.AppUserId == signedInUserId && n.Read == false);
+            foreach (var item in notifications)
+            {
+                item.Read = true;
+                await new AppUserFactory().UpdatePushNotification(new AppConfig().UpdatePushNotifications, item);
+            }
+            return View(_pushNotifications.Where(n => n.AppUserId == signedInUserId).ToList());
         }
 
         public async Task<ActionResult> MarkNotificationAsRead(long id)
         {
             var signedInUserId = Convert.ToInt64(HttpContext.Session.GetString("StudioLoggedInUserId"));
-            var notification = _pushNotifications.SingleOrDefault(n=>n.PushNotificationId == id);
+            var notification = _pushNotifications.SingleOrDefault(n => n.PushNotificationId == id);
             if (notification != null)
             {
                 notification.DateLastModified = DateTime.Now;
                 notification.LastModifiedBy = signedInUserId;
                 notification.Read = true;
             }
-            var response = await new AppUserFactory().UpdatePushNotification(new AppConfig().UpdatePushNotifications, notification);
+            var response =
+                await new AppUserFactory().UpdatePushNotification(new AppConfig().UpdatePushNotifications,
+                    notification);
             if (response.PushNotificationId > 0)
             {
                 //display notification
@@ -127,6 +142,7 @@ namespace CamerackStudio.Controllers
             }
             return RedirectToAction("Notification");
         }
+
         public ActionResult ChangeProfileImage()
         {
             return View();
@@ -134,79 +150,104 @@ namespace CamerackStudio.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult ChangeProfileImage(IList<IFormFile> profile, IList<IFormFile> background)
+        public async Task<ActionResult> ChangeProfileImage(IList<IFormFile> profile, IList<IFormFile> background)
         {
             ViewBag.Users = _users;
             var signedInUserId = Convert.ToInt64(HttpContext.Session.GetString("StudioLoggedInUserId"));
             var userString = HttpContext.Session.GetString("StudioLoggedInUser");
             var appUser = JsonConvert.DeserializeObject<AppUser>(userString);
 
-            ActionResponse response;
-            if (profile.Count > 0)
-                foreach (var file in profile)
-                {
-                    var fileInfo = new FileInfo(file.FileName);
-                    var ext = fileInfo.Extension.ToLower();
-                    var name = DateTime.Now.ToFileTime().ToString();
-                    var fileName = name + ext;
-                    var uploadedImage = new AppConfig().ProfilePicture + fileName;
 
-                    using (var fs = System.IO.File.Create(uploadedImage))
-                    {
-                        if (fs != null)
-                        {
-                            file.CopyTo(fs);
-                            fs.Flush();
-                            appUser.ProfilePicture = fileName;
-                            appUser.LastModifiedBy = signedInUserId;
-                            appUser.DateLastModified = DateTime.Now;
-                            response = new AppUserFactory().EditProfile(new AppConfig().EditProfileUrl, appUser).Result;
-                            if (response.AppUser != null)
-                            {
-                                var newUserString = JsonConvert.SerializeObject(appUser);
-                                HttpContext.Session.SetString("StudioLoggedInUser", newUserString);
-                            }
-                        }
-                    }
-                }
-            if (background.Count > 0)
-                foreach (var file in background)
-                {
-                    var fileInfo = new FileInfo(file.FileName);
-                    var ext = fileInfo.Extension.ToLower();
-                    var name = DateTime.Now.ToFileTime().ToString();
-                    var fileName = name + ext;
-                    //var uploadedImage = _hostingEnv.WebRootPath + $@"\UploadedImage\ProfileBackground\{fileName}";
-                    var uploadedImage = new AppConfig().ProfileBackgorundPicture + fileName;
+            if (profile != null && profile.Count > 0)
+            {
+                var fileInfo = new FileInfo(profile.SingleOrDefault().FileName);
+                var ext = fileInfo.Extension.ToLower();
+                var name = DateTime.Now.ToFileTime().ToString();
+                var fileName = name + ext;
 
-                    using (var fs = System.IO.File.Create(uploadedImage))
-                    {
-                        if (fs != null)
-                        {
-                            file.CopyTo(fs);
-                            fs.Flush();
-                            appUser.BackgroundPicture = fileName;
-                            appUser.LastModifiedBy = signedInUserId;
-                            appUser.DateLastModified = DateTime.Now;
-                            response = new AppUserFactory().EditProfile(new AppConfig().EditProfileUrl, appUser).Result;
-                            if (response.AppUser != null)
-                            {
-                                var newerUserString = JsonConvert.SerializeObject(appUser);
-                                HttpContext.Session.SetString("StudioLoggedInUser", newerUserString);
-                            }
-                        }
-                    }
+                appUser.ProfilePicture = fileName;
+                appUser.LastModifiedBy = signedInUserId;
+                appUser.DateLastModified = DateTime.Now;
+                var account = new Account(
+                    new AppConfig().CloudinaryAccoutnName,
+                    new AppConfig().CloudinaryApiKey,
+                    new AppConfig().CloudinaryApiSecret);
+                //connect to cloudinary account
+                var cloudinary = new Cloudinary(account);
+                var filename = DateTime.Now.ToFileTime().ToString();
+                //upload parameters
+                var uploadParams = new ImageUploadParams
+                {
+                    File = new FileDescription(filename, profile.SingleOrDefault().OpenReadStream()),
+                    Invalidate = true,
+                    Format = "JPG",
+                    Folder = "ProfileImage"
+                };
+                //upload image
+                var uploadResult = cloudinary.UploadAsync(uploadParams);
+
+                if (uploadResult.Result.Format != null)
+                {
+                    appUser.ProfilePicture = uploadResult.Result.Uri.AbsoluteUri;
+                    var newUserString = JsonConvert.SerializeObject(appUser);
+                    HttpContext.Session.SetString("StudioLoggedInUser", newUserString);
+                    await new AppUserFactory().EditProfile(new AppConfig().EditProfileUrl, appUser);
+                    //display notification
+                    TempData["display"] = "You have succesfully uploaded a new profile picture!";
+                    TempData["notificationtype"] = NotificationType.Success.ToString();
                 }
-            if (background.Count <= 0 && profile.Count <= 0)
+            }
+
+
+            if (background != null && background.Count > 0)
+            {
+                var fileInfo = new FileInfo(background.SingleOrDefault().FileName);
+                var ext = fileInfo.Extension.ToLower();
+                var name = DateTime.Now.ToFileTime().ToString();
+                var fileName = name + ext;
+
+                appUser.ProfilePicture = fileName;
+                appUser.LastModifiedBy = signedInUserId;
+                appUser.DateLastModified = DateTime.Now;
+                var account = new Account(
+                    new AppConfig().CloudinaryAccoutnName,
+                    new AppConfig().CloudinaryApiKey,
+                    new AppConfig().CloudinaryApiSecret);
+                //connect to cloudinary account
+                var cloudinary = new Cloudinary(account);
+                var filename = DateTime.Now.ToFileTime().ToString();
+                //upload parameters
+                var uploadParams = new ImageUploadParams
+                {
+                    File = new FileDescription(filename, background.SingleOrDefault().OpenReadStream()),
+                    Invalidate = true,
+                    Format = "JPG",
+                    Folder = "ProfileBackground"
+                };
+                //upload image
+                var uploadResult = cloudinary.UploadAsync(uploadParams);
+
+                if (uploadResult.Result.Format != null)
+                {
+                    appUser.BackgroundPicture = uploadResult.Result.Uri.AbsoluteUri;
+                    var newUserString = JsonConvert.SerializeObject(appUser);
+                    HttpContext.Session.SetString("StudioLoggedInUser", newUserString);
+                    await new AppUserFactory().EditProfile(new AppConfig().EditProfileUrl, appUser);
+                    //display notification
+                    TempData["display"] = "You have succesfully uploaded a new background image!";
+                    TempData["notificationtype"] = NotificationType.Success.ToString();
+                }
+            }
+
+
+            if (profile != null && (background != null && (background.Count <= 0 && profile.Count <= 0)))
             {
                 //display notification
                 TempData["display"] = "No Image has been selected!";
                 TempData["notificationtype"] = NotificationType.Error.ToString();
                 return View();
             }
-            //display notification
-            TempData["display"] = "You have succesfully uploaded a new profile/background!";
-            TempData["notificationtype"] = NotificationType.Success.ToString();
+
             return RedirectToAction("Profile");
         }
 
@@ -565,9 +606,7 @@ namespace CamerackStudio.Controllers
             _databaseConnection.Dispose();
             HttpContext.Session.Clear();
             if (HttpContext.Session.GetString("StudioLoggedInUser") != null)
-            {
                 return RedirectToAction("Dashboard", "Home");
-            }
             if (returnUrl != null)
             {
                 //display notification
@@ -600,8 +639,9 @@ namespace CamerackStudio.Controllers
                 HttpContext.Session.SetString("StudioLoggedInUser", userString);
 
                 var userBank = _databaseConnection.UserBanks.SingleOrDefault(n => n.CreatedBy == userExist.AppUserId);
-                if(userBank != null && (string.IsNullOrEmpty(userBank.AccountName) || userBank.BankId <= 0
-                                        || string.IsNullOrEmpty(userBank.AccountName) && HttpContext.Session.GetString("UserBank") == null))
+                if (userBank != null && (string.IsNullOrEmpty(userBank.AccountName) || userBank.BankId <= 0
+                                         || string.IsNullOrEmpty(userBank.AccountName) &&
+                                         HttpContext.Session.GetString("UserBank") == null))
                 {
                     var bankString = JsonConvert.SerializeObject(userBank);
                     HttpContext.Session.SetString("UserBank", bankString);

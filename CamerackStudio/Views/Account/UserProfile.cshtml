@@ -1,4 +1,5 @@
-﻿@using Microsoft.AspNetCore.Http
+﻿@using CamerackStudio.Models
+@using Microsoft.AspNetCore.Http
 @model CamerackStudio.Models.Entities.AppTransport
 @{
     Layout = "Layout/Dashboard/_LayoutDashboard";
@@ -28,20 +29,10 @@
             <div class="pull-left media">
                 <div class="media-left">
 
-                    <img src="~/UploadedImage/ProfileBackground/@if (Model.AppUser != null && Model.AppUser.ProfilePicture != null)
-                                                                {
-                                                                    @Model.AppUser.BackgroundPicture
-                                                                }" alt="" style="opacity: 1; z-index: -1" class="img-main img-responsive"><a href="javascript:void(0)" style="background-color: #fff; border-radius: 50%; display: inline-block; padding: 3px;">
-                        @if (Model.AppUser != null && Model.AppUser.HasSocialMediaLogin)
+                    <img src="@Model.AppUser.ProfilePicture" alt="" style="opacity: 1; z-index: -1" class="img-main img-responsive"><a href="javascript:void(0)" style="background-color: #fff; border-radius: 50%; display: inline-block; padding: 3px;">
+                        @if (Model.AppUser != null)
                         {
                             <img src="@Model.AppUser.ProfilePicture" alt="" class="img-circle img-responsive" style="height: 80px; width: 80px;">
-                        }
-                        else
-                        {
-                            <img src="~/UploadedImage/ProfilePicture/@if (Model.AppUser != null && Model.AppUser.ProfilePicture != null)
-                                                                     {
-                                                                         @Model.AppUser.ProfilePicture
-                                                                     }" alt="" class="img-circle img-responsive" style="height: 80px; width: 80px;">
                         }
                     </a>
                 </div>
@@ -194,14 +185,10 @@
                     <a href="@Url.Action("UserProfile", new {id = item.AppUserId})" class="media-left">
                         @if (singleOrDefault != null)
                         {
-                            if (singleOrDefault.HasSocialMediaLogin)
-                            {
+                         
                                 <img src="@singleOrDefault.ProfilePicture" alt="" class="media-object mo-lg img-circle">
-                            }
-                            else
-                            {
-                                <img src="~/UploadedImage/ProfilePicture/@singleOrDefault.ProfilePicture" alt="" class="media-object mo-lg img-circle">
-                            }
+                           
+
                         }
 
                     </a>

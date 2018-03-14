@@ -15,6 +15,7 @@ namespace CamerackStudio.Models.Entities
         public List<ImageComment> ImageComments { get; set; }
         public List<AppUser> AppUsers { get; set; }
         public List<ImageAction> ImageActions { get; set; }
+        public List<ImageDownload> ImageDownloads { get; set; }
         public Image Image { get; set; }
         public AppUser AppUser { get; set; }
         public string Status { get; set; }

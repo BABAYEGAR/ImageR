@@ -82,7 +82,7 @@ namespace CamerackStudio.Controllers
         public int RealoadNavigationAndCount()
         {
             var signedInUserId = Convert.ToInt64(HttpContext.Session.GetString("StudioLoggedInUserId"));
-            var notifications = _pushNotifications.Where(n => n.AppUserId == signedInUserId).Take(5).ToList();
+            var notifications = _pushNotifications.Where(n => n.AppUserId == signedInUserId).Where(n=>n.Read == false).ToList();
             return notifications.Count;
         }
         public async Task<IActionResult> Dashboard()
@@ -146,7 +146,9 @@ namespace CamerackStudio.Controllers
                         Locations = _databaseConnection.Locations.ToList(),
                         Orders = new OrderFactory().GetAllOrdersAsync(new AppConfig().FetchOrdersUrl).Result.ToList(),
                         Payments = new OrderFactory().GetAllPaymentsAsync(new AppConfig().FetchPaymentsUrl).Result
-                            .ToList()
+                            .ToList(),
+                        ImageDownloads = new ImageFactory().GetAllDownloads(new AppConfig().GetImageDownloadsUrl).Result,
+                        AppUser = _appUser
                     };
                 }
                 if (_appUser != null && _appUser.Role.UploadImage)
@@ -162,7 +164,9 @@ namespace CamerackStudio.Controllers
                             .Result.Where(n => n.CreatedBy == signedInUserId).ToList(),
                         Payments = new OrderFactory().GetAllPaymentsAsync(new AppConfig().FetchPaymentsUrl).Result
                             .Where(n => n.AppUserId == signedInUserId)
-                            .ToList()
+                            .ToList(),
+                        ImageDownloads = new ImageFactory().GetAllDownloads(new AppConfig().GetImageDownloadsUrl).Result,
+                        AppUser = _appUser
                     };
                 }
                 //validate mapping

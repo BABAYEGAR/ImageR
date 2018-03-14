@@ -35,8 +35,6 @@
 @using (Html.BeginForm("EditTerms", "Page", FormMethod.Post, new {enctype = "multipart/form-data", role = "form"}))
 {
     @Html.HiddenFor(n=>n.TermAndConditionId)
-    @Html.HiddenFor(n=>n.DateCreated)
-    @Html.HiddenFor(n=>n.CreatedBy)
     @Html.AntiForgeryToken()
     @Html.ValidationSummary(true, "", new {@class = "text-danger"})
     <div class="form-group col-md-12">

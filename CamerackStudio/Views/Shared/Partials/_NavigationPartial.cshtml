@@ -30,7 +30,7 @@
                 </a>
             </li>
             <a id="dropdownMenu1" href="#" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false" class="dropdown-toggle bubble header-icon">
-                <i class="ti-world"></i><span class="badge bg-danger" id="number">@notifications.Count</span>
+                <i class="ti-world"></i><span class="badge bg-danger number">@notifications.Where(n=>n.Read == false).ToList().Count</span>
             </a>
             <div aria-labelledby="dropdownMenu1" class="dropdown-menu dropdown-menu-right dm-medium fs-12 animated fadeInDown">
                 @{
@@ -65,9 +65,9 @@
             });
                 $(function() {
                     setTimeout(function (data) {
-                            $('#number')
+                            $('.number')
                             .load('@Url.Action("RealoadNavigationAndCount", "Home")');
-                            $('#number').val(data);
+                            $('.number').val(data);
 
                         },
                         20000);

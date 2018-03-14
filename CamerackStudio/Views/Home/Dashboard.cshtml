@@ -84,13 +84,31 @@
                                                         {
                                                             @string.Format("{0:n0}", @Model.Payments.Where(n => n.Status == PaymentStatus.Paid.ToString()).ToList().Count)
                                                         }
-                                                        </div>
+                </div>
                 <div id="esp-feedback" data-percent="20" style="height: 10px; line-height: 20px; padding: 5px; width: 140px;" class="easy-pie-chart fs-36">
                     &#8358
                 </div>
             </div>
         </div>
     </a>
+    @if (Model.AppUser.Role.ManageApplicationUser)
+    {
+        <a class="col-md-3 col-sm-6" href="@Url.Action("Downloads", "Image")">
+            <div class="widget text-center">
+                <div class="widget-body">
+                    <h5 class="mb-5">Image Downloads</h5>
+                    <div class="fs-36 fw-600 mb-20 counter">@if (Model != null && Model.ImageDownloads != null)
+                                                            {
+                                                                @Model.ImageDownloads.Count
+                                                            }
+                    </div>
+                    <div id="esp-feedback" data-percent="20" style="height: 10px; line-height: 20px; padding: 5px; width: 140px;" class="easy-pie-chart fs-36">
+                        <i class="ti-download"></i>
+                    </div>
+                </div>
+            </div>
+        </a>
+    }
     <div class="col-md-12">
         <div class="widget no-border">
             <table id="order-table" style="width: 100%" class="table table-hover dt-responsive nowrap">
@@ -100,22 +118,22 @@
                     <th style="width: 37%">Customer</th>
                     <th style="width: 20%">Date Added</th>
                     <th style="width: 12%">Total</th>
-                    <th style="width: 15%">Completed</th>
                 </tr>
                 </thead>
                 <tbody>
                 @if (Model != null && Model.Orders != null)
                 {
-                    @if (Model.Orders.Count > 0)
+                    if (Model.Orders.Count > 0)
                      {
                          foreach (var item in Model.Orders)
                          {
+                             var singleOrDefault = Model.AppUsers.SingleOrDefault(n => n.AppUserId == item.CreatedBy);
                              <tr>
                                  <td>@item.OrderNumber</td>
                                  <td>
                                      <div class="media">
                                          <div class="media-left avatar">
-                                             <img src="~/UploadedImage/ProfilePicture/Avatar.jpg" alt="" class="media-object img-circle"><span class="status bg-success"></span>
+                                             <img src="@singleOrDefault.ProfilePicture" alt="" class="media-object img-circle"><span class="status bg-success"></span>
                                          </div>
                                          <div class="media-body">
                                              <h5 class="media-heading">
@@ -123,7 +141,6 @@
 
                                                  @if (Model.AppUsers != null)
                                                  {
-                                                     var singleOrDefault = Model.AppUsers.SingleOrDefault(n => n.AppUserId == item.AppUserId);
 
                                                      if (singleOrDefault != null)
                                                      {
@@ -144,12 +161,9 @@
 
                                          if (orDefault != null)
                                          {
-                                             @orDefault.SellingPrice
+                                     <span>&#8358</span> @orDefault.SellingPrice
                                          }
                                      }
-                                 </td>
-                                 <td class="text-center text-success">
-                                     <i class="ti-check"></i>
                                  </td>
                              </tr>
                          }

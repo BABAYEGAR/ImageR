@@ -9,6 +9,19 @@
 
     <!-- Bootstrap Markdown-->
     <link rel="stylesheet" type="text/css" href="~/Dashboard/plugins/bootstrap-markdown/css/bootstrap-markdown.min.css">
+    <link href="~/Dashboard/assets/selectize/dist/css/selectize.css" rel="stylesheet"/>
+    <style>
+        .fileinput-upload-button { visibility: hidden }
+
+        .page-header { padding: 0px; }
+
+        .selectize-input {
+            border: 0px solid #d0d0d0;
+            font-weight: bolder;
+            padding: 0px 0px;
+            width: 100%;
+        }
+    </style>
 }
 @section Breadcrumbs
 {
@@ -119,6 +132,11 @@
                     @Html.EditorFor(model => model.Discount, new {htmlAttributes = new {@class = "form-control", placeholder = "Please enter the discount % for the image",min="0",max="100",id="discount"}})
                     @Html.ValidationMessageFor(model => model.Discount, "", new {@class = "text-danger"})
                 </div>
+                <div class="form-group col-md-12">
+                    @Html.LabelFor(model => model.Tags, new {@class = "control-label"})
+                    @Html.EditorFor(model => model.Tags, new {htmlAttributes = new {@class = "form-control", placeholder = "Add tags for the image", id = "input-tags"}})
+                    @Html.ValidationMessageFor(model => model.Tags, "", new {@class = "text-danger"})
+                </div>
             </div>
 
             <div class="row">
@@ -145,6 +163,7 @@
 {
     <!-- Bootstrap Markdown-->
     <script type="text/javascript" src="~/Dashboard/plugins/bootstrap-markdown/js/bootstrap-markdown.js"></script>
+    <script src="~/Dashboard/assets/selectize/dist/js/standalone/selectize.min.js"></script>
 
 }
 @section Functions {
@@ -217,6 +236,17 @@
 
                 //Ajax ends
             });
+        // Selectize plugin
+        $('#input-tags').selectize({
+            delimiter: ',',
+            persist: false,
+            create: function(input) {
+                return {
+                    value: input,
+                    text: input
+                };
+            }
+        });
     </script>
 
         <script>

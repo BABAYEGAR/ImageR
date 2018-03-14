@@ -1,4 +1,5 @@
-﻿@using CamerackStudio.Models.Entities
+﻿@using CamerackStudio.Models
+@using CamerackStudio.Models.Entities
 @model CamerackStudio.Models.Entities.AppTransport
 @{
     Layout = "Layout/Dashboard/_LayoutDashboard";
@@ -27,20 +28,13 @@
             <div class="pull-left media">
                 <div class="media-left">
 
-                    <img src="~/UploadedImage/ProfileBackground/@if (Model.AppUser != null && Model.AppUser.ProfilePicture != null)
+                    <img src="@if (Model.AppUser != null && Model.AppUser.ProfilePicture != null)
                                                                 {
                                                                     @Model.AppUser.BackgroundPicture
                                                                 }" alt="" style="opacity: 1; z-index: -1" class="img-main img-responsive"><a href="javascript:void(0)" style="background-color: #fff; border-radius: 50%; display: inline-block; padding: 3px;">
-                        @if (Model.AppUser != null && Model.AppUser.HasSocialMediaLogin)
+                        @if (Model.AppUser != null)
                         {
                             <img src="@Model.AppUser.ProfilePicture" alt="" class="img-circle img-responsive" style="height: 80px; width: 80px;">
-                        }
-                        else
-                        {
-                            <img src="~/UploadedImage/ProfilePicture/@if (Model.AppUser != null && Model.AppUser.ProfilePicture != null)
-                                                                     {
-                                                                         @Model.AppUser.ProfilePicture
-                                                                     }"alt="" class="img-circle img-responsive" style="height: 80px; width: 80px;">
                         }
                     </a>
                 </div>
@@ -88,9 +82,12 @@
             @if (Model.AppUser != null && !Model.AppUser.HasSocialMediaLogin)
             {
                 <a href="@Url.Action("ChangeProfileImage")">Change Profile Images<i style="font-size: 20px; font-weight: bolder;" class="ti-image"></i></a>
+                <br/>
             }
-            <br/>
-            <a href="@Url.Action("UserBank")">Bank Information<i style="font-size: 20px; font-weight: bolder;" class="ti-money"></i></a>
+      @if (Model.Images.Where(n => n.AppUserId == Model.AppUser.AppUserId).ToList().Count > 0)
+      {
+                <span>&#8358</span><a href="@Url.Action("UserBank")">Bank Information</a>
+      }
         </div>
         <div class="widget-body">
             <ul class="media-list mb-0">
@@ -185,14 +182,7 @@
                     <a href="@Url.Action("UserProfile", new {id = item.AppUserId})" class="media-left">
                         @if (singleOrDefault != null)
                         {
-                            if (singleOrDefault.HasSocialMediaLogin)
-                            {
                                 <img src="@singleOrDefault.ProfilePicture" alt="" class="media-object mo-lg img-circle">
-                            }
-                            else
-                            {
-                                <img src="~/UploadedImage/ProfilePicture/@singleOrDefault.ProfilePicture" alt="" class="media-object mo-lg img-circle">
-                            }
                         }
                       
                     </a>

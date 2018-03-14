@@ -1,8 +1,8 @@
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace CamerackStudio.Views.TermAndCondition
+namespace CamerackStudio.Views.Image
 {
-    public class CreateModel : PageModel
+    public class DownloadsModel : PageModel
     {
         public void OnGet()
         {

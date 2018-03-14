@@ -210,6 +210,7 @@ namespace CamerackStudio.Controllers
         public ActionResult Create(Image image, IFormCollection collection, IFormFile FileName)
         {
             var signedInUserId = Convert.ToInt64(HttpContext.Session.GetString("StudioLoggedInUserId"));
+            var tags = new List<string>();
             var newLocation = new Location();
             var newCamera = new Camera();
             try
@@ -330,6 +331,31 @@ namespace CamerackStudio.Controllers
                         }
                         if (signedInUserId > 0)
                         {
+                            //get tags
+                            if (!string.IsNullOrEmpty(image.Tags))
+                            {
+                                var values = image.Tags.Split(',');
+                                for (var i = 0; i < values.Length; i++)
+                                {
+                                    values[i] = values[i].Trim();
+                                    tags.Add(values[i]);
+                                }
+                                //save tags
+                                foreach (var item in tags)
+                                {
+                                    var tag = new ImageTag
+                                    {
+                                        Name = item,
+                                        ImageId = image.ImageId,
+                                        DateCreated = DateTime.Now,
+                                        DateLastModified = DateTime.Now,
+                                        CreatedBy = signedInUserId,
+                                        LastModifiedBy = signedInUserId
+                                    };
+                                    _databaseConnection.ImageTags.AddRange(tag);
+                                }
+                                _databaseConnection.SaveChanges();
+                            }
                             _databaseConnection.Add(image);
                             _databaseConnection.SaveChanges();
                         }
@@ -432,6 +458,7 @@ namespace CamerackStudio.Controllers
         [SessionExpireFilter]
         public ActionResult Edit(Image image, IFormCollection collection)
         {
+            var tags = new List<string>();
             var newLocation = new Location();
             var newCamera = new Camera();
             try
@@ -475,8 +502,35 @@ namespace CamerackStudio.Controllers
                         image.LocationId = newLocation.LocationId;
                     }
                 }
-
-
+                var allTags = _databaseConnection.ImageTags.Where(n => n.ImageId == image.ImageId);
+                //get tags
+                if (!string.IsNullOrEmpty(image.Tags))
+                {
+                    var values = image.Tags.Split(',');
+                    for (var i = 0; i < values.Length; i++)
+                    {
+                        values[i] = values[i].Trim();
+                        tags.Add(values[i]);
+                    }
+                    //save tags
+                    foreach (var item in tags)
+                    {
+                        if (allTags.Where(n => n.Name == item).ToList().Count <= 0)
+                        {
+                            var tag = new ImageTag
+                            {
+                                Name = item,
+                                ImageId = image.ImageId,
+                                DateCreated = DateTime.Now,
+                                DateLastModified = DateTime.Now,
+                                CreatedBy = signedInUserId,
+                                LastModifiedBy = signedInUserId
+                            };
+                            _databaseConnection.ImageTags.AddRange(tag);
+                        }
+                    }
+                    _databaseConnection.SaveChanges();
+                }
                 _databaseConnection.Entry(image).State = EntityState.Modified;
                 _databaseConnection.SaveChanges();
 
@@ -683,6 +737,12 @@ namespace CamerackStudio.Controllers
             TempData["display"] = "You have successfully removed the image from the platform!";
             TempData["notificationtype"] = NotificationType.Success.ToString();
             return RedirectToAction("Index");
+        }
+        public IActionResult Downloads()
+        {
+            var downloads = new ImageFactory().GetAllDownloads(new AppConfig().GetImageDownloadsUrl);
+            ViewBag.Images = _databaseConnection.Images.ToList();
+            return View(downloads.Result.ToList());
         }
     }
 }

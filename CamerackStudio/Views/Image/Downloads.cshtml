@@ -1,0 +1,56 @@
+﻿@using CamerackStudio.Models
+@using CamerackStudio.Models.Entities
+@using CamerackStudio.Models.Enum
+@using CamerackStudio.Models.Services
+@using Microsoft.AspNetCore.Http
+@model List<CamerackStudio.Models.Entities.ImageDownload>
+@{
+    Layout = "Layout/Dashboard/_LayoutTable";
+    ViewBag.PageTitle = "List of Image Downloads";
+    ViewBag.PageHeader = "Manage Image Downloads";
+    ViewBag.FormHeader = "List of Image downloads";
+    List<Image> images = ViewBag.Images;
+}
+@section Breadcrumbs
+{
+    <div class="pull-left">
+        <h4 class="mt-0 mb-5">@ViewBag.PageHeader</h4>
+        <ol class="breadcrumb mb-0">
+            <li>
+                <a href="@Url.Action("Dashboard", "Home")">Dashboard</a>
+            </li>
+            <li class="active">@ViewBag.PageHeader</li>
+        </ol>
+    </div>
+}
+<table id="example-2" cellspacing="0" width="100%" class="table table-striped table-bordered">
+    <thead>
+    <tr>
+    
+        <th>Date-Time</th>
+        <th>Image</th>
+        <th>Size</th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>@item.DateCreated.ToString("D")</td>
+            <td>
+
+                @{
+                    var singleOrDefault = images.SingleOrDefault(n => n.ImageId == item.ImageId);
+                }
+                @if (singleOrDefault != null)
+                {
+                    @singleOrDefault.Title
+                }</td>
+            <td>@item.Size</td>
+        </tr>
+    }
+    </tbody>
+</table>
+@section Functions {
+
+}

@@ -47,6 +47,7 @@
         public string FetchInvoiceUrl => CamerackBaseUrl + "API/GetAllInvoices";
         public string ApprovePaymentsUrl => CamerackBaseUrl + "API/ApprovePayment/";
         public string GetSubscriptionsUrl => CamerackBaseUrl + "API/GetAllSubscriptions";
+        public string GetImageDownloadsUrl => CamerackBaseUrl + "API/GetAllImageDownloads";
         #endregion
 
         #region Mailer
@@ -62,7 +63,7 @@
         #endregion
 
         #region APP
-
+        public string GeneralUserImage => "upload/q_auto,f_auto/";
         public string ProfilePicture => "wwwroot/UploadedImage/ProfilePicture/";
 
         public string ProfileBackgorundPicture => "wwwroot/UploadedImage/ProfileBackground/";

@@ -9,7 +9,7 @@
 }
 
 
-<h5 class="dropdown-header">You have @(Model.Where(n => n.Read == false).ToList().Count) unread notifications</h5>
+<h5 class="dropdown-header">You have <span class="number">@(Model.Where(n => n.Read == false).ToList().Count) </span>unread notifications</h5>
 <br/>
     <ul data-mcs-theme="minimal-dark" class="media-list mCustomScrollbar">
         @foreach (var item in Model.OrderBy(n=>n.DateCreated).Take(10))
@@ -20,15 +20,10 @@
                 {
                     <a href="@Url.Action("SingleImage","Account",new{id = item.ControllerId,notificationId = item.PushNotificationId})">
                         <div class="media-left avatar">
-                            @if (user != null && user.HasSocialMediaLogin)
+                            @if (user != null)
                             {
                                 <img src="@user.ProfilePicture" alt="" class="media-object img-circle">
                             }
-                            @if (user != null && user.HasSocialMediaLogin == false)
-                            {
-                                <img src="~/UploadedImage/ProfilePicture/@user.ProfilePicture" alt="" class="media-object img-circle">
-                            }
-                       
                             @if (item.Read == true)
                             {
                                 <span class="status bg-default"></span> 
@@ -56,15 +51,10 @@
                 {
                     <a href="@Url.Action("SingleImage","Account",new{id = item.ControllerId,notificationId = item.PushNotificationId})">
                         <div class="media-left avatar">
-                            @if (user != null && user.HasSocialMediaLogin)
+                            @if (user != null)
                             {
                                 <img src="@user.ProfilePicture" alt="" class="media-object img-circle">
                             }
-                            @if (user != null && user.HasSocialMediaLogin == false)
-                            {
-                                <img src="~/UploadedImage/ProfilePicture/@user.ProfilePicture" alt="" class="media-object img-circle">
-                            }
-                       
                             @if (item.Read == true)
                             {
                                 <span class="status bg-default"></span> 
@@ -91,16 +81,10 @@
                 {
                     <a href="@Url.Action("Index","Order",new{notificationId = item.PushNotificationId})">
                         <div class="media-left avatar">
-                            @if (user != null && user.HasSocialMediaLogin)
+                            @if (user != null)
                             {
                                 <img src="@user.ProfilePicture" alt="" class="media-object img-circle">
                             }
-                            @if (user != null && user.HasSocialMediaLogin == false)
-                            {
-                                <img src="~/UploadedImage/ProfilePicture/@user.ProfilePicture" alt="" class="media-object img-circle">
-                            }
-                       
-
                             @if (item.Read == true)
                             {
                                 <span class="status bg-default"></span> 

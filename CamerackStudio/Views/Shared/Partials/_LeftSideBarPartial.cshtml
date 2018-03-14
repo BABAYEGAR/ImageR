@@ -1,3 +1,4 @@
+@using CamerackStudio.Models
 @using CamerackStudio.Models.Entities
 @using CamerackStudio.Models.Enum
 @using Microsoft.AspNetCore.Http
@@ -18,14 +19,9 @@
             <div id="esp-user-profile" data-percent="65" style="height: 110px; line-height: 80px; padding: 12px; width: 110px;" class="easy-pie-chart">
                 @if (appUser != null)
                 {
-                    if (appUser.HasSocialMediaLogin)
-                    {
+
                         <img src="@appUser.ProfilePicture" alt="" class="avatar img-circle img-responsive" style="width: 80px; height: 80px"><span class="status bg-success"></span>
-                    }
-                    else
-                    {
-                        <img src="~/UploadedImage/ProfilePicture/@appUser.ProfilePicture" alt="" class="avatar img-circle img-responsive" style="width: 80px; height: 80px"><span class="status bg-success"></span> 
-                    }
+                    
                  
                 }
             
