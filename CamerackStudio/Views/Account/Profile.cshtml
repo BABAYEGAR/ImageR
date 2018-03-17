@@ -28,13 +28,21 @@
             <div class="pull-left media">
                 <div class="media-left">
 
-                    <img src="@if (Model.AppUser != null && Model.AppUser.ProfilePicture != null)
+                    <img src="@if (Model.AppUser != null && Model.AppUser.BackgroundPicture != null)
                                                                 {
                                                                     @Model.AppUser.BackgroundPicture
                                                                 }" alt="" style="opacity: 1; z-index: -1" class="img-main img-responsive"><a href="javascript:void(0)" style="background-color: #fff; border-radius: 50%; display: inline-block; padding: 3px;">
-                        @if (Model.AppUser != null)
+                        @if (Model.AppUser != null && Model.AppUser.ProfilePicture != null)
                         {
-                            <img src="@Model.AppUser.ProfilePicture" alt="" class="img-circle img-responsive" style="height: 80px; width: 80px;">
+                            if (Model.AppUser.HasSocialMediaLogin)
+                            {
+                                <img src="@Model.AppUser.ProfilePicture" alt="" class="img-circle img-responsive" style="height: 80px; width: 80px;">
+                            }
+                            else
+                            {
+                                <img src="@Model.AppUser.ProfilePicture.Replace("upload/",new AppConfig().GeneralUserImage)" alt="" class="img-circle img-responsive" style="height: 80px; width: 80px;">
+                            }
+                      
                         }
                     </a>
                 </div>
@@ -180,11 +188,18 @@
             <div class="widget-heading">
                 <div class="media">
                     <a href="@Url.Action("UserProfile", new {id = item.AppUserId})" class="media-left">
-                        @if (singleOrDefault != null)
+                        @if (singleOrDefault != null && singleOrDefault.ProfilePicture != null)
                         {
+                            if (singleOrDefault.HasSocialMediaLogin)
+                            {
                                 <img src="@singleOrDefault.ProfilePicture" alt="" class="media-object mo-lg img-circle">
-                        }
+                            }
+                            else
+                            {
+                                <img src="@singleOrDefault.ProfilePicture.Replace("upload/",new AppConfig().GeneralUserImage)" alt="" class="media-object mo-lg img-circle">
+                            }
                       
+                        }
                     </a>
                     <div class="media-body media-middle">
                         <p class="mb-0">

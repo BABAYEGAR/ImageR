@@ -36,14 +36,17 @@
             <div class="widget-heading">
                 <div class="media">
                     <div class="media-left">
-                        @if (singleOrDefault != null && singleOrDefault.HasSocialMediaLogin)
+                        @if (singleOrDefault != null && singleOrDefault.ProfilePicture != null)
                         {
-                            <img src="@singleOrDefault.ProfilePicture" alt="" class="media-object mo-lg img-circle">
-                        }
-                        @if (singleOrDefault != null && !singleOrDefault.HasSocialMediaLogin)
-                        {
-                            var image = "https://res.cloudinary.com/" + singleOrDefault.ProfilePicture.Replace("upload/", new AppConfig().GeneralImage);
-                            <img src="@image" alt="" class="media-object mo-lg img-circle">
+                            if (singleOrDefault.HasSocialMediaLogin)
+                            {
+                                <img src="@singleOrDefault.ProfilePicture" alt="" class="media-object mo-lg img-circle">
+                            }
+                            else
+                            {
+                                <img src="@singleOrDefault.ProfilePicture.Replace("upload/",new AppConfig().GeneralUserImage)" alt="" class="media-object mo-lg img-circle">
+                            }
+                      
                         }
                    
                     </div>

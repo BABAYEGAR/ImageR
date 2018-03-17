@@ -10,7 +10,6 @@
         var userString = Context.Session.GetString("StudioLoggedInUser");
         appUser = JsonConvert.DeserializeObject<AppUser>(userString);
     }
-
 }
 
 <aside data-mcs-theme="minimal-dark" class="main-sidebar mCustomScrollbar">
@@ -19,19 +18,28 @@
             <div id="esp-user-profile" data-percent="65" style="height: 110px; line-height: 80px; padding: 12px; width: 110px;" class="easy-pie-chart">
                 @if (appUser != null)
                 {
-
-                        <img src="@appUser.ProfilePicture" alt="" class="avatar img-circle img-responsive" style="width: 80px; height: 80px"><span class="status bg-success"></span>
-                    
-                 
+                    if (appUser.ProfilePicture != null)
+                    {
+                        if (appUser.HasSocialMediaLogin)
+                        {
+                            <img src="@appUser.ProfilePicture" alt="" class="avatar img-circle img-responsive" style="height: 80px; width: 80px;">
+                            <span class="status bg-success"></span>
+                        }
+                        else
+                        {
+                            <img src="@appUser.ProfilePicture.Replace("upload/", new AppConfig().GeneralUserImage)" alt="" class="avatar img-circle img-responsive" style="height: 80px; width: 80px;">
+                            <span class="status bg-success"></span>
+                        }
+                    }
                 }
-            
+
             </div>
         </a>
         @if (appUser != null)
         {
             <h4 class="fs-14 text-muted mt-15 mb-5 fw-300">@appUser.Name</h4>
         }
-     
+
     </div>
     <ul class="list-unstyled navigation mb-0">
         <li class="sidebar-header pt-0">Main Menu</li>
@@ -114,10 +122,10 @@
                         <a href="@Url.Action("Report", "Image")">Reported Images </a>
                     </li>
                     <li>
-                        <a href="@Url.Action("Index", "Image",new{status = ImageStatus.Accepted.ToString()})">Accepted Images </a>
+                        <a href="@Url.Action("Index", "Image", new {status = ImageStatus.Accepted.ToString()})">Accepted Images </a>
                     </li>
                     <li>
-                        <a href="@Url.Action("Index", "Image",new{status = ImageStatus.Rejected.ToString()})">Rejected Images </a>
+                        <a href="@Url.Action("Index", "Image", new {status = ImageStatus.Rejected.ToString()})">Rejected Images </a>
                     </li>
                 </ul>
             </li>
@@ -131,10 +139,10 @@
                         <a href="@Url.Action("Index", "Image")">All Images </a>
                     </li>
                     <li>
-                        <a href="@Url.Action("Index", "Image",new{status = ImageStatus.Accepted.ToString()})">Accepted Images </a>
+                        <a href="@Url.Action("Index", "Image", new {status = ImageStatus.Accepted.ToString()})">Accepted Images </a>
                     </li>
                     <li>
-                        <a href="@Url.Action("Index", "Image",new{status = ImageStatus.Rejected.ToString()})">Rejected Images </a>
+                        <a href="@Url.Action("Index", "Image", new {status = ImageStatus.Rejected.ToString()})">Rejected Images </a>
                     </li>
                     <li>
                         <a href="@Url.Action("Index", "Camera")">Camera's</a>
@@ -165,12 +173,12 @@
             <li class="panel">
                 <a role="button" data-toggle="collapse" data-parent=".navigation" href="#collapse7" aria-expanded="false" aria-controls="collapse7" class="collapsed"><i class="ti-shopping-cart"></i> My Store @*<span class="label label-outline label-success">New</span>*@</a>
                 <ul id="collapse7" class="list-unstyled collapse">
-                <li>
-                    <a href="@Url.Action("Index", "Order")">Orders </a>
-                </li>
-                <li>
-                    <a href="@Url.Action("Index", "Payment")">Payment </a>
-                </li>
+                    <li>
+                        <a href="@Url.Action("Index", "Order")">Orders </a>
+                    </li>
+                    <li>
+                        <a href="@Url.Action("Index", "Payment")">Payment </a>
+                    </li>
                 </ul>
             </li>
         }

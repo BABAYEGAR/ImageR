@@ -9,11 +9,19 @@
     var singleOrDefault = Model.AppUsers.SingleOrDefault(n => n.AppUserId == items.AppUserId);
     <li class="media">
         <div class="media-left avatar">
-            @if (singleOrDefault != null)
+            @if (singleOrDefault != null && singleOrDefault.ProfilePicture != null)
             {
-                <img alt="" src="@singleOrDefault.ProfilePicture"
-                     class="media-object img-circle">
-                <span class="status bg-success"></span>
+                if (singleOrDefault.HasSocialMediaLogin)
+                {
+                    <img src="@singleOrDefault.ProfilePicture" alt="" class="media-object img-circle">
+                    <span class="status bg-success"></span>
+                }
+                else
+                {
+                    <img src="@singleOrDefault.ProfilePicture.Replace("upload/",new AppConfig().GeneralUserImage)" alt="" class="media-object img-circle">
+                    <span class="status bg-success"></span>
+                }
+                      
             }
         </div>
         <div class="media-body">

@@ -49,7 +49,8 @@ namespace CamerackStudio.Controllers
             List<AppUser> users = new List<AppUser>();
 
 
-            var subscriptions = new AppUserFactory().GetAllSubscriptions(new AppConfig().GetSubscriptionsUrl).Result.ToList();
+            var subscriptions = new AppUserFactory().GetAllSubscriptions(new AppConfig().GetSubscriptionsUrl)
+                .Result.Where(n=>n.Status == "Active").ToList();
             foreach (var item in subscriptions)
             {
                 AppUser user = new AppUser
