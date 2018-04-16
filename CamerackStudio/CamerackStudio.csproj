@@ -60,6 +60,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Include="wwwroot\lib\signalr.js" />
+    <None Include="wwwroot\lib\signalr.js.map" />
+    <None Include="wwwroot\lib\signalr.min.js" />
+    <None Include="wwwroot\lib\signalr.min.js.map" />
     <None Include="wwwroot\Dashboard\assets\js\page-content\animations\basic-animations.js" />
     <None Include="wwwroot\Dashboard\assets\js\page-content\apps\calendar.js" />
     <None Include="wwwroot\Dashboard\assets\js\page-content\apps\image-cropper.js" />

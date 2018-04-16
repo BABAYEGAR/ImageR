@@ -19,12 +19,12 @@ namespace CamerackStudio.Controllers
 
         private readonly CamerackStudioDataContext _databaseConnection;
         AppUser _appUser;
-        private List<PushNotification> pushNotifications;
+        private readonly List<PushNotification> _pushNotifications;
 
         public OrderController(CamerackStudioDataContext databaseConnection)
         {
             _databaseConnection = databaseConnection;
-            pushNotifications = new AppUserFactory().GetAllPushNotifications(new AppConfig()
+            _pushNotifications = new AppUserFactory().GetAllPushNotifications(new AppConfig()
                 .UsersPushNotifications).Result.Where(n => n.ClientId == new AppConfig().ClientId).ToList();
         }
         [SessionExpireFilter]
@@ -37,7 +37,7 @@ namespace CamerackStudio.Controllers
                 //update notification to read
                 if (notificationId != null)
                 {
-                    var notification = pushNotifications.SingleOrDefault(n => n.PushNotificationId == notificationId);
+                    var notification = _pushNotifications.SingleOrDefault(n => n.PushNotificationId == notificationId);
 
                     if (notification != null)
                     {
@@ -58,7 +58,7 @@ namespace CamerackStudio.Controllers
                 if (_appUser.Role.UploadImage)
                 {
                     orders = new OrderFactory().GetAllOrdersAsync(new AppConfig().FetchOrdersUrl).Result
-                        .Where(n => n.AppUserId == signedInUserId).ToList();
+                        .Where(n => n.AppUserId == signedInUserId || n.CreatedBy == signedInUserId).ToList();
                 }
                 if (_appUser.Role.ManageImageCategory)
                 {

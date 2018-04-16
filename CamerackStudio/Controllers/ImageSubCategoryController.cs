@@ -108,7 +108,7 @@ namespace CamerackStudio.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [SessionExpireFilter]
-        public ActionResult Edit(ImageSubCategory imageSubCategory, IFormCollection collection)
+        public ActionResult Edit(ImageSubCategory imageSubCategory)
         {
             try
             {

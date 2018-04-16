@@ -54,23 +54,21 @@
 <script>
     $(document)
         .ready(function() {
-
-            $(function() {
-                setTimeout(function () {
-                        $('#numberOfNotifications')
-                            .load('@Url.Action("RealoadNavigation", "Home")');
-
-                    },
-                    20000);
-            });
-                $(function() {
-                    setTimeout(function (data) {
-                            $('.number')
-                            .load('@Url.Action("RealoadNavigationAndCount", "Home")');
-                            $('.number').val(data);
-
-                        },
-                        20000);
-            });
+            function numberOfNotifications() {    
+                    $('numberOfNotifications').load('@Url.Action("RealoadNavigation", "Home")');
+                    setTimeout(numberOfNotifications, 20000);
+            }
+            numberOfNotifications();
+        });
+</script>
+<script>
+    $(document)
+        .ready(function (data) {
+            function numberOfNotificationsCount() {    
+                    $('.number').load('@Url.Action("RealoadNavigationAndCount", "Home")');
+                    $('.number').val(data);
+                    setTimeout(numberOfNotificationsCount, 20000);
+            }
+            numberOfNotificationsCount();
         });
 </script>

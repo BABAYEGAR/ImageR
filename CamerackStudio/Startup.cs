@@ -46,14 +46,18 @@ namespace CamerackStudio
             services.AddDbContext<CamerackStudioDataContext>(options =>
                 options.UseMySql(Configuration.GetConnectionString("CamerackStudio")));
             // Adds a default in-memory implementation of IDistributedCache.
-            services.AddDistributedMemoryCache();
+            //services.AddDistributedMemoryCache();
             services.AddSession(options =>
             {
                 options.IdleTimeout = TimeSpan.FromDays(2);
             });
+            services.AddDistributedRedisCache(options =>
+            {
+                options.Configuration = "localhost";
+            });
             services.Configure<FormOptions>(options =>
             {
-                options.MultipartBodyLengthLimit = 100000000;
+                options.MultipartBodyLengthLimit = 100000000000000;
             });
             services.AddMvc(options => options.MaxModelValidationErrors = 50).AddJsonOptions(options => {
                 options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();

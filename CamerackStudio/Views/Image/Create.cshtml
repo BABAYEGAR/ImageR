@@ -5,16 +5,20 @@
     ViewBag.FormHeader = "Upload an Image (Make sure to fill all compulsory fields *)";
 }
 @section css{
-<script type="text/javascript" src="~/Dashboard/plugins/jquery/dist/jquery.min.js"></script>
+
     <!-- SpinKit-->
     <link rel="stylesheet" type="text/css" href="~/Dashboard/plugins/SpinKit/css/spinkit.css">
     <!-- Bootstrap Markdown-->
     <link rel="stylesheet" type="text/css" href="~/Dashboard/plugins/bootstrap-markdown/css/bootstrap-markdown.min.css">
-    <link href="~/Dashboard/assets/selectize/dist/css/selectize.css" rel="stylesheet"/>
+    <link href="~/Dashboard/assets/selectize/dist/css/selectize.css" rel="stylesheet" />
     <style>
-        .fileinput-upload-button { visibility: hidden }
+        .fileinput-upload-button {
+            visibility: hidden
+        }
 
-        .page-header { padding: 0px; }
+        .page-header {
+            padding: 0px;
+        }
 
         .selectize-input {
             border: 0px solid #d0d0d0;
@@ -25,7 +29,7 @@
     </style>
 }
 @section Breadcrumbs
-{
+    {
     <div class="pull-left">
         <h4 class="mt-0 mb-5">@ViewBag.PageHeader</h4>
         <ol class="breadcrumb mb-0">
@@ -40,174 +44,180 @@
     </div>
 }
 
-    <div class="loading-demo" style="display: none" id="loader">
-        <div class="sk-circle">
-            <div class="sk-circle1 sk-child"></div>
-            <div class="sk-circle2 sk-child"></div>
-            <div class="sk-circle3 sk-child"></div>
-            <div class="sk-circle4 sk-child"></div>
-            <div class="sk-circle5 sk-child"></div>
-            <div class="sk-circle6 sk-child"></div>
-            <div class="sk-circle7 sk-child"></div>
-            <div class="sk-circle8 sk-child"></div>
-            <div class="sk-circle9 sk-child"></div>
-            <div class="sk-circle10 sk-child"></div>
-            <div class="sk-circle11 sk-child"></div>
-            <div class="sk-circle12 sk-child"></div>
-        </div>
+<div class="loading-demo" style="display: none" id="loader">
+    <div class="sk-circle">
+        <div class="sk-circle1 sk-child"></div>
+        <div class="sk-circle2 sk-child"></div>
+        <div class="sk-circle3 sk-child"></div>
+        <div class="sk-circle4 sk-child"></div>
+        <div class="sk-circle5 sk-child"></div>
+        <div class="sk-circle6 sk-child"></div>
+        <div class="sk-circle7 sk-child"></div>
+        <div class="sk-circle8 sk-child"></div>
+        <div class="sk-circle9 sk-child"></div>
+        <div class="sk-circle10 sk-child"></div>
+        <div class="sk-circle11 sk-child"></div>
+        <div class="sk-circle12 sk-child"></div>
     </div>
+</div>
 <div class="widget-body" id="hideBody">
     <h4>
-        <span class="required">*</span> For the mean time the allowed image upload size limit is <strong class="annouce">10MB</strong>.Soon larger uploads will be allowed..
+        <span class="required">*</span> For the mean time the allowed image upload size limit is <strong class="annouce">20MB</strong>.Soon larger uploads will be allowed..
     </h4>
     <h4>
         <span class="required">*</span> Note That the <strong class="annouce">Supported Formats</strong> for Image Uploads are <strong class="required">JPG/JPEG</strong>..
     </h4>
+    <h4>
+        <span class="required">*</span> Never upload images with  <strong class="annouce">Watermarks as the system will auto assign a watermark</strong>..
+    </h4>
+    <h4>
+        <span class="required">*</span> Most importantly Note That uploading images might take longer time especially if they are large. A faster way out will be to have a  <strong class="annouce">Speedy Internet Connection..</strong>
+    </h4>
 
-    @using (Html.BeginForm("Create", "Image", FormMethod.Post, new {enctype = "multipart/form-data", role = "form",id="form"}))
+    @using (Html.BeginForm("Create", "Image", FormMethod.Post, new { enctype = "multipart/form-data", role = "form", id = "form" }))
     {
         <div class="tab-content" id="uploadHide">
-                @Html.AntiForgeryToken()
-                @Html.ValidationSummary(true, "", new {@class = "text-danger"})
+            @Html.AntiForgeryToken()
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
 
-                <div class="form-body">
-                    <div class="row">
-                        <div class="form-group col-md-6">
-                            @Html.LabelFor(model => model.Title, new {@class = "control-label"})<span class="required">*</span>
-                            @Html.EditorFor(model => model.Title, new {htmlAttributes = new {@class = "form-control", placeholder = "Please enter the image title"}})
-                            @Html.ValidationMessageFor(model => model.Title, "", new {@class = "text-danger"})
-                        </div>
-                        <div class="form-group col-md-6">
-                            @Html.LabelFor(model => model.Theme, new {@class = "control-label"})<span class="required">*</span>
-                            @Html.EditorFor(model => model.Theme, new {htmlAttributes = new {@class = "form-control", placeholder = "Please enter the image theme"}})
-                            @Html.ValidationMessageFor(model => model.Theme, "", new {@class = "text-danger"})
-                        </div>
-                        <div class="form-group col-md-6">
-                            @Html.LabelFor(model => model.ImageCategoryId, new {@class = "control-label"})<span class="required">*</span>
-                            @Html.DropDownListFor(model => model.ImageCategoryId, null, "Select an Image Category/Genre", new {@class = "form-control", placeholder = "", id = "category"})
-                            @Html.ValidationMessageFor(model => model.ImageCategoryId, "", new {@class = "text-danger"})
-                        </div>
-                        <div class="form-group col-md-6">
-                            @Html.LabelFor(model => model.ImageSubCategoryId, new {@class = "control-label"})
-                            @Html.DropDownListFor(m => m.ImageSubCategoryId, new SelectList(string.Empty, "Value", "Text"), "--Please select a Sub-Category/ Sub-Genre--", new {@class = "form-control", id = "sub"})
-                            @Html.ValidationMessageFor(model => model.ImageSubCategoryId, "", new {@class = "text-danger"})
-                        </div>
-                        <div class="form-group col-md-6">
-                            @Html.LabelFor(model => model.LocationId, new {@class = "control-label"}) <a data-toggle="tooltip" title="Add a new Location" class="loadModal4" style="font-weight: bolder">Add New</a>
-                            @Html.DropDownListFor(model => model.LocationId, null, "Select an Image Location", new {@class = "form-control", placeholder = ""})
-
-                        </div>
-                        <div class="form-group col-md-12" style="display: none" id="NewLocation">
-                            <label class="control-label">Add Location</label>
-                            <input type="text" name="NewLocationText" class="form-control" required="required"/>
-                        </div>
-                   
-                        <div class="form-group col-md-6">
-                            @Html.LabelFor(model => model.Inspiration, new {@class = "control-label"})
-                            @Html.EditorFor(model => model.Inspiration, new {htmlAttributes = new {@class = "form-control", placeholder = "Please enter the your inspiration for taking the image"}})
-                            @Html.ValidationMessageFor(model => model.Inspiration, "", new {@class = "text-danger"})
-                        </div>
-                        <div class="form-group col-md-6">
-                            @Html.LabelFor(model => model.CameraId, new {@class = "control-label"}) <a data-toggle="tooltip" title="Add a new Camera" class="loadModal3" style="font-weight: bolder">Add New</a>
-                            @Html.DropDownListFor(model => model.CameraId, null, "Select the Camera Used", new { @class = "form-control", placeholder = "" })
-                        </div>
-                        <div class="form-group col-md-12" style="display: none" id="NewCamera">
-                            <label class="control-label">Add Camera:</label>
-                            <input type="text" name="NewCameraText" class="form-control" required="required"/>
-                        </div>
-                        <div class="form-group col-md-6">
-                            <label for="state">Pricing Category</label>
-                            <select name="state" class="form-control" id="state">
-                                <option value="Free">Free</option>
-                                <option value="NotFree">Set Price</option>
-                            </select>
-                        </div>
-                        <div class="form-group col-md-6" id="priceDiv">
-                            @Html.LabelFor(model => model.SellingPrice, new {@class = "control-label"})<span style="font-weight: bolder" class="required">(N500 - N100,000)*</span>
-                            @Html.EditorFor(model => model.SellingPrice, new {htmlAttributes = new {@class = "form-control", placeholder = "Please enter the selling price for the image", min = "500", max = "100000", id = "price"}})
-                            @Html.ValidationMessageFor(model => model.SellingPrice, "", new {@class = "text-danger"})
-                        </div>
-                        <div class="form-group col-md-6" id="discountDiv">
-                            @Html.LabelFor(model => model.Discount, new {@class = "control-label"})<span style="font-weight: bolder" class="required"> (0% - 100%)</span>
-                            @Html.EditorFor(model => model.Discount, new {htmlAttributes = new {@class = "form-control", placeholder = "Please enter the discount % for the image", min = "0", max = "100", id = "discount"}})
-                            @Html.ValidationMessageFor(model => model.Discount, "", new {@class = "text-danger"})
-                        </div>
-                        <div class="form-group col-md-12">
-                            @Html.LabelFor(model => model.Tags, new {@class = "control-label"})
-                            @Html.EditorFor(model => model.Tags, new {htmlAttributes = new {@class = "form-control", placeholder = "Please enter the tags for the image", id = "input-tags"}})
-                            @Html.ValidationMessageFor(model => model.Tags, "", new {@class = "text-danger"})
-                        </div>
+            <div class="form-body">
+                <div class="row">
+                    <div class="form-group col-md-6">
+                        @Html.LabelFor(model => model.Title, new { @class = "control-label" })<span class="required">*</span>
+                        @Html.EditorFor(model => model.Title, new { htmlAttributes = new { @class = "form-control", placeholder = "Please enter the image title" } })
+                        @Html.ValidationMessageFor(model => model.Title, "", new { @class = "text-danger" })
                     </div>
-                    <div class="row">
-                        <div class="form-group">
-                            @Html.LabelFor(model => model.Description, new {@class = "control-label"})<span class="required">*</span>
-                            <textarea name="Description" data-provide="markdown" rows="10" required="required"></textarea>
-                            @Html.ValidationMessageFor(model => model.Description, "", new {@class = "text-danger"})
-                        </div>
-                        <div class="form-group">
-                            <br/>
-                            <br/>
+                    <div class="form-group col-md-6">
+                        @Html.LabelFor(model => model.Theme, new { @class = "control-label" })<span class="required">*</span>
+                        @Html.EditorFor(model => model.Theme, new { htmlAttributes = new { @class = "form-control", placeholder = "Please enter the image theme" } })
+                        @Html.ValidationMessageFor(model => model.Theme, "", new { @class = "text-danger" })
+                    </div>
+                    <div class="form-group col-md-6">
+                        @Html.LabelFor(model => model.ImageCategoryId, new { @class = "control-label" })<span class="required">*</span>
+                        @Html.DropDownListFor(model => model.ImageCategoryId, null, "Select an Image Category/Genre", new { @class = "form-control", placeholder = "", id = "category" })
+                        @Html.ValidationMessageFor(model => model.ImageCategoryId, "", new { @class = "text-danger" })
+                    </div>
+                    <div class="form-group col-md-6">
+                        @Html.LabelFor(model => model.ImageSubCategoryId, new { @class = "control-label" })
+                        @Html.DropDownListFor(m => m.ImageSubCategoryId, new SelectList(string.Empty, "Value", "Text"), "--Please select a Sub-Category/ Sub-Genre--", new { @class = "form-control", id = "sub" })
+                        @Html.ValidationMessageFor(model => model.ImageSubCategoryId, "", new { @class = "text-danger" })
+                    </div>
+                    <div class="form-group col-md-6">
+                        @Html.LabelFor(model => model.LocationId, new { @class = "control-label" }) <a data-toggle="tooltip" title="Add a new Location" class="loadModal4" style="font-weight: bolder">Add New</a>
+                        @Html.DropDownListFor(model => model.LocationId, null, "Select an Image Location", new { @class = "form-control", placeholder = "" })
 
-                            <label class="col-sm-2 control-label">Image Upload</label>
-                            <div class="col-sm-10">
-                    
-                                <input id="input-5" name="FileName" type="file" class="file-loading" required="required">
-                                @Html.ValidationMessageFor(model => model.FileName, "", new {@class = "text-danger"})
-                                <p class="help-block">
-                                    Note that uploading large image sizes might take some more time to upload to the server at such please be patient, but a quick fix is to have a speedy internet connection.
-                                </p>
-                            </div>
-                        </div>
-                        <br/>
-                        <br/>
-                        <br/>
-                        <br/>
-                        <h4>
-                            <strong>Print Support up to 300DPI and above</strong>
-                        </h4>
-                        <h5>Please make sure your image supports printing before selecting the appropriate Options</h5>
-                        <div class="form-group">
-                            <div class="form-group col-md-2">
-                                @Html.LabelFor(model => model.A1, new {@class = "control-label"})
-                                @*@Html.CheckBoxFor(model => model.A1, new {id = "checkA1" })*@
-                                <input type="checkbox" name="A1" id="checkA1"/>
-                                @Html.ValidationMessageFor(model => model.A1, "", new {@class = "text-danger"})
-                            </div>
-                            <div class="form-group col-md-2">
-                                @Html.LabelFor(model => model.A2, new {@class = "control-label"})
-                                @*@Html.CheckBoxFor(model => model.A2, new { id = "checkA2" })*@
-                                <input type="checkbox" name="A2" id="checkA2"/>
-                                @Html.ValidationMessageFor(model => model.A2, "", new {@class = "text-danger"})
-                            </div>
-                            <div class="form-group col-md-2">
-                                @Html.LabelFor(model => model.A3, new {@class = "control-label"})
-                                @*@Html.CheckBoxFor(model => model.A3, new {id = "checkA3" } )*@
-                                <input type="checkbox" name="A3" id="checkA3"/>
-                                @Html.ValidationMessageFor(model => model.A3, "", new {@class = "text-danger"})
-                            </div>
-                            <div class="form-group col-md-2">
-                                @Html.LabelFor(model => model.A4, new {@class = "control-label"})
-                                @*@Html.CheckBoxFor(model => model.A4,  new {id = "checkA4" } )*@
-                                <input type="checkbox" name="A4" id="checkA4"/>
-                                @Html.ValidationMessageFor(model => model.A4, "", new {@class = "text-danger"})
-                            </div>
-                            <div class="form-group col-md-2">
-                                @Html.LabelFor(model => model.A5, new {@class = "control-label"})
-                                @*@Html.CheckBoxFor(model => model.A5,new {id = "checkA5" } )*@
-                                <input type="checkbox" name="A5" id="checkA5"/>
-                                @Html.ValidationMessageFor(model => model.A5, "", new {@class = "text-danger"})
-                            </div>
-                            <div class="form-group col-md-2">
-                                @Html.LabelFor(model => model.A6, new {@class = "control-label"})
-                                @*@Html.CheckBoxFor(model => model.A6,  new {id = "checkA6" } )*@
-                                <input type="checkbox" name="A6" id="checkA6"/>
-                                @Html.ValidationMessageFor(model => model.A5, "", new {@class = "text-danger"})
-                            </div>
-                        </div>
+                    </div>
+                    <div class="form-group col-md-12" style="display: none" id="NewLocation">
+                        <label class="control-label">Add Location</label>
+                        <input type="text" name="NewLocationText" class="form-control" required="required" />
                     </div>
 
+                    <div class="form-group col-md-6">
+                        @Html.LabelFor(model => model.Inspiration, new { @class = "control-label" })
+                        @Html.EditorFor(model => model.Inspiration, new { htmlAttributes = new { @class = "form-control", placeholder = "Please enter the your inspiration for taking the image" } })
+                        @Html.ValidationMessageFor(model => model.Inspiration, "", new { @class = "text-danger" })
+                    </div>
+                    <div class="form-group col-md-6">
+                        @Html.LabelFor(model => model.CameraId, new { @class = "control-label" }) <a data-toggle="tooltip" title="Add a new Camera" class="loadModal3" style="font-weight: bolder">Add New</a>
+                        @Html.DropDownListFor(model => model.CameraId, null, "Select the Camera Used", new { @class = "form-control", placeholder = "" })
+                    </div>
+                    <div class="form-group col-md-12" style="display: none" id="NewCamera">
+                        <label class="control-label">Add Camera:</label>
+                        <input type="text" name="NewCameraText" class="form-control" required="required" />
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="state">Pricing Category</label>
+                        <select name="state" class="form-control" id="state">
+                            <option value="Free">Free</option>
+                            <option value="NotFree">Set Price</option>
+                        </select>
+                    </div>
+                    <div class="form-group col-md-6" id="priceDiv">
+                        @Html.LabelFor(model => model.SellingPrice, new { @class = "control-label" })<span style="font-weight: bolder" class="required">(N500 - N100,000)*</span>
+                        @Html.EditorFor(model => model.SellingPrice, new { htmlAttributes = new { @class = "form-control", placeholder = "Please enter the selling price for the image", min = "500", max = "100000", id = "price" } })
+                        @Html.ValidationMessageFor(model => model.SellingPrice, "", new { @class = "text-danger" })
+                    </div>
+                    <div class="form-group col-md-6" id="discountDiv">
+                        @Html.LabelFor(model => model.Discount, new { @class = "control-label" })<span style="font-weight: bolder" class="required"> (0% - 100%)</span>
+                        @Html.EditorFor(model => model.Discount, new { htmlAttributes = new { @class = "form-control", placeholder = "Please enter the discount % for the image", min = "0", max = "100", id = "discount" } })
+                        @Html.ValidationMessageFor(model => model.Discount, "", new { @class = "text-danger" })
+                    </div>
+                    <div class="form-group col-md-12">
+                        @Html.LabelFor(model => model.Tags, new { @class = "control-label" })
+                        @Html.EditorFor(model => model.Tags, new { htmlAttributes = new { @class = "form-control", placeholder = "Please enter the tags for the image", id = "input-tags" } })
+                        @Html.ValidationMessageFor(model => model.Tags, "", new { @class = "text-danger" })
+                    </div>
                 </div>
+                <div class="row">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Description, new { @class = "control-label" })<span class="required">*</span>
+                        <textarea name="Description" data-provide="markdown" rows="10" required="required"></textarea>
+                        @Html.ValidationMessageFor(model => model.Description, "", new { @class = "text-danger" })
+                    </div>
+                    <div class="form-group">
+                        <br />
+                        <br />
+
+                        <label class="col-sm-2 control-label">Image Upload</label>
+                        <div class="col-sm-10">
+
+                            <input id="input-5" name="FileName" type="file" class="file-loading" required="required">
+                            @Html.ValidationMessageFor(model => model.FileName, "", new { @class = "text-danger" })
+                            <p class="help-block">
+                                Note that uploading large image sizes might take some more time to upload to the server at such please be patient, but a quick fix is to have a speedy internet connection.
+                            </p>
+                        </div>
+                    </div>
+                    <br />
+                    <br />
+                    <br />
+                    <br />
+                    <h4>
+                        <strong>Print Support up to 300DPI and above</strong>
+                    </h4>
+                    <h5>Please make sure your image supports printing before selecting the appropriate Options</h5>
+                    <div class="form-group">
+                        <div class="form-group col-md-2">
+                            @Html.LabelFor(model => model.A1, new { @class = "control-label" })
+                            @*@Html.CheckBoxFor(model => model.A1, new {id = "checkA1" })*@
+                            <input type="checkbox" name="A1" id="checkA1" />
+                            @Html.ValidationMessageFor(model => model.A1, "", new { @class = "text-danger" })
+                        </div>
+                        <div class="form-group col-md-2">
+                            @Html.LabelFor(model => model.A2, new { @class = "control-label" })
+                            @*@Html.CheckBoxFor(model => model.A2, new { id = "checkA2" })*@
+                            <input type="checkbox" name="A2" id="checkA2" />
+                            @Html.ValidationMessageFor(model => model.A2, "", new { @class = "text-danger" })
+                        </div>
+                        <div class="form-group col-md-2">
+                            @Html.LabelFor(model => model.A3, new { @class = "control-label" })
+                            @*@Html.CheckBoxFor(model => model.A3, new {id = "checkA3" } )*@
+                            <input type="checkbox" name="A3" id="checkA3" />
+                            @Html.ValidationMessageFor(model => model.A3, "", new { @class = "text-danger" })
+                        </div>
+                        <div class="form-group col-md-2">
+                            @Html.LabelFor(model => model.A4, new { @class = "control-label" })
+                            @*@Html.CheckBoxFor(model => model.A4,  new {id = "checkA4" } )*@
+                            <input type="checkbox" name="A4" id="checkA4" />
+                            @Html.ValidationMessageFor(model => model.A4, "", new { @class = "text-danger" })
+                        </div>
+                        <div class="form-group col-md-2">
+                            @Html.LabelFor(model => model.A5, new { @class = "control-label" })
+                            @*@Html.CheckBoxFor(model => model.A5,new {id = "checkA5" } )*@
+                            <input type="checkbox" name="A5" id="checkA5" />
+                            @Html.ValidationMessageFor(model => model.A5, "", new { @class = "text-danger" })
+                        </div>
+                        <div class="form-group col-md-2">
+                            @Html.LabelFor(model => model.A6, new { @class = "control-label" })
+                            @*@Html.CheckBoxFor(model => model.A6,  new {id = "checkA6" } )*@
+                            <input type="checkbox" name="A6" id="checkA6" />
+                            @Html.ValidationMessageFor(model => model.A5, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                </div>
+
             </div>
+        </div>
         <div class="row">
             <button id="submitForm" type="submit" class="btn btn-primary">
                 <i class="glyphicon glyphicon-upload"></i>
@@ -216,11 +226,10 @@
             <a href="@Url.Action("Index", "Image")" class="btn btn-default">Cancel</a>
         </div>
     }
-    </div >
-
+</div>
 
 @section Scripts
-{
+    {
     <!-- Bootstrap Markdown-->
     <script type="text/javascript" src="~/Dashboard/plugins/bootstrap-markdown/js/bootstrap-markdown.js"></script>
     <script src="~/Dashboard/assets/selectize/dist/js/standalone/selectize.min.js"></script>
@@ -271,7 +280,7 @@
                     if (checkA1.val() == 'false') {
                         checkA1.attr('checked', 'checked').val('true');
                     } else {
-                        checkA1.removeAttr('checked', 'checked').val('false');  
+                        checkA1.removeAttr('checked', 'checked').val('false');
                     }
                 });
                 var checkA2 = $('#checkA2');
@@ -367,25 +376,23 @@
         });
     </script>
     <script>
-        $(document).ready(function() {
+        $(document).ready(function () {
             $(".loadModal4").click(function () { // Click to only happen on announce links
                 $('#NewLocation').fadeIn(1000);
             });
         });
     </script>
     <script>
-        $(document).ready(function() {
+        $(document).ready(function () {
             $(".loadModal3").click(function () { // Click to only happen on announce links
                 $('#NewCamera').fadeIn(1000);
             });
         });
     </script>
     <script>
-            $('#form').submit(function () {
-                if($(this).valid()) {
-                   $('#hideBody').fadeOut(100);
-                   $('#loader').fadeIn(100);
-                }
-            });
+        $('#form').submit(function () {
+            $('#hideBody').fadeOut(100);
+            $('#loader').fadeIn(100);
+        });
     </script>
 }

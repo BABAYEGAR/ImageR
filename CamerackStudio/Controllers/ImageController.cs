@@ -331,6 +331,9 @@ namespace CamerackStudio.Controllers
                         }
                         if (signedInUserId > 0)
                         {
+                            _databaseConnection.Add(image);
+                            _databaseConnection.SaveChanges();
+
                             //get tags
                             if (!string.IsNullOrEmpty(image.Tags))
                             {
@@ -356,8 +359,7 @@ namespace CamerackStudio.Controllers
                                 }
                                 _databaseConnection.SaveChanges();
                             }
-                            _databaseConnection.Add(image);
-                            _databaseConnection.SaveChanges();
+                         
                         }
                         else
                         {

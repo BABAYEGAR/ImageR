@@ -9,14 +9,15 @@
     var signedInUserId = Convert.ToInt64(Context.Session.GetString("StudioLoggedInUserId"));
     var singleOrDefault = Model.AppUsers.SingleOrDefault(n => n.AppUserId == Model.Image.AppUserId);
     var singleRating = Model.ImageActions.SingleOrDefault(n => n.AppUserId == signedInUserId && n.ImageId == Model.Image.ImageId);
-    var pic = "https://res.cloudinary.com/" + Model.Image.FilePath;
+    var freeImage = "https://res.cloudinary.com/" + Model.Image.FilePath;
+    var notFreeImage = "https://res.cloudinary.com/" + Model.Image.FilePath.Replace("upload/", new AppConfig().GeneralImage);
 }
 @section Css
-{
-    <link href="~/Rating/css/star-rating.css" rel="stylesheet"/>
+    {
+    <link href="~/Rating/css/star-rating.css" rel="stylesheet" />
 }
 @section Breadcrumbs
-{
+    {
     <div class="pull-left">
         <h4 class="mt-0 mb-5">@ViewBag.PageHeader</h4>
         <ol class="breadcrumb mb-0">
@@ -46,9 +47,9 @@
                             {
                                 <img src="@singleOrDefault.ProfilePicture.Replace("upload/",new AppConfig().GeneralUserImage)" alt="" class="media-object mo-lg img-circle">
                             }
-                      
+
                         }
-                   
+
                     </div>
                     <div class="media-body media-middle">
                         <p class="mb-0">
@@ -56,7 +57,8 @@
                                 @if (singleOrDefault != null)
                                 {
                                     @singleOrDefault.Username
-                                }</span> uploaded a new image
+                                }
+                            </span> uploaded a new image
                         </p>
                         <time datetime="2015-12-10T20:50:48+07:00" class="text-muted fs-12">
                             @Model.Image.DateCreated.ToString("D") <i class="ti-time"></i>@Model.Image.DateCreated.ToString("h:mm:ss tt")
@@ -70,7 +72,17 @@
                 </p>
                 <div class="thumbnail">
                     <a href="#">
-                        <img src="@pic" alt="">
+                        @if (Model.Image.SellingPrice > 0)
+                        {
+
+                            <img data-src="@notFreeImage" src="@notFreeImage" alt="">
+                        }
+                        else
+                        {
+                            <img data-src="@freeImage" src="@freeImage" alt="">
+
+                        }
+
                         <div class="text-left caption">
                             @{
                                 Html.RenderPartial("Partials/_PartialRating", Model);
@@ -89,10 +101,10 @@
                                         <form asp-controller="Image" asp-action="RateImage" data-ajax-begin="onBegin"
                                               data-ajax="true" data-ajax-method="POST" data-ajax-update="#" id="hideRating">
                                             @Html.AntiForgeryToken()
-                                            @Html.ValidationSummary(true, "", new {@class = "text-danger"})
+                                            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
                                             @Html.Hidden("ImageId", Model.Image.ImageId)
                                             @Html.AntiForgeryToken()
-                                            @Html.ValidationSummary(true, "", new {@class = "text-danger"})
+                                            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
                                             <input id="input-21d" name="rating" type="text" class="rating" data-min=0 data-max=5 data-step=1 data-size="sm">
                                             <input type="submit" class="btn btn-primary" value="Rate" id="rateButton">
                                         </form>
@@ -111,10 +123,10 @@
                 </ul>
 
                 <form asp-controller="Image" asp-action="PostImageComment" data-ajax="true" data-ajax-method="POST" data-ajax-update="#content-@Model.Image.ImageId" data-ajax-complete="onFormComplete">
-                    <input type="hidden" value="@Model.Image.ImageId" name="ImageId"/>
+                    <input type="hidden" value="@Model.Image.ImageId" name="ImageId" />
                     <label>Post a Comment</label>
                     <textarea name="Comment" id="comment-@Model.Image.ImageId" class="form-control comment" aria-expanded="False" required="required"></textarea>
-                    <br/>
+                    <br />
                     <button type="submit" class="btn btn-primary btn-sm pull-right" id="postComment" data-id="@Model.Image.ImageId">
                         <i class="glyphicon glyphicon-upload"></i>
                         Post
@@ -127,14 +139,14 @@
 </div>
 
 @section Functions
-{
+    {
     <script src="~/Rating/js/star-rating.min.js"></script>
     <script>
-        var onBegin = function() {
+        var onBegin = function () {
             $('#hideRating').fadeOut("slow");
             $('#showRatings').fadeIn(300);
         };
-        var onFormComplete = function() {
+        var onFormComplete = function () {
             $('.comment').val('');
         };
     </script>

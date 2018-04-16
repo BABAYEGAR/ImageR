@@ -12,7 +12,7 @@
 <h5 class="dropdown-header">You have <span class="number">@(Model.Where(n => n.Read == false).ToList().Count) </span>unread notifications</h5>
 <br/>
     <ul data-mcs-theme="minimal-dark" class="media-list mCustomScrollbar">
-        @foreach (var item in Model.OrderBy(n=>n.DateCreated).Take(10))
+        @foreach (var item in Model.OrderBy(n=>n.DateCreated).Take(10).ToList())
         {
             var user = users.SingleOrDefault(n => n.AppUserId == item.CreatedBy);
             <li class="media">

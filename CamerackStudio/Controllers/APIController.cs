@@ -28,8 +28,7 @@ namespace CamerackStudio.Controllers
         /// <returns></returns>
         public JsonResult GetAllImages()
         {
-            var images = _databaseConnection.Images.Include(n => n.Camera).Include(n => n.Location)
-                .Where(n => n.Status == ImageStatus.Accepted.ToString());
+            var images = _databaseConnection.Images.Where(n => n.Status == ImageStatus.Accepted.ToString()).ToList();
             return Json(images);
         }
         /// <summary>

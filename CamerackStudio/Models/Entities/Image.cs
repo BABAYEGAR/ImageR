@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using CamerackStudio.Models.Services;
+using Newtonsoft.Json;
 
 namespace CamerackStudio.Models.Entities
 {
